@@ -1,22 +1,31 @@
 var path = require('path');
 
-var phaserModule = path.join(__dirname, '/node_modules/phaser/');
-var phaser = path.join(phaserModule, 'build/custom/phaser-split.js');
-var pixi = path.join(phaserModule, 'build/custom/pixi.js');
-var p2 = path.join(phaserModule, 'build/custom/p2.js');
+const PATHS = {
+    build: path.join(__dirname, 'build'),
+    phaser: path.join(__dirname, '/node_modules/phaser/build/custom/phaser-split.js'),
+    pixi: path.join(__dirname, '/node_modules/phaser/build/custom/pixi.js'),
+    p2: path.join(__dirname, '/node_modules/phaser/build/custom/p2.js')
+};
 
 module.exports = {
     entry: './scripts/entry.js',
     output: {
-        path: path.join(__dirname, '/build/'),
+        path: PATHS.build,
+        publicPath: PATHS.build,
         filename: 'bundle.js'
     },
     module: {
         preLoaders: [
-          {
-            test: /\.jsx?$/,
-            loaders: ['eslint']
-          }
+            {
+                test: /\.jsx?$/,
+                exclude: [
+                    /node_modules/,
+                    /pixi\.js/,
+                    /phaser-split\.js$/,
+                    /p2\.js/
+                ],
+                loaders: ['eslint']
+            }
         ],
         loaders: [
             { test: /pixi\.js/, loader: 'expose?PIXI' },
@@ -25,6 +34,11 @@ module.exports = {
             { test: /\.css$/, loader: 'style!css' },
             {
                 test: /\.js$/,
+                exclude: [
+                    /pixi\.js/,
+                    /phaser-split\.js$/,
+                    /p2\.js/
+                ],
                 loader: 'babel-loader',
                 query: {
                     presets: ['es2015']
@@ -34,9 +48,9 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'phaser': phaser,
-            'pixi': pixi,
-            'p2': p2,
+            'phaser': PATHS.phaser,
+            'pixi': PATHS.pixi,
+            'p2': PATHS.p2
         },
         extensions: ['', '.js', '.json']
     }
