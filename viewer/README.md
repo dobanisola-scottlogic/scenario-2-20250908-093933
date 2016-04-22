@@ -15,18 +15,33 @@ The application is built using ES2015, transpiled via Babel.
 npm install
 ```
 
-#### Running locally
+### Running the application locally
 
-- Start the webpack development server
+#### Development
+
+Start the webpack development server:
+```
+npm run dev
+```
+This binds a small express server on http://localhost:8080. It automatically updates the browser page when a bundle is recompiled. Open http://localhost:8080/webpack-dev-server/ in your browser.
+
+#### Live
+Start the server:
 ```
 npm start
 ```
-This binds a small express server on http://localhost:8080. It automatically updates the browser page when a bundle is recompiled. Open http://localhost:8080/webpack-dev-server/bundle in your browser.
+This runs webpack and then starts the http-server on http://localhost:8080.
 
-#### Testing
+### Testing
 [Jasmine](http://jasmine.github.io/) is the testing framework used within this project for testing JavaScript.
 
-Run the tests using:
+Run the tests:
 ```
 npm test
+```
+### Linting
+
+Run ESLint:
+```
+npm run lint
 ```
