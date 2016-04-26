@@ -4,7 +4,7 @@ let SPRITE = require('../../enums/sprite.js');
 
 let Cell = require('./Cell.js');
 
-class Spawn {
+class Player {
     constructor(game, id, owner, teamIndex, cell) {
         this.id = id;
         this.owner = owner;
@@ -15,16 +15,21 @@ class Spawn {
     constructSprite(game) {
         let sprite = game.add.sprite((this.cell.column + 0.5) * PHASER.CELL.WIDTH,
                                        (this.cell.row + 0.5) * PHASER.CELL.HEIGHT,
-                                       SPRITE.SPAWN.IDENTIFIER,
+                                       SPRITE.PLAYER.IDENTIFIER,
                                        this.teamIndex);
-        sprite.width = PHASER.CELL.WIDTH * 3;
-        sprite.height = PHASER.CELL.HEIGHT * 3;
+        sprite.width = PHASER.CELL.WIDTH * 0.8;
+        sprite.height = PHASER.CELL.HEIGHT * 0.8;
         sprite.anchor.setTo(0.5, 0.5);
         return sprite;
     }
     destroy() {
         this.sprite.destroy();
     }
+    setCell(cell) {
+        this.cell = cell;
+        this.sprite.x = (this.cell.column + 0.5) * PHASER.CELL.WIDTH;
+        this.sprite.y = (this.cell.row + 0.5) * PHASER.CELL.HEIGHT;
+    }
 }
 
-module.exports = Spawn;
+module.exports = Player;

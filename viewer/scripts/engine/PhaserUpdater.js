@@ -1,7 +1,12 @@
 
 let PHASER = require('../enums/phaser.js');
+let MOVEMENT = require('../enums/movement.js');
 
 let Collectable = require('./models/Collectable.js');
+let Player = require('./models/Player.js');
+let Cell = require('./models/Cell.js');
+
+let cellShifter = require('./utils/CellShifter.js');
 
 /*
  * Phaser Update function:
@@ -35,6 +40,10 @@ class PhaserUpdater {
 
             this.destroySpawns(deltaPhase.spawnPointsDestroyed);
 
+            this.addPlayers(deltaPhase.playersAdded);
+            this.destroyPlayers(deltaPhase.playersDestroyed);
+            this.movePlayers(deltaPhase.playerMovement);
+
             this.phaseIndex ++;
         }
     }
@@ -43,7 +52,7 @@ class PhaserUpdater {
             let newCollectable = new Collectable(this.engine.game,
                                                  collectable.id,
                                                  collectable.type,
-                                                 collectable.position);
+                                                 collectable.cell);
             this.engine.collectables.push(newCollectable);
         });
     }
@@ -62,6 +71,47 @@ class PhaserUpdater {
     destroySpawns(destroyedSpawns) {
         destroyedSpawns.forEach(spawn => {
             this.engine.map.destroySpawn(spawn.id);
+        });
+    }
+    addPlayers(addedPlayers) {
+        addedPlayers.forEach(player => {
+            if (player.owner && player.teamIndex !== -1) {
+                this.engine.players.push(new Player(this.engine.game,
+                                                    player.id,
+                                                    player.owner,
+                                                    player.teamIndex,
+                                                    player.cell));
+            } else {
+                console.log('ERROR : Attempted to create player[' + player.id + '] without a matching owner.');
+            }
+        });
+    }
+    destroyPlayers(destroyedPlayers) {
+        destroyedPlayers.forEach(player => {
+            let playerIndex = this.engine.players.map(currentPlayer => currentPlayer.id)
+                                                 .indexOf(player.id);
+            if (playerIndex !== -1) {
+                this.engine.players[playerIndex].destroy();
+                this.engine.players.splice(playerIndex, 1);
+            } else {
+                console.log('ERROR : Failed to destroy player[' + player.id + '].');
+            }
+        });
+    }
+    movePlayers(movedPlayers) {
+        movedPlayers.forEach(player => {
+            let playerIndex = this.engine.players.map(currentPlayer => currentPlayer.id)
+                                                 .indexOf(player.id);
+            if (playerIndex !== -1) {
+                let playerCell = this.engine.players[playerIndex].cell;
+                let playerShift = cellShifter.getCellShift(player.movement);
+                let column = cellShifter.wrap((playerCell.column + playerShift.columnShift), this.engine.getColumnCount());
+                let row = cellShifter.wrap((playerCell.row + playerShift.rowShift), this.engine.getRowCount());
+
+                this.engine.players[playerIndex].setCell(new Cell(column, row));
+            } else {
+                console.log('ERROR : Failed to move player[' + player.id + '].');
+            }
         });
     }
 }
