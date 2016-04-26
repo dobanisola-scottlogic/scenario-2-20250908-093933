@@ -1,4 +1,4 @@
-var Cell = require('./Cell');
+var Cell = require('../engine/models/Cell');
 var states = [];
 
 class State {
@@ -59,6 +59,7 @@ function parseCollectablePositions(index, gameData) {
     gameData.phaseResults[index].addedCollectables.forEach((addedCollectable) => {
         collectables.push({
             id: addedCollectable.id,
+            type: addedCollectable.type,
             cell: new Cell(addedCollectable.position.x, addedCollectable.position.y)
         });
     });
@@ -83,7 +84,11 @@ function parseSpawnPositions(index, gameData) {
     // Set the current spawn points to the previous spawn point
     if (index === 0) {
         gameData.spawnPoints.forEach((spawnPoint) => {
-            spawnPoints.push(spawnPoint);
+            spawnPoints.push({
+                id: spawnPoint.id,
+                owner: spawnPoint.owner,
+                cell: new Cell(spawnPoint.position.x, spawnPoint.position.y)
+            });
         });
     } else {
         states[index - 1].spawnPoints.forEach((spawnPoint) => {

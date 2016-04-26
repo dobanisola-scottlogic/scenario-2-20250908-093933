@@ -16,7 +16,7 @@ class PhaserCreator {
         this.create = this.create.bind(this);
     }
     create() {
-        this.engine.map.create(this.engine.game);
+        this.engine.map.create(this.engine.game, this.engine.getSpawns(), this.engine.getOutOfBoundPositions());
     }
 }
 

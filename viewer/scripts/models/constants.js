@@ -1,3 +1,5 @@
+var Cell = require('../engine/models/Cell');
+
 class Constants {
     constructor(id, width, height, outOfBoundPositions, spawnPoints, owners) {
         this.id = id;
@@ -10,8 +12,16 @@ class Constants {
 
     static parse(gameData) {
         let owners = [];
-        gameData.spawnPoints.forEach(spawnPoint => {
+        let spawnPoints = [];
+
+        gameData.spawnPoints.forEach((spawnPoint, index) => {
             owners.push(spawnPoint.owner);
+            spawnPoints.push({
+                id: spawnPoint.id,
+                owner: spawnPoint.owner,
+                cell: new Cell(spawnPoint.position.x, spawnPoint.position.y),
+                teamIndex: index
+            });
         });
 
         let constants = new Constants(
@@ -19,7 +29,7 @@ class Constants {
             gameData.map.width,
             gameData.map.height,
             gameData.map.outOfBoundPositions,
-            gameData.spawnPoints,
+            spawnPoints,
             owners
         );
 

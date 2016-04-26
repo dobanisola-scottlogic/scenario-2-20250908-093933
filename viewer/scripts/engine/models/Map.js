@@ -5,45 +5,46 @@ let SPRITE = require('../../enums/sprite.js');
 let Spawn = require('./Spawn');
 
 class Map {
-    constructor(gameData) {
+    constructor(width, height) {
 
-        // Set default values
+        this.width = width;
+        this.height = height;
         this.tileGrid = [];
         this.obsticles = [];
         this.spawns = [];
-        this.gameData = gameData;
 
+    }
+    create(game, spawns, outOfBoundPositions) {
         // Populate tileGrid
-        for (let row = 0; row < this.gameData.constants.height; row ++) {
+        for (let row = 0; row < this.height; row ++) {
             let tileRow = [];
-            for (let column = 0; column < this.gameData.constants.width; column ++) {
+            for (let column = 0; column < this.width; column ++) {
                 tileRow.push(SPRITE.MAP.INDEXES.CLEAR);
             }
             this.tileGrid.push(tileRow);
         }
 
         // Populate obstacles
-        this.gameData.constants.outOfBoundPositions.forEach((obstacle) => {
+        outOfBoundPositions.forEach((obstacle) => {
             this.tileGrid[obstacle.y][obstacle.x] = SPRITE.MAP.INDEXES.OBSTRUCTION;
         });
-    }
-    create(phaser) {
+
         for (let row = 0; row < this.tileGrid.length; row ++) {
             for (let column = 0; column < this.tileGrid[row].length; column ++) {
-                let newTileSprite = phaser.add.sprite(column * PHASER.CELL.WIDTH,
+                let sprite = game.add.sprite(column * PHASER.CELL.WIDTH,
                                                          row * PHASER.CELL.HEIGHT,
                                                          SPRITE.MAP.IDENTIFIER,
                                                          this.tileGrid[row][column]);
-                newTileSprite.width = PHASER.CELL.WIDTH;
-                newTileSprite.height = PHASER.CELL.HEIGHT;
+                sprite.width = PHASER.CELL.WIDTH;
+                sprite.height = PHASER.CELL.HEIGHT;
                 if (this.tileGrid[row][column] === SPRITE.MAP.INDEXES.OBSTRUCTION) {
-                    this.obsticles.push(newTileSprite);
+                    this.obsticles.push(sprite);
                 }
             }
         }
 
-        this.gameData.constants.spawnPoints.forEach((spawn) => {
-            this.spawns.push(new Spawn(phaser, this.gameData, spawn));
+        spawns.forEach((spawn) => {
+            this.spawns.push(new Spawn(game, spawn.id, spawn.owner, spawn.teamIndex, spawn.cell));
         });
     }
     destroySpawn(spawnId) {

@@ -29,16 +29,38 @@ class Engine {
             });
 
         // Construct map object
-        this.map = new Map(this.gameData);
+        this.map = new Map(this.getColumnCount(), this.getRowCount());
 
         // Define arrays to hold game objects
         this.collectables = [];
+        this.players = [];
     }
     getPhaseCount() {
         return this.gameData.deltas.length;
     }
     getPhaseDelta(index) {
         return this.gameData.deltas[index];
+    }
+    getColumnCount() {
+        return this.gameData.constants.width;
+    }
+    getRowCount() {
+        return this.gameData.constants.height;
+    }
+    getOutOfBoundPositions() {
+        return this.gameData.constants.outOfBoundPositions;
+    }
+    getSpawns() {
+        return this.gameData.constants.spawnPoints;
+    }
+    getSpawnAtCell(cell) {
+        let spawnAtCell = null;
+        this.gameData.constants.spawnPoints.forEach(spawn => {
+            if (cell.column === spawn.cell.column && cell.row === spawn.cell.row) {
+                spawnAtCell = spawn;
+            }
+        });
+        return spawnAtCell;
     }
 }
 
