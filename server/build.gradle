@@ -2,14 +2,16 @@ group "com.scottlogic.hackathon"
 version "1.0-SNAPSHOT"
 
 def mainClass = "com.scottlogic.hackathon.server.HackathonApplication"
+def dropWizardVersion = "0.9.2"
 
 apply plugin: "application"
 
 mainClassName = mainClass
 
 dependencies {
-    compile group: "io.dropwizard", name: "dropwizard-core", version: "0.9.2"
-    compile group: "io.dropwizard", name: "dropwizard-auth", version: "0.9.2"
+    compile group: "io.dropwizard", name: "dropwizard-core", version: dropWizardVersion
+    compile group: "io.dropwizard", name: "dropwizard-auth", version: dropWizardVersion
+    compile group: "io.dropwizard", name: "dropwizard-assets", version: dropWizardVersion
     compile group: "com.google.inject", name: "guice", version: "3.0"
     compile group: "com.sleepycat", name: "je", version: "5.0.73"
     compile project(":game")
@@ -24,13 +26,35 @@ jar {
                 "Implementation-Version": version,
                 "Main-Class": mainClass )
     }
+    from('../viewer') {
+        include 'index.html'
+        include 'build/bundle.js'
+        include 'assets/*.png'
+        into "assets"
+    }
+    dependsOn ":viewer:build"
+}
+
+shadowJar {
+    from('../viewer') {
+        include 'index.html'
+        include 'build/bundle.js'
+        include 'assets/*.png'
+        into "assets"
+    }
+    dependsOn ":viewer:build"
 }
 
 runShadow {
     args "server"
+    args "..\\server.yml"
 }
 
 run {
     main mainClass
     args "server"
+    args "..\\server.yml"
 }
+
+
+build.dependsOn ":viewer:build"
