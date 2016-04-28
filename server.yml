@@ -3,3 +3,4 @@ server:
   connector:
     type: http
     port: 8080
+  rootPath: '/api/*'

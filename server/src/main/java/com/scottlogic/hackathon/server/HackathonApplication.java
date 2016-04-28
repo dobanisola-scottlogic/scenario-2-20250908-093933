@@ -13,6 +13,7 @@ import com.scottlogic.hackathon.server.resources.LoginResource;
 import com.scottlogic.hackathon.server.resources.TeamResource;
 import com.scottlogic.hackathon.server.services.TeamService;
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
@@ -37,6 +38,7 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
 
     @Override
     public void initialize(final Bootstrap<HackathonConfiguration> bootstrap) {
+        bootstrap.addBundle(new AssetsBundle("/assets", "/", "index.html"));
     }
 
     @Override
