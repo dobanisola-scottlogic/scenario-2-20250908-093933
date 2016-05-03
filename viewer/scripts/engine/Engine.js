@@ -57,7 +57,7 @@ class Engine {
         }
 
         this.gameData.constants.teamInfo.forEach((team, index) => {
-            teams[team.bot.id] = new Team(team.team.id, team.team.name, colours[index]);
+            teams[team.botId] = new Team(team.teamId, team.teamName, colours[index]);
         });
 
         return teams;

@@ -26,7 +26,7 @@ class Constants {
             });
         });
 
-        gameData.game.teamBots.forEach(team => {
+        gameData.game.teams.forEach(team => {
             teamInfo.push(team);
         });
 

@@ -6,19 +6,19 @@ import java.util.Set;
 
 @Persistent
 public class Game {
-    private Set<TeamBot> teamBots;
+    private Set<GameTeam> teams;
     private Map map;
 
     public Game() {
     }
 
-    public Game(final Set<TeamBot> teamBots, final Map map) {
-        this.teamBots = teamBots;
+    public Game(final Set<GameTeam> teams, final Map map) {
+        this.teams = teams;
         this.map = map;
     }
 
-    public Set<TeamBot> getTeamBots() {
-        return teamBots;
+    public Set<GameTeam> getTeams() {
+        return teams;
     }
 
     public Map getMap() {
