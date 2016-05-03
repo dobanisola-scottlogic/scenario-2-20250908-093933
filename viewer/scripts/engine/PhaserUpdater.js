@@ -127,7 +127,7 @@ class PhaserUpdater {
                 this.engine.players.push(new Player(this.engine.game,
                                                     player.id,
                                                     player.owner,
-                                                    this.engine.getOwnerColour(player.owner),
+                                                    this.engine.getTeamColour(player.owner),
                                                     player.cell));
             } else {
                 console.log('ERROR : Attempted to create player[' + player.id + '] without a matching owner.');
