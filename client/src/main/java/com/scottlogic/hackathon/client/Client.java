@@ -22,7 +22,7 @@ public class Client {
         bots.add(new ConsistentRandomBot());
         bots.add(new ConsistentRandomBot());
 
-        String mapName = "Cross";
+        String mapName = "Easy";
         if (args.length >= 1) {
             mapName = args[0];
         }
