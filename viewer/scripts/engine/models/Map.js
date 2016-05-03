@@ -15,7 +15,7 @@ class Map {
         this.spawns = [];
 
     }
-    create(game, spawns, outOfBoundPositions, ownerMap) {
+    create(game, spawns, outOfBoundPositions, teamMap) {
 
         let spriteMap = SPRITE.MAP.COLOUR_MAP[COLOURS.NONE.ID];
 
@@ -46,11 +46,11 @@ class Map {
                 }
             }
         }
-        this.addSpawns(game, spawns, ownerMap);
+        this.addSpawns(game, spawns, teamMap);
     }
-    addSpawns(game, spawns, ownerMap) {
+    addSpawns(game, spawns, teamMap) {
         spawns.forEach((spawn) => {
-            let ownerColour = ownerMap[spawn.owner];
+            let ownerColour = teamMap[spawn.owner].getTeamColour();
             if (ownerColour) {
                 this.spawns.push(new Spawn(game, spawn.id, spawn.owner, ownerColour, spawn.cell));
             } else {

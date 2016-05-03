@@ -19,7 +19,7 @@ class PhaserCreator {
         this.engine.map.create(this.engine.game,
                                this.engine.getSpawns(),
                                this.engine.getOutOfBoundPositions(),
-                               this.engine.getOwners());
+                               this.engine.getTeams());
     }
 }
 

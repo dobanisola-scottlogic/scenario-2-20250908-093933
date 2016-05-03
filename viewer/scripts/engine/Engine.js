@@ -8,6 +8,7 @@ let PhaserRenderer = require('./PhaserRenderer.js');
 let PhaserUpdater = require('./PhaserUpdater.js');
 
 let Map = require('./models/Map.js');
+let Team = require('./models/Team.js');
 
 // Define engine constructor
 class Engine {
@@ -41,28 +42,31 @@ class Engine {
         // Define objects to hold game data
         this.collectables = [];
         this.players = [];
-        this.owners = this.createOwners(this.getSpawns());
+        this.teams = this.createTeams();
         this.paused = false;
 
     }
-    createOwners(spawns) {
-        let owners = {};
+    createTeams() {
+        let teams = {};
+
         let colours = [];
         for (let member in COLOURS.TEAM_COLOURS) {
             if (COLOURS.TEAM_COLOURS.hasOwnProperty(member)) {
                 colours.push(COLOURS.TEAM_COLOURS[member]);
             }
         }
-        spawns.forEach((spawn, index) => {
-            owners[spawn.owner] = colours[index];
+
+        this.gameData.constants.teamInfo.forEach((team, index) => {
+            teams[team.bot.id] = new Team(team.team.id, team.team.name, colours[index]);
         });
-        return owners;
+
+        return teams;
     }
-    getOwnerColour(ownerId) {
-        return this.owners[ownerId];
+    getTeamColour(botId) {
+        return this.teams[botId].getTeamColour();
     }
-    getOwners() {
-        return this.owners;
+    getTeams() {
+        return this.teams;
     }
     getPhaseCount() {
         return this.gameData.deltas.length;
