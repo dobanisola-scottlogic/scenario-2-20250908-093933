@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class GameService {
@@ -30,16 +29,17 @@ public class GameService {
         this.gameFactory = gameFactory;
     }
 
+
     public GameResult playGame(final User user, final GameConfiguration gameConfiguration) {
-        Game game = gameFactory.create(user,gameConfiguration);
+        final Map<Team, Bot> teamBotMap = gameFactory.createTeamBots(user, gameConfiguration);
+        final Game game = gameFactory.create(teamBotMap, gameConfiguration);
         GameResult gameResult = null;
         if (game != null) {
-            Set<Bot> botTeams =  game
-                    .getTeamBots()
+            final Set<Bot> bots = teamBotMap
+                    .values()
                     .stream()
-                    .map(teamBot -> teamBot.getBot())
                     .collect(Collectors.toSet());
-            final GameEngine gameEngine = GameEngine.create(gameConfiguration.getMap(), botTeams);
+            final GameEngine gameEngine = GameEngine.create(gameConfiguration.getMap(), bots);
             try {
                 final com.scottlogic.hackathon.game.GameResult engineGameResult = gameEngine.play();
                 gameResult = GameResult.create(game, engineGameResult);

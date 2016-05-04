@@ -2,24 +2,16 @@
   "key": "47ebbd52-28ac-46a0-b089-61019d2512fa",
   "id": "47ebbd52-28ac-46a0-b089-61019d2512fa",
   "game": {
-    "teamBots": [
+    "teams": [
       {
-        "team": {
-          "id": "92e9fc0e-bd6d-4fb7-ad52-2725a9807518",
-          "name": "Team1"
-        },
-        "bot": {
-          "id": "0d343e98-c576-449d-aa38-fd77a051e23c"
-        }
+        "teamId": "92e9fc0e-bd6d-4fb7-ad52-2725a9807518",
+        "teamName": "Team1",
+        "botId": "0d343e98-c576-449d-aa38-fd77a051e23c"
       },
       {
-        "team": {
-          "id": "d2e4025e-d39f-43b7-a6a0-259b402cbd0e",
-          "name": "Team2"
-        },
-        "bot": {
-          "id": "9880c2fb-7486-4309-887f-a4419fda0b26"
-        }
+        "teamId": "d2e4025e-d39f-43b7-a6a0-259b402cbd0e",
+        "teamName": "Team2",
+        "botId": "9880c2fb-7486-4309-887f-a4419fda0b26"
       }
     ],
     "map": {
