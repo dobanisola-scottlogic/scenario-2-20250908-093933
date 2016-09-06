@@ -1,0 +1,37 @@
+
+.control-overlay {
+    position: relative;
+    bottom: 80px;
+    margin: auto;
+    padding: 6px;
+    border-radius: 15px;
+    height: 70px;
+    width: 500px;
+    color: #ddd;
+    background-color: #333;
+    font-size: 50px;
+    text-align: center;
+}
+
+.play-pause-icon:hover {
+    cursor: pointer;
+    color: #999;
+}
+
+.speed-change {
+    display: inline-block;
+    margin-left: 15px;
+    margin-top: 10px;
+    font-size: 30px;
+    vertical-align: top;
+}
+
+.speed-change-disabled {
+    cursor: not-allowed;
+    color: #222;
+}
+
+.speed-change-enabled:hover {
+    cursor: pointer;
+    color: #999;
+}

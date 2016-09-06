@@ -35,6 +35,7 @@ class Engine {
                 render: this.phaserRenderer.render,
                 update: this.phaserUpdater.update
             });
+        this.game.playbackSpeed = 1;
 
         // Construct map object
         this.map = new Map(this.getColumnCount(), this.getRowCount());
@@ -44,6 +45,10 @@ class Engine {
         this.players = [];
         this.teams = this.createTeams();
         this.paused = false;
+        this.speed = {
+            index: PHASER.SPEED.DEFAULT_INDEX,
+            value: PHASER.SPEED.VALUES[PHASER.SPEED.DEFAULT_INDEX]
+        };
 
     }
     createTeams() {
@@ -107,6 +112,37 @@ class Engine {
     }
     isPaused() {
         return this.paused;
+    }
+    setSpeedIndex(speedIndex) {
+        let phaseDelay = this.getSpeedValue();
+        this.speed.index = Math.min(PHASER.SPEED.VALUES.length - 1, Math.max(0, speedIndex));
+        this.speed.value = PHASER.SPEED.VALUES[this.speed.index];
+        this.game.playbackSpeed = PHASER.SPEED.VALUES[PHASER.SPEED.DEFAULT_INDEX] / PHASER.SPEED.VALUES[this.speed.index];
+        if (!this.paused) {
+            this.phaserUpdater.updatePhaseDelay(phaseDelay, this.getSpeedValue());
+        }
+    }
+    setSpeedMultiplier(speedMultiplier) {
+        let requestedSpeed = PHASER.SPEED.VALUES[PHASER.SPEED.DEFAULT_INDEX] / speedMultiplier;
+        PHASER.SPEED.VALUES.forEach((SPEED, index) => {
+            if (requestedSpeed === SPEED) {
+                this.setSpeedIndex(index);
+            }
+        });
+    }
+    getSpeedMultipliers() {
+        let speeds = [];
+        let defaultTime = PHASER.SPEED.VALUES[PHASER.SPEED.DEFAULT_INDEX];
+        PHASER.SPEED.VALUES.forEach(value => {
+            speeds.push(defaultTime / value);
+        });
+        return speeds;
+    }
+    getSpeedValue() {
+        return this.speed.value;
+    }
+    getSpeedMultiplier() {
+        return PHASER.SPEED.VALUES[PHASER.SPEED.DEFAULT_INDEX] / this.speed.value;
     }
 }
 

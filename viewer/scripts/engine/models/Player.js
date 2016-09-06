@@ -20,8 +20,8 @@ class Player {
         sprite.playAnimation('run');
         return sprite;
     }
-    setPaused(paused) {
-        this.sprite.setPaused(paused);
+    setPaused(paused, resumeSpeed) {
+        this.sprite.setPaused(paused, resumeSpeed);
     }
     destroy() {
         this.sprite.destroy(true);
@@ -31,7 +31,13 @@ class Player {
         this.sprite.setCell(this.cell);
         this.sprite.setDirection(direction);
     }
-    setTranslate(game, cell, direction, xTranslate, yTranslate) {
+    adjustPlaybackSpeed(phaseDelay, newPhaseDelay) {
+        this.sprite.adjustPlaybackSpeed(phaseDelay, newPhaseDelay);
+    }
+    adjustVelocity(phaseDelay, newPhaseDelay) {
+        this.sprite.adjustVelocity(phaseDelay, newPhaseDelay);
+    }
+    setTranslate(delay, cell, direction, xTranslate, yTranslate) {
 
         this.sprite.setDirection(direction);
         if (this.doubleSprite) { this.doubleSprite.destroy(); }
@@ -42,14 +48,14 @@ class Player {
 
         // Check if sprite wrapped around the map
         if ((Math.abs(xDelta) <= 1) && (Math.abs(yDelta) <= 1)) {
-            this.sprite.setTranslate(game, cell);
+            this.sprite.setTranslate(delay, cell);
         } else {
             let wrapAroundCell = new Cell(cell.column - xTranslate,
                                           cell.row - yTranslate);
-            this.doubleSprite = this.sprite.copySpriteToCell(game, this.cell);
+            this.doubleSprite = this.sprite.copySpriteToCell(this.cell);
             this.sprite.setCell(wrapAroundCell);
-            this.doubleSprite.setTranslate(game, new Cell(this.cell.column + xTranslate, this.cell.row + yTranslate));
-            this.sprite.setTranslate(game, cell);
+            this.doubleSprite.setTranslate(delay, new Cell(this.cell.column + xTranslate, this.cell.row + yTranslate));
+            this.sprite.setTranslate(delay, cell);
         }
 
         this.cell = cell;

@@ -20,8 +20,11 @@ class Collectable {
         sprite.playAnimation('active');
         return sprite;
     }
-    setPaused(paused) {
-        this.sprite.setPaused(paused);
+    setPaused(paused, resumeSpeed) {
+        this.sprite.setPaused(paused, resumeSpeed);
+    }
+    adjustPlaybackSpeed(phaseDelay, newPhaseDelay) {
+        this.sprite.adjustPlaybackSpeed(phaseDelay, newPhaseDelay);
     }
     destroy() {
         this.sprite.destroy(true);

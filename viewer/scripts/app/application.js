@@ -24,6 +24,8 @@ let requires = [
 
 let application = angular.module('hackathon', requires);
 
+application.service('SharedPropertiesService', require('./sharedProperties/SharedPropertiesService'));
+
 application.directive('hackTransclude', function() {
     return {
         restrict: 'AE',

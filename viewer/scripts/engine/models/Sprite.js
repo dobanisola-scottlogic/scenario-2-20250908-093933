@@ -8,16 +8,17 @@ let Cell = require('./Cell.js');
 
 class Sprite {
     constructor(game, staticSprite, width, height, cell, colour) {
+        this.game = game;
         this.width = width;
         this.height = height;
         this.staticSprite = staticSprite;
         this.colour = colour;
         this.colourMap = staticSprite.COLOUR_MAP[colour.ID];
-        this.sprite = this.constructSprite(game, staticSprite, cell);
+        this.sprite = this.constructSprite(staticSprite, cell);
         this.pauseCache = null;
     }
-    copySpriteToCell(game, cell) {
-        let clone = new Sprite(game,
+    copySpriteToCell(cell) {
+        let clone = new Sprite(this.game,
                                this.staticSprite,
                                this.width,
                                this.height,
@@ -36,16 +37,16 @@ class Sprite {
         }
         return clone;
     }
-    constructSprite(game, staticSprite, cell) {
+    constructSprite(staticSprite, cell) {
         let defaultFrame = this.colourMap.DEFAULT ? this.colourMap.DEFAULT.START : 0;
-        let sprite = game.add.sprite(cell.getCentreXPosition(),
-                                     cell.getCentreYPosition(),
-                                     staticSprite.IDENTIFIER,
-                                     defaultFrame);
+        let sprite = this.game.add.sprite(cell.getCentreXPosition(),
+                                          cell.getCentreYPosition(),
+                                          staticSprite.IDENTIFIER,
+                                          defaultFrame);
         sprite.width = PHASER.CELL.WIDTH * this.width;
         sprite.height = PHASER.CELL.HEIGHT * this.height;
         sprite.anchor.setTo(0.5, 0.5);
-        game.physics.enable(sprite);
+        this.game.physics.enable(sprite);
         return sprite;
     }
     getAngle(direction) {
@@ -69,12 +70,12 @@ class Sprite {
         }
         return 0;
     }
-    setTranslate(game, cell) {
-        game.physics.arcade.moveToXY(this.sprite,
-                                     cell.getCentreXPosition(),
-                                     cell.getCentreYPosition(),
-                                     1,
-                                     PHASER.PHASE_DELAY);
+    setTranslate(delay, cell) {
+        this.game.physics.arcade.moveToXY(this.sprite,
+                                          cell.getCentreXPosition(),
+                                          cell.getCentreYPosition(),
+                                          1,
+                                          delay);
     }
     setVelocity(xVelocity, yVelocity) {
         if (this.sprite.body) {
@@ -95,7 +96,10 @@ class Sprite {
         return newAnimation;
     }
     playAnimation(id) {
-        this.sprite.animations.play(id);
+        let staticAnimation = Array.from(Object.keys(this.colourMap), key => this.colourMap[key])
+                                   .filter(colour => colour.ID === id)[0];
+        let animationSpeed = Math.max(Math.ceil(staticAnimation.FRAME_RATE * this.game.playbackSpeed), 1);
+        this.sprite.animations.play(id, animationSpeed);
     }
     stopAnimation(id) {
         this.sprite.animations.stop(null, true);
@@ -108,19 +112,32 @@ class Sprite {
         this.sprite.x = cell.getCentreXPosition();
         this.sprite.y = cell.getCentreYPosition();
     }
-    setPaused(pause) {
+    adjustVelocity(phaseDelay, newPhaseDelay) {
+        let workingVelocityX = 0.0 + this.pauseCache ? this.pauseCache.velocity.x : this.sprite.body.velocity.x;
+        let workingVelocityY = 0.0 + this.pauseCache ? this.pauseCache.velocity.y : this.sprite.body.velocity.y;
+        let newVelocityX = workingVelocityX * phaseDelay / newPhaseDelay;
+        let newVelocityY = workingVelocityY * phaseDelay / newPhaseDelay;
+        this.setVelocity(newVelocityX, newVelocityY);
+    }
+    adjustPlaybackSpeed(phaseDelay, newPhaseDelay) {
+        if (this.sprite.animations.currentAnim) {
+            this.sprite.animations.currentAnim.delay /= phaseDelay / newPhaseDelay;
+        }
+    }
+    setPaused(pause, phaseDelay) {
         if (pause) {
             this.pauseCache = {
                 velocity: {
                     x: this.sprite.body ? this.sprite.body.velocity.x : 0,
                     y: this.sprite.body ? this.sprite.body.velocity.y : 0
-                }
+                },
+                phaseDelay: phaseDelay
             };
             this.sprite.animations.paused = true;
             this.setVelocity(0, 0);
         } else if (this.pauseCache) {
-            this.setVelocity(this.pauseCache.velocity.x,
-                             this.pauseCache.velocity.y);
+            this.adjustPlaybackSpeed(this.pauseCache.phaseDelay, phaseDelay);
+            this.adjustVelocity(this.pauseCache.phaseDelay, phaseDelay);
             this.sprite.animations.paused = false;
             this.pauseCache = null;
         } else {

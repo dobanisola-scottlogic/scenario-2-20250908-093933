@@ -6,10 +6,10 @@ let Cell = require('./Cell.js');
 let Sprite = require('./Sprite.js');
 
 class Spawn {
-    constructor(game, id, owner, teamIndex, cell) {
+    constructor(game, id, owner, colour, cell) {
         this.id = id;
         this.owner = owner;
-        this.teamIndex = teamIndex;
+        this.colour = colour;
         this.cell = cell.clone();
         this.sprite = this.constructSprite(game);
     }
@@ -19,14 +19,17 @@ class Spawn {
                                 3,
                                 3,
                                 this.cell,
-                                this.teamIndex);
+                                this.colour);
         sprite.addAnimation('active');
         sprite.addAnimation('die');
         sprite.playAnimation('active');
         return sprite;
     }
-    setPaused(paused) {
-        this.sprite.setPaused(paused);
+    setPaused(paused, resumeSpeed) {
+        this.sprite.setPaused(paused, resumeSpeed);
+    }
+    adjustPlaybackSpeed(phaseDelay, newPhaseDelay) {
+        this.sprite.adjustPlaybackSpeed(phaseDelay, newPhaseDelay);
     }
     destroy() {
         this.sprite.destroy();

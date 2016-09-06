@@ -1,0 +1,28 @@
+<div class="col-md-10"
+     ng-mouseenter="controller.mouseEnter()"
+     ng-mouseleave="controller.mouseLeave()"
+     ng-mousemove="controller.mouseMove()">
+    <div id="phaserApp"></div>
+    <div class="control-overlay"
+         ng-if="controller.isLoaded()"
+         ng-show="controller.isControlsVisible"
+         ng-mouseenter="controller.mouseControlsEnter()"
+         ng-mouseleave="controller.mouseControlsLeave()"
+         ng-mousedown="controller.mouseDown()">
+    <icon class="play-pause-icon glyphicon"
+          ng-class="{
+              'glyphicon-pause': controller.isPlaying,
+              'glyphicon-play': !controller.isPlaying
+          }"
+          ng-click="controller.playToggleClick()"></icon>
+    <div class="speed-change"
+         ng-repeat="speedMultiplier in controller.getSpeedMultipliers()"
+         ng-class="{
+             'speed-change-disabled': controller.getSpeedMultiplier() === speedMultiplier,
+             'speed-change-enabled': controller.getSpeedMultiplier() !== speedMultiplier
+         }"
+         ng-click="controller.setSpeedMultiplier(speedMultiplier)">
+        x{{speedMultiplier}}
+    </div>
+</div>
+</div>

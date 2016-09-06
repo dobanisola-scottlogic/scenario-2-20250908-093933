@@ -6,7 +6,17 @@ const PHASER = {
         HEIGHT: 10
     },
 
-    PHASE_DELAY: 300,
+    SPEED: {
+        DEFAULT_INDEX: 2,
+        VALUES: [
+            1120,
+            560,
+            280,
+            140,
+            70,
+            35
+        ]
+    },
 
     A_SECOND: 1000
 
