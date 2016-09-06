@@ -1,14 +1,16 @@
-let angular = require('angular');
+require('./content/viewer.css');
 
+let angular = require('angular');
 let viewer = angular.module('hackathon.viewer', []);
 
 viewer.directive('hackViewer', function() {
     return {
         restrict: 'E',
-        transclude: false,
         scope: {},
         replace: true,
-        template: '<div class="col-md-10" id="phaserApp"></div>'
+        template: require('./content/viewer.html'),
+        controller: require('./viewerController'),
+        controllerAs: 'controller'
     };
 });
 

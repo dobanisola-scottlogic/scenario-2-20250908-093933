@@ -14,13 +14,14 @@ const LOGIN_STATE = {
 let engine;
 
 class NavigationBarController {
-    constructor($rootScope, $scope, $http, $interval, navigationBarService, gameService) {
+    constructor($rootScope, $scope, $http, $interval, navigationBarService, gameService, sharedPropertiesService) {
         this.$rootScope = $rootScope;
         this.$scope = $scope;
         this.$http = $http;
         this.$interval = $interval;
         this.navigationBarService = navigationBarService;
         this.gameService = gameService;
+        this.sharedPropertiesService = sharedPropertiesService;
 
         this.credentials = {
             username: '',
@@ -58,6 +59,7 @@ class NavigationBarController {
 
         // Construct phaser engine
         engine = new Engine(phaser, gameData);
+        this.sharedPropertiesService.setEngine(engine);
 
         this.initialiseTeams(gameData);
 
@@ -101,6 +103,6 @@ class NavigationBarController {
     }
 }
 
-NavigationBarController.$inject = ['$rootScope', '$scope', '$http', '$interval', 'NavigationBarService', 'GameService'];
+NavigationBarController.$inject = ['$rootScope', '$scope', '$http', '$interval', 'NavigationBarService', 'GameService', 'SharedPropertiesService'];
 
 module.exports = NavigationBarController;

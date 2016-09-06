@@ -25,7 +25,7 @@ class PhaserUpdater {
         this.engine = engine;
         this.chartRenderer = new ChartRenderer(engine);
         this.phaseIndex = 0;
-        this.lastPhaseTime = new Date().getTime() - PHASER.PHASE_DELAY;
+        this.lastPhaseTime = new Date().getTime() - PHASER.SPEED.VALUES[PHASER.SPEED.DEFAULT_INDEX];
         this.update = this.update.bind(this);
     }
     update() {
@@ -36,7 +36,7 @@ class PhaserUpdater {
         }
 
         // Control rate of phase updates, limiting to PHASE_DELAY
-        if (new Date().getTime() - this.lastPhaseTime > PHASER.PHASE_DELAY &&
+        if (new Date().getTime() - this.lastPhaseTime > this.engine.getSpeedValue() &&
             this.phaseIndex < this.engine.getPhaseCount() &&
             !this.engine.isPaused()) {
 
@@ -60,13 +60,25 @@ class PhaserUpdater {
     }
     setPaused(paused) {
         this.engine.collectables.forEach(collectable => {
-            collectable.setPaused(paused);
+            collectable.setPaused(paused, this.engine.getSpeedValue());
         });
         this.engine.map.spawns.forEach(spawn => {
-            spawn.setPaused(paused);
+            spawn.setPaused(paused, this.engine.getSpeedValue());
         });
         this.engine.players.forEach(player => {
-            player.setPaused(paused);
+            player.setPaused(paused, this.engine.getSpeedValue());
+        });
+    }
+    updatePhaseDelay(phaseDelay, newPhaseDelay) {
+        this.engine.collectables.forEach(collectable => {
+            collectable.adjustPlaybackSpeed(phaseDelay, newPhaseDelay);
+        });
+        this.engine.map.spawns.forEach(spawn => {
+            spawn.adjustPlaybackSpeed(phaseDelay, newPhaseDelay);
+        });
+        this.engine.players.forEach(player => {
+            player.adjustVelocity(phaseDelay, newPhaseDelay);
+            player.adjustPlaybackSpeed(phaseDelay, newPhaseDelay);
         });
     }
     renderPhase(phase) {
@@ -156,7 +168,7 @@ class PhaserUpdater {
                 let column = cellShifter.wrap((playerCell.column + playerShift.columnShift), this.engine.getColumnCount());
                 let row = cellShifter.wrap((playerCell.row + playerShift.rowShift), this.engine.getRowCount());
 
-                this.engine.players[playerIndex].setTranslate(this.engine.game,
+                this.engine.players[playerIndex].setTranslate(this.engine.getSpeedValue(),
                                                               new Cell(column, row),
                                                               player.movement,
                                                               playerShift.columnShift,
