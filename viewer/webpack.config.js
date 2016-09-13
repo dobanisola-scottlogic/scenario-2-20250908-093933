@@ -4,7 +4,8 @@ var webpack = require('webpack');
 
 const PATHS = {
     BUILD: path.join(__dirname, '/build/'),
-    PUBLIC: '/application/build/',
+    PUBLIC_DEV: '/build/',
+    PUBLIC_PRODUCTION: '/application/build/',
     PHASER: path.join(__dirname, '/node_modules/phaser/build/custom/phaser-split.js'),
     PIXI: path.join(__dirname, '/node_modules/phaser/build/custom/pixi.js'),
     P2: path.join(__dirname, '/node_modules/phaser/build/custom/p2.js'),
@@ -20,11 +21,26 @@ if (process.env.npm_lifecycle_event) {
 }
 var configuration = (configurationStat && configurationStat.isFile) ? process.env.npm_lifecycle_event : 'default';
 
+var publicPath;
+switch(process.env.npm_lifecycle_event) {
+    case 'dev':
+        publicPath = PATHS.PUBLIC_DEV;
+        break;
+    case 'dev-local':
+        publicPath = PATHS.PUBLIC_DEV;
+        break;
+    case 'build':
+        publicPath = PATHS.PUBLIC_PRODUCTION;
+        break;
+    default:
+        publicPath = PATHS.PUBLIC_PRODUCTION;
+}
+
 module.exports = {
     entry: './scripts/entry.js',
     output: {
         path: PATHS.BUILD,
-        publicPath: PATHS.PUBLIC,
+        publicPath: publicPath,
         filename: 'bundle.js'
     },
     devtool: 'inline-source-map',
