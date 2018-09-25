@@ -30,9 +30,10 @@ gradle-app.setting
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 .idea/codeStyleSettings.xml
-.idea/*
 .idea/gradle.xml
 .idea/libraries
+.idea/*
+
 
 # Eclipse
 .classpath
