@@ -1,0 +1,43 @@
+# Java
+
+*.class
+*.jar
+*.war
+*.ear
+
+# Git
+*.orig
+
+# Gradle
+
+.gradle
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Idea
+*.iml
+.idea/*
+*.ipr
+*.iws
+
+
+# Eclipse
+.classpath
+.project
+.settings
+./*/bin
+
+# Ubuntu
+*.swp
+
+# Node
+node_modules
+npm-debug.log
+
+# DB
+data
+
+# Logs
+logs

@@ -1,0 +1,63 @@
+<div class="teamPanel">
+    <hack-alert ng-show="controller.alert"
+           close-alert="controller.refreshAlerts()"
+           alert="controller.alert">
+    </hack-alert>
+    <div class="input-group">
+        <span class="input-group-addon">Hackathon</span>
+        <select
+            class="form-control"
+            ng-model="controller.newTeamDetails.hackathonId"
+            ng-options="hackathon.id as hackathon.name for hackathon in controller.hackathons | orderBy:'name' track by hackathon.id"
+            ng-disabled="controller.userInterfaceDisabled"
+            ng-change="controller.onHackathonSelected()">
+        </select>
+    </div>
+    <hr></hr>
+    <form class="add-new-team" ng-submit="controller.addNewTeam()">
+        <input type="text" class="form-control" placeholder="Username" ng-model="controller.newTeamDetails.name">
+        <input type="password" class="form-control" placeholder="Password" ng-model="controller.newTeamDetails.password">
+        <button type="submit" class="btn btn-success" ng-disabled="controller.addButtonDisabled">Add New Team</button>
+    </form>
+    <div class="list-group">
+        <div class="list-group-item" ng-if="controller.teams.length === 0">No teams found.</div>
+        <button
+            type="button"
+            class="list-group-item"
+            ng-class="{'active': controller.isSelected(team)}"
+            ng-repeat="team in controller.teams track by team.id"
+            ng-click="controller.onTeamSelected(team)">{{team.name}}
+        </button>
+    </div>
+    <form ng-submit="controller.onUpdatePassword()">
+        <input type="text" class="form-control" placeholder="New Password" ng-model="controller.updatePassword">
+        <button type="submit" class="btn btn-default" ng-disabled="controller.updatePasswordButtonDisabled">Update Password</button>
+        <button type="button" class="btn btn-danger pull-right" ng-click="controller.onDelete()" ng-disabled="controller.deleteButtonDisabled">Delete Team</button>
+    </form>
+    <hr></hr>
+    <hack-bot-upload
+        on-upload="controller.onBotUpload(bot)"
+        is-admin-user="true"
+        select-file-disabled="controller.selectFileDisabled"
+        team-name="{{controller.selectedTeam.name}}">
+    </hack-bot-upload>
+    <div class="list-group">
+        <div class="list-group-item" ng-if="controller.currentTeamBots.length === 0">No bots found.</div>
+        <hack-bot
+            ng-repeat="bot in controller.currentTeamBots track by bot.id"
+            ng-click="controller.onBotSelected(bot)"
+            ng-class="{'active': controller.isBotSelected(bot)}"
+            is-active="controller.isActive(bot)"
+            bot="bot">
+        </hack-bot>
+    </div>
+    <button class="btn btn-default"
+            ng-disabled="controller.editButtonsDisabled"
+            ng-click="controller.onMakeActive()">Make Active</button>
+    <button class="btn btn-danger pull-right"
+            ng-disabled="controller.editButtonsDisabled"
+            ng-click="controller.onBotDelete()">Delete</button>
+    <div class="spinner-container" ng-show="controller.makingCall">
+        <div class="spinner"></div>
+    </div>
+</div>

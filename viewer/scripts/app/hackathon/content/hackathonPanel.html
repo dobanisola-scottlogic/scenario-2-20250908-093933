@@ -1,0 +1,52 @@
+<div class="hackathonPanel">
+    <hack-alert ng-show="controller.alert"
+           close-alert="controller.refreshAlerts()"
+           alert="controller.alert">
+    </hack-alert>
+    <form ng-submit="controller.createHackathon()">
+        <input type="text" class="form-control" placeholder="Name" ng-model="controller.hackathon.name" ng-disabled="controller.userInterfaceDisabled">
+        <button type="submit" class="btn btn-success" ng-disabled="controller.addButtonDisabled">Add New Hackathon</button>
+    </form>
+    <hr></hr>
+    <div class="list-group">
+        <hack-hackathon
+                ng-repeat="hackathon in controller.hackathons | orderBy:'name' track by hackathon.id "
+                ng-click="controller.onHackathonSelected(hackathon)"
+                ng-class="{'active': controller.isSelected(hackathon)}"
+                hackathon="hackathon">
+        </hack-hackathon>
+    </div>
+    <button class="btn btn-danger"
+        ng-click="controller.onDelete()"
+        ng-disabled="controller.updateButtonDisabled">Delete Hackathon
+    </button>
+    <h4>Current Milestone</h4>
+    <br>
+    <div class="input-group">
+        <span class="input-group-addon">Bot</span>
+        <select
+            class="form-control"
+            ng-model="controller.selectedHackathon.currentMilestoneClassName"
+            ng-options="milestone.name as milestone.name.replace(controller.milestoneBotPrefix, '').replace('Bot', '') for milestone in controller.milestoneTeams"
+            ng-disabled="controller.userInterfaceDisabled">
+        </select>
+    </div>
+    <br>
+    <div class="input-group">
+        <span class="input-group-addon">Map</span>
+        <select
+            class="form-control"
+            ng-model="controller.selectedHackathon.currentMilestoneMap"
+            ng-options="map.value as map.display for map in controller.maps"
+            ng-disabled="controller.userInterfaceDisabled">
+        </select>
+    </div>
+    <br>
+    <button class="btn btn-default"
+        ng-click="controller.onUpdate()"
+        ng-disabled="controller.updateButtonDisabled">Update Hackathon
+    </button>
+    <div class="spinner-container" ng-show="controller.makingCall">
+        <div class="spinner"></div>
+    </div>
+</div>

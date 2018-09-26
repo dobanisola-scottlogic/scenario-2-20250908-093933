@@ -1,0 +1,28 @@
+plugins {
+    id "com.moowork.node" version "1.2.0"
+}
+
+group "com.scottlogic.hackathon"
+version "1.0-SNAPSHOT"
+
+node {
+    download = true
+}
+
+task webpack(type: NodeTask) {
+    script = file('node_modules/webpack/bin/webpack.js')
+}
+
+task jasmine(type: NodeTask) {
+    script = file('node_modules/jasmine/bin/jasmine.js')
+}
+
+task build(){
+    dependsOn npmInstall
+    dependsOn webpack
+}
+
+task test(){
+    dependsOn npmInstall
+    dependsOn jasmine
+}

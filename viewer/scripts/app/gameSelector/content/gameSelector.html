@@ -1,0 +1,6 @@
+<div ng-show="controller.selectedHackathon" id="gameSelector">
+    <div id="game-grid-container" ng-if="controller.showGrid()">
+        <div id="grid1" ui-grid="controller.gridOptions"  ui-grid-selection class="grid"></div>
+        <button class="btn btn-danger" id="live-mode-btn" ng-click="controller.enableLiveMode()">Live</button>
+    </div>
+</div>
