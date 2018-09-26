@@ -1,10 +1,8 @@
-Hackathon AI Game
-
------------------------
+# Code Challenge - Server
 
 # Git #
 
-* All code shall be reviewed before merge to development via pull request
+* All code shall be reviewed before merge to develop via pull request
 * Follow branch naming conventions, using JIRA ticket numbers
 * Include a JIRA issue number in every commit message
 * Keep all pull requests specific to one piece of work and make them small and frequent where possible
