@@ -3,8 +3,6 @@ package com.scottlogic.hackathon.client;
 import org.apache.commons.cli.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 class ArgumentsBuilder {
@@ -17,6 +15,9 @@ class ArgumentsBuilder {
     private String bot;
     private String className;
     private Options options;
+    private Option mapOption;
+    private Option botOption;
+    private Option classOption;
 
     public ArgumentsBuilder(final String[] args) {
         errors = new ArrayList<String>();
@@ -46,16 +47,39 @@ class ArgumentsBuilder {
     }
 
     public Options createOptions() {
-        options.addOption("m", "map", true, "MapName: a map name (VeryEasy, Easy, Medium, LargeMedium, Hard)\t\t default: Easy");
-        options.addOption("b", "bot", true, "Bot: a bot name to play against (Default, Milestone1, Milestone2, Milestone3)\t\tdefault: Milestone1");
-        options.addOption("c", "className", true, "ClassName: full class name (include package) of your bot e.g. com.contestantbots.team.ExampleBot");
+        mapOption = Option.builder("m")
+                .hasArg()
+                .longOpt("map")
+                .desc("MapName: a map name (VeryEasy, Easy, Medium, LargeMedium, Hard)\t\t default: Easy")
+                .build();
+
+        botOption = Option.builder("b")
+                .hasArg()
+                .longOpt("bot")
+                .desc("Bot: a bot name to play against (Default, Milestone1, Milestone2, Milestone3)\t\tdefault: Milestone1")
+                .build();
+
+        classOption = Option.builder("c")
+                .hasArg()
+                .longOpt("className")
+                .desc("ClassName: full class name (include package) of your bot e.g. com.contestantbots.team.ExampleBot")
+                .build();
+
+        options.addOption(mapOption);
+        options.addOption(botOption);
+        options.addOption(classOption);
         return options;
     }
 
 
     public void printUsage() {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(" [-m|map MapName] [-b|bot Bot] [-c|className] ClassName", options);
+        StringBuilder help = new StringBuilder();
+        for (Option option : options.getOptions()) {
+            help.append(String.format("[%s|%s %s] ", option.getOpt(), option.getLongOpt(), option.getDescription().split(":")[0]));
+        }
+        formatter.printHelp(help.toString(), options);
+
     }
 
     private void parse() {
@@ -64,28 +88,28 @@ class ArgumentsBuilder {
 
         try {
             cmd = parser.parse(options, arguments);
-            if (cmd.hasOption("h") || cmd.hasOption("-?")) {
-                printUsage();
+
+            if (cmd.hasOption(mapOption.getOpt())) {
+                map = cmd.getOptionValue(mapOption.getOpt());
             }
 
-            if (cmd.hasOption("m")) {
-                map = cmd.getOptionValue("m");
+            if (cmd.hasOption(botOption.getOpt())) {
+                bot = cmd.getOptionValue(botOption.getOpt());
             }
 
-            if (cmd.hasOption("b")) {
-                bot = cmd.getOptionValue("b");
-            }
+            if (cmd.hasOption(classOption.getOpt())) {
+                System.out.println(cmd.getOptionValue(classOption.getOpt()));
 
-            if (cmd.hasOption("c")) {
-                className = cmd.getOptionValue("c");
+                className = cmd.getOptionValue(classOption.getOpt());
             } else {
                 List<String> additionalArgs = cmd.getArgList();
-                if(additionalArgs.size() > 0) {
-                    className= additionalArgs.get(0);
+                if (additionalArgs.size() > 0) {
+                    className = additionalArgs.get(0);
                 }
             }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
+            printUsage();
             printErrors();
         }
     }
@@ -100,7 +124,6 @@ class ArgumentsBuilder {
         errors.forEach(error -> {
             System.err.println(error);
         });
-        printUsage();
     }
 
 }
