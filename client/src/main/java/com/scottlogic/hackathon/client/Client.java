@@ -21,7 +21,7 @@ public class Client {
         final Arguments arguments = argumentsBuilder.create();
         if (arguments != null) {
 
-            final List<Bot> defaultBot = Stream.of(arguments.getBot()).map(this::loadDefaultBot).collect(Collectors.toList());
+            final List<Bot> defaultBot = Stream.of(arguments.getBots()).map(this::loadDefaultBot).collect(Collectors.toList());
             final Bot bot = loadBot(arguments.getClassName());
 
             if (bot != null && defaultBot != null) {
