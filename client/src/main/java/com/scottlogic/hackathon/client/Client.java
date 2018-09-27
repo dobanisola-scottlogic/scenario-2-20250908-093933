@@ -4,7 +4,6 @@ import com.scottlogic.hackathon.bots.DefaultBot;
 import com.scottlogic.hackathon.game.*;
 import com.scottlogic.hackathon.game.engine.GameEngine;
 import org.fusesource.jansi.AnsiConsole;
-
 import java.util.*;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,7 +18,6 @@ public class Client {
     private void run(final String[] args) {
         final ArgumentsBuilder argumentsBuilder = new ArgumentsBuilder(args);
         final Arguments arguments = argumentsBuilder.create();
-
         if (arguments != null) {
             final Bot defaultBot = loadDefaultBot(arguments.getBot());
             final Bot bot = loadBot(arguments.getClassName());
