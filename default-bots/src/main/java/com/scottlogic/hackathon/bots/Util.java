@@ -3,10 +3,9 @@ package com.scottlogic.hackathon.bots;
 import com.scottlogic.hackathon.game.Direction;
 import com.scottlogic.hackathon.game.Position;
 
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Util {
 
@@ -114,8 +113,14 @@ public class Util {
         return directions[new Random().nextInt(directions.length)];
     }
 
-    public Stream<Direction> randomDirections() {
-        return Stream.generate(this::randomDirection);
+    public Stream<Direction> preferredThenRandom(Stream<Direction> preferred) {
+        Set<Direction> pending = EnumSet.allOf(Direction.class);
+        return Stream.concat(preferred.peek(pending::remove), StreamSupport.stream(() -> {
+            List<Direction> remaining = new ArrayList<>(pending);
+            Collections.shuffle(remaining);
+            return remaining.spliterator();
+        }, Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.ORDERED | Spliterator.NONNULL,
+                false));
     }
 
     public boolean playersCollideInThisMove(int distance, Direction direction, Position playerPosition, Set<Position> myPlayersPositions) {

@@ -30,10 +30,10 @@ public class CollectableMove extends MoveBase {
             }
             if (nearestCollectable != null) {
                 distance = 0;
-                direction = Stream.concat(getMap().directionsTowards(playerPosition, nearestCollectable.getPosition()), util.randomDirections())
-                        .filter(d -> util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
+                direction = util.preferredThenRandom(getMap().directionsTowards(playerPosition, nearestCollectable.getPosition()))
+                        .filter(d -> !util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
                         .findFirst()
-                        .get();
+                        .orElseGet(util::randomDirection);
             } else {
                 setRandomDirectionAndDistance(MINIMUM_RANDOM_DISTANCE, MAXIMUM_RANDOM_DISTANCE);
             }

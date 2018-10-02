@@ -30,10 +30,10 @@ public class AttackMove extends MoveBase {
             }
             if (nearestOpponentPosition != null) {
                 distance = 0;
-                direction = Stream.concat(getMap().directionsTowards(playerPosition, nearestOpponentPosition), util.randomDirections())
-                        .filter(d -> util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
+                direction = util.preferredThenRandom(getMap().directionsTowards(playerPosition, nearestOpponentPosition))
+                        .filter(d -> !util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
                         .findFirst()
-                        .get(); // Guaranteed to be present
+                        .orElseGet(util::randomDirection);
             } else {
                 setRandomDirectionAndDistance(MINIMUM_RANDOM_DISTANCE, MAXIMUM_RANDOM_DISTANCE);
             }

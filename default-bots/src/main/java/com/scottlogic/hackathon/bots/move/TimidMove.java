@@ -30,10 +30,10 @@ public class TimidMove extends MoveBase {
             }
             if (nearestOpponentPosition != null) {
                 distance = 0;
-                direction = Stream.concat(getMap().directionsAwayFrom(playerPosition, nearestOpponentPosition), util.randomDirections())
-                        .filter(d -> util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
+                direction = util.preferredThenRandom(getMap().directionsAwayFrom(playerPosition, nearestOpponentPosition))
+                        .filter(d -> !util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
                         .findFirst()
-                        .get();
+                        .orElseGet(util::randomDirection);
             } else {
                 setRandomDirectionAndDistance(MINIMUM_RANDOM_DISTANCE, MAXIMUM_RANDOM_DISTANCE);
             }
