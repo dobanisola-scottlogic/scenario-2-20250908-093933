@@ -44,10 +44,10 @@ public class HunterMove extends MoveBase {
             }
             if (nearestOpponentSpawnPointPosition != null) {
                 distance = 0;
-                direction = Stream.concat(getMap().directionsTowards(playerPosition, nearestOpponentSpawnPointPosition), util.randomDirections())
-                        .filter(d -> util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
+                direction = util.preferredThenRandom(getMap().directionsTowards(playerPosition, nearestOpponentSpawnPointPosition))
+                        .filter(d -> !util.playersCollideInThisMove(2, d, playerPosition, playersPositions))
                         .findFirst()
-                        .get();
+                        .orElseGet(util::randomDirection);
             } else {
                 setRandomDirectionAndDistance(MINIMUM_RANDOM_DISTANCE, MAXIMUM_RANDOM_DISTANCE);
             }

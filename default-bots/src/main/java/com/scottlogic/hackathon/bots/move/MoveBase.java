@@ -48,10 +48,12 @@ public class MoveBase implements Move {
         return map;
     }
 
+    @Override
     public UUID getPlayer() {
         return player;
     }
 
+    @Override
     public Direction getDirection() {
         return direction;
     }
