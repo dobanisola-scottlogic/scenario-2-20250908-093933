@@ -36,7 +36,7 @@ runShadow {
 }
 
 shadowJar {
-    dependsOn ":default-bots:shadowJar"
+    dependsOn ":default-bots:obfuscate"
     exclude "com/scottlogic/hackathon/bots/BasicAgent.class"
     exclude "com/scottlogic/hackathon/bots/FastExpansionBot.class"
     exclude "com/scottlogic/hackathon/bots/Node.class"

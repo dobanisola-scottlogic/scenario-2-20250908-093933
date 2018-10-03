@@ -13,12 +13,8 @@ shadowJar {
 }
 
 task obfuscate(type: proguard.gradle.ProGuardTask) {
+    dependsOn shadowJar
     configuration 'proguard.txt'
     injars "build/libs/default-bots-1.0-SNAPSHOT-all.jar"
     outjars "${buildDir}/libs/milestone-bots-obfuscated.jar"
 }
-
-tasks.shadowJar.doLast {
-    obfuscate.execute();
-}
-
