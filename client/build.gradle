@@ -8,10 +8,9 @@ apply plugin: "application"
 mainClassName = mainClass
 
 dependencies {
-    compile files('../default-bots/build/libs/milestone-bots-obfuscated.jar')
     compile project(":game")
     compile project(":game-engine")
-    compile project(":default-bots")
+    compile project(path: ':default-bots', configuration: 'obfuscated')
     compile group: "commons-cli", name: "commons-cli", version: "1.4"
     compile group: "org.fusesource.jansi", name: "jansi", version: "1.11"
     compile group: "org.slf4j", name: "slf4j-simple", version: rootProject.slf4jVersion
@@ -36,7 +35,6 @@ runShadow {
 }
 
 shadowJar {
-    dependsOn ":default-bots:obfuscate"
     exclude "com/scottlogic/hackathon/bots/BasicAgent.class"
     exclude "com/scottlogic/hackathon/bots/FastExpansionBot.class"
     exclude "com/scottlogic/hackathon/bots/Node.class"

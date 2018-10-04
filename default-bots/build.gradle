@@ -1,20 +1,53 @@
 group "com.scottlogic.hackathon"
 version "1.0-SNAPSHOT"
 
+
+configurations {
+    obfuscated
+}
+
 dependencies {
     compile project(":game")
     compile group: "org.fusesource.jansi", name: "jansi", version: "1.11"
 }
 
-shadowJar {
-    include "com/scottlogic/hackathon/bots/Milestone**.class"
-    include "com/scottlogic/hackathon/bots/move/**"
-    include "com/scottlogic/hackathon/bots/state/**"
+/*
+ * Task to extract the DefaultBot class and its dependencies from the built jar.
+ */
+task extractDefaultBot(type: proguard.gradle.ProGuardTask) {
+    injars jar
+    outjars "${buildDir}/proguard/${name}.jar"
+    libraryjars configurations.runtime
+    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+
+    dontobfuscate()
+    keep([includedescriptorclasses: true], 'class **.DefaultBot** { *; }')
 }
 
-task obfuscate(type: proguard.gradle.ProGuardTask) {
-    dependsOn shadowJar
-    configuration 'proguard.txt'
-    injars "build/libs/default-bots-1.0-SNAPSHOT-all.jar"
-    outjars "${buildDir}/libs/milestone-bots-obfuscated.jar"
+/*
+ * Task to extract and obfuscate all other Bots and their dependencies from the built jar.
+ */
+task extractMilestoneBots(type: proguard.gradle.ProGuardTask) {
+    injars jar
+    outjars "${buildDir}/proguard/${name}.jar"
+    libraryjars configurations.runtime
+    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+
+    keep 'public class *,!**.DefaultBot** extends com.scottlogic.hackathon.game.Bot { public *; }'
+    keepnames 'class com.scottlogic.hackathon.bots.**'
 }
+
+task obfuscate(dependsOn: configurations.obfuscated, type: Jar) {
+    classifier = 'obfuscated'
+    inputs.files(extractDefaultBot, extractMilestoneBots)
+    println("Input files")
+    from {zipTree(extractDefaultBot.outputs.files.singleFile)}
+    from {zipTree(extractMilestoneBots.outputs.files.singleFile)}
+}
+
+artifacts {
+    obfuscated obfuscate
+}
+
+
+
