@@ -86,16 +86,16 @@ class GamePanelController {
     initialiseHackathons() {
         this.makingCall = true;
         this.hackathonService.getHackathonFromPath().then(
-                hackathon => {
-                    this.selectedHackathon = hackathon;
-                    this.game.hackathonId = hackathon.id;
-                    this.currentMilestone = hackathon.currentMilestoneClassName;
-                    this.refreshTeams();
-                    this.makingCall = false;
-                },
-                () => {
-                    this.makingCall = false;
-                }
+            hackathon => {
+                this.selectedHackathon = hackathon;
+                this.game.hackathonId = hackathon.id;
+                this.currentMilestone = hackathon.currentMilestoneClassName;
+                this.refreshTeams();
+                this.makingCall = false;
+            },
+            () => {
+                this.makingCall = false;
+            }
          );
         this.refreshHackathons();
 

@@ -5,11 +5,7 @@ import com.scottlogic.hackathon.server.authentication.User;
 import com.scottlogic.hackathon.server.models.Hackathon;
 import com.scottlogic.hackathon.server.models.HackathonUpdate;
 import com.scottlogic.hackathon.server.services.stores.HackathonStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
-import java.util.UUID;
 
 public class HackathonService {
     private final HackathonStore hackathonStore;

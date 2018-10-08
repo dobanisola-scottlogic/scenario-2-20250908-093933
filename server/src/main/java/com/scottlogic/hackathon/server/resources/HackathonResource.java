@@ -16,16 +16,12 @@ import com.scottlogic.hackathon.server.services.HackathonService;
 import com.scottlogic.hackathon.server.services.TeamService;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.UUID;
 
 @Path("/hackathon")
 @Produces(MediaType.APPLICATION_JSON)
