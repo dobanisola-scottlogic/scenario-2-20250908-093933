@@ -40,19 +40,23 @@ public class Client {
 
                 if (gameEngine != null) {
                     try {
-                        final GameResult gameResult = gameEngine.play();
+                        final Scanner scanner = new Scanner(System.in);
+                        final PhaseResultPrinter phaseResultPrinter = new PhaseResultPrinter(bots, gameEngine.getMap());
+                        final GameResult gameResult = gameEngine.play((phase, cutoff) -> {
+                            phaseResultPrinter.print(phase, 0);
+                            System.out.println("Type 'q' to quit or press enter to continue");
+                            return !scanner.nextLine().equals("q");
+                        });
 
                         printGameResult(gameResult, bots);
 
-                        final Scanner scanner = new Scanner(System.in);
-                        System.out.println("Type p to play or press enter to quit");
+                        System.out.println("Type 'p' to review game steps or press enter to quit");
                         if (scanner.nextLine().equals("p")) {
                             final List<PhaseResult> phaseResults = gameResult.getPhaseResults();
                             int phase = 1;
                             while (phase < phaseResults.size()) {
-                                final PhaseResultPrinter phaseResultPrinter = new PhaseResultPrinter(bots, gameResult, phaseResults.get(phase));
-                                phaseResultPrinter.print();
-                                System.out.println("Type q to quit, a number to jump to a phase or press enter to continue");
+                                phaseResultPrinter.print(phaseResults.get(phase), phaseResults.size());
+                                System.out.println("Type 'q' to quit, a number to jump to a phase or press enter to continue");
 
                                 final String input = scanner.nextLine();
                                 if (input.equals("q")) {
@@ -106,7 +110,7 @@ public class Client {
         System.out.printf("Game completed in %s phases", finalResult.getPhase())
                 .println();
 
-        System.out.printf("Ended because %s", gameResult.getCutoffCondition().toString())
+        System.out.printf("Ended because %s", gameResult.getCutoffCondition())
                 .println();
 
         System.out.printf("The game has %s spawn points, %s players and %s collectables left",

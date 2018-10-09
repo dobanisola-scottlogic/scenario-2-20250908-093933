@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,11 +62,19 @@ public class GameEngine {
         return new GameEngine(map, bots);
     }
 
+    public PlayableMap getMap() {
+        return map;
+    }
+
     public GameResult play() throws Exception {
-        players = new TrackedSetImpl<PlayerImpl>();
-        collectables = new TrackedSetImpl<CollectableImpl>();
-        spawnPoints = new TrackedSetImpl<SpawnPointImpl>();
-        disqualifiedBots = new TrackedSetImpl<DisqualifiedBotImpl>();
+        return play((a,b) -> true);
+    }
+
+    public GameResult play(BiPredicate<PhaseResult, Optional<CutoffCondition>> phaseCallback) throws Exception {
+        players = new TrackedSetImpl<>();
+        collectables = new TrackedSetImpl<>();
+        spawnPoints = new TrackedSetImpl<>();
+        disqualifiedBots = new TrackedSetImpl<>();
         phase = 0;
 
         logger.info("Game Started");
@@ -75,7 +82,7 @@ public class GameEngine {
         initialiseBots();
         createSpawnPoints();
 
-        final List<PhaseResult> phaseResults = new ArrayList<PhaseResult>(maxPhases);
+        final List<PhaseResult> phaseResults = new ArrayList<>(maxPhases);
 
         spawn();
 
@@ -87,6 +94,9 @@ public class GameEngine {
             final PhaseResult phaseResult = playPhase();
             phaseResults.add(phaseResult);
             cutoffCondition = getCutoffCondition();
+            if(!phaseCallback.test(phaseResult, Optional.ofNullable(cutoffCondition)) && cutoffCondition==null) {
+                cutoffCondition = CutoffCondition.CLIENT_QUIT;
+            }
         } while (cutoffCondition == null);
 
         logger.info("Cut Off Condition: " + cutoffCondition);
