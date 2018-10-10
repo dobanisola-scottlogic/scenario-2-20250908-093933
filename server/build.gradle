@@ -8,6 +8,15 @@ apply plugin: "application"
 
 mainClassName = mainClass
 
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if(details.requested.name == 'hibernate-core') {
+            details.useVersion '5.3.6.Final'
+            details.because 'Hibernate 5.3.3+ needed for Java 11 support'
+        }
+    }
+}
+
 dependencies {
     compile group: "io.dropwizard", name: "dropwizard-core", version: dropWizardVersion
     compile group: "io.dropwizard", name: "dropwizard-auth", version: dropWizardVersion
