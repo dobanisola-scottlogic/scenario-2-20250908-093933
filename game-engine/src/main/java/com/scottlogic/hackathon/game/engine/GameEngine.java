@@ -25,13 +25,13 @@ public class GameEngine {
     private final Set<Bot> bots;
     private final PlayableMap map;
     private int maxPhases;
-    private final int spawnPhases = 8;
-    private final int maxVisibleDistance = 6;
-    private final int maxCollectablesSpawnedPerPhase = 4;
-    private final int minCollectableDistanceFromSpawn = 8;
-    private final double collectablesSpawnFrequency = 0.2;
-    private final int battleRadius = 2;
-    private final int initialiseTimeoutSeconds = 30;
+    private int spawnPhases;
+    private int maxVisibleDistance;
+    private int maxCollectablesSpawnedPerPhase;
+    private int minCollectableDistanceFromSpawn;
+    private double collectablesSpawnFrequency;
+    private int battleRadius;
+    private int initialiseTimeoutSeconds;
     private int makeMovesTimeoutSeconds;
     private final TimedConsumer<Bot> timedConsumer = new TimedConsumer<Bot>();
     private TrackedSetImpl<PlayerImpl> players;
@@ -57,31 +57,25 @@ public class GameEngine {
     }
 
     private void setConfigValues() {
-        InputStream inputStream = null;
         try {
-            Properties props = new Properties();
-            String fileName = "config.properties";
-            inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
 
-            if (inputStream != null) {
-                props.load(inputStream);
-            }
+            makeMovesTimeoutSeconds = Integer.parseInt(System.getProperty("makeMovesTimeoutSeconds"));
+            maxPhases = Integer.parseInt(System.getProperty("maxPhases"));
+            maxVisibleDistance = Integer.parseInt(System.getProperty("maxVisibleDistance"));
+            collectablesSpawnFrequency = Double.parseDouble(System.getProperty("collectablesSpawnFrequency"));
+            battleRadius = Integer.parseInt(System.getProperty("battleRadius"));
+            maxCollectablesSpawnedPerPhase = Integer.parseInt(System.getProperty("maxCollectablesSpawnedPerPhase"));
+            minCollectableDistanceFromSpawn = Integer.parseInt(System.getProperty("minCollectableDistanceFromSpawn"));
+            spawnPhases = Integer.parseInt(System.getProperty("spawnPhases"));
+            initialiseTimeoutSeconds = Integer.parseInt(System.getProperty("initialiseTimeoutSeconds"));
 
-            makeMovesTimeoutSeconds = Integer.parseInt(props.getProperty("makeMovesTimeoutSeconds"));
-            maxPhases = Integer.parseInt(props.getProperty("maxPhases"));
-
-            for (Object key : props.keySet()) {
-                logger.info(String.format("Loaded %s property", key.toString()));
+            logger.info("Running game with config: ");
+            for (Object key : System.getProperties().keySet()) {
+                logger.info(String.format("%s = %s", key.toString(), System.getProperty(key.toString())));
             }
 
         } catch (Exception e ) {
             logger.error("Error reading config values: " + e);
-        } finally {
-            try {
-                if (inputStream!= null) inputStream.close();
-            } catch (IOException e) {
-                logger.error("Failed to close input stream :" + e);
-            }
         }
     }
 
