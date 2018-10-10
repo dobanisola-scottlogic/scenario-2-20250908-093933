@@ -6,6 +6,7 @@ import com.scottlogic.hackathon.game.engine.models.*;
 import com.scottlogic.hackathon.game.engine.models.builders.GameStateBuilder;
 import com.scottlogic.hackathon.game.engine.models.builders.PhaseResultBuilder;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -57,25 +58,36 @@ public class GameEngine {
     }
 
     private void setConfigValues() {
+        InputStream inputStream = null;
         try {
+            Properties props = new Properties();
+            String fileName = "config.properties";
+            inputStream = new FileInputStream(fileName);
+            props.load(inputStream);
 
-            makeMovesTimeoutSeconds = Integer.parseInt(System.getProperty("makeMovesTimeoutSeconds"));
-            maxPhases = Integer.parseInt(System.getProperty("maxPhases"));
-            maxVisibleDistance = Integer.parseInt(System.getProperty("maxVisibleDistance"));
-            collectablesSpawnFrequency = Double.parseDouble(System.getProperty("collectablesSpawnFrequency"));
-            battleRadius = Integer.parseInt(System.getProperty("battleRadius"));
-            maxCollectablesSpawnedPerPhase = Integer.parseInt(System.getProperty("maxCollectablesSpawnedPerPhase"));
-            minCollectableDistanceFromSpawn = Integer.parseInt(System.getProperty("minCollectableDistanceFromSpawn"));
-            spawnPhases = Integer.parseInt(System.getProperty("spawnPhases"));
-            initialiseTimeoutSeconds = Integer.parseInt(System.getProperty("initialiseTimeoutSeconds"));
+            makeMovesTimeoutSeconds = Integer.parseInt(props.getProperty("makeMovesTimeoutSeconds"));
+            maxPhases = Integer.parseInt(props.getProperty("maxPhases"));
+            maxVisibleDistance =  Integer.parseInt(props.getProperty("maxVisibleDistance"));
+            collectablesSpawnFrequency =  Double.parseDouble(props.getProperty("collectablesSpawnFrequency"));
+            battleRadius =  Integer.parseInt(props.getProperty("battleRadius"));
+            maxCollectablesSpawnedPerPhase =  Integer.parseInt(props.getProperty("maxCollectablesSpawnedPerPhase"));
+            minCollectableDistanceFromSpawn =  Integer.parseInt(props.getProperty("minCollectableDistanceFromSpawn"));
+            spawnPhases =  Integer.parseInt(props.getProperty("spawnPhases"));
+            initialiseTimeoutSeconds =  Integer.parseInt(props.getProperty("initialiseTimeoutSeconds"));
 
             logger.info("Running game with config: ");
-            for (Object key : System.getProperties().keySet()) {
-                logger.info(String.format("%s = %s", key.toString(), System.getProperty(key.toString())));
+            for (Object key : props.keySet()) {
+                logger.info(String.format("%s = %s", key.toString(), props.get(key)));
             }
 
         } catch (Exception e ) {
             logger.error("Error reading config values: " + e);
+        } finally {
+            try {
+                if (inputStream != null) inputStream.close();
+            } catch (IOException e) {
+                logger.error("Failed to close input stream :" + e);
+            }
         }
     }
 
