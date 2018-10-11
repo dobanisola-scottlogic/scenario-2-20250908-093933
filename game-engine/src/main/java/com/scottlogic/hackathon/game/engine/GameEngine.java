@@ -48,7 +48,7 @@ public class GameEngine {
         this.bots = bots;
         logger = LoggerFactory.getLogger(this.getClass().getName());
 
-        maxPhases = getConfigValue(Integer::parseInt, "maxPhases", 256);
+        maxPhases = getConfigValue(Integer::parseInt, "maxPhases", 512);
         makeMovesTimeoutSeconds = getConfigValue(Integer::parseInt, "makeMovesTimeoutSeconds", 5);
         maxVisibleDistance = getConfigValue(Integer::parseInt, "maxVisibleDistance", 6);
         collectablesSpawnFrequency = getConfigValue(Double::parseDouble, "collectablesSpawnFrequency", 0.2);
@@ -58,8 +58,6 @@ public class GameEngine {
         spawnPhases = getConfigValue(Integer::parseInt, "spawnPhases", 8);
         initialiseTimeoutSeconds = getConfigValue(Integer::parseInt, "initialiseTimeoutSeconds", 30);
 
-        logger.info("Game loaded with config: " + props);
-        logger.info("Max phases set " + maxPhases);
         if (bots.size() <= 1) {
             throw new IllegalArgumentException("must have at least 2 bots");
         }
@@ -73,13 +71,19 @@ public class GameEngine {
         InputStream inputStream = null;
         T value = null;
         try {
+
             if (props == null) {
                 props = new Properties();
                 String fileName = "config.properties";
                 inputStream = new FileInputStream(fileName);
                 props.load(inputStream);
             }
-            value = parseFunction.apply(props.getProperty(fieldName));
+
+            String property = props.getProperty(fieldName);
+
+            if (property != null) {
+                value = parseFunction.apply(property);
+            }
 
         } catch (Exception e) {
             logger.error("Error reading config values: " + e);
