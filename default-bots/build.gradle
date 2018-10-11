@@ -16,8 +16,6 @@ dependencies {
 task extractDefaultBot(type: proguard.gradle.ProGuardTask) {
     injars jar
     outjars "${buildDir}/proguard/${name}.jar"
-    libraryjars configurations.runtime
-    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
 
     dontobfuscate()
     keep([includedescriptorclasses: true], 'class **.DefaultBot** { *; }')
@@ -29,11 +27,19 @@ task extractDefaultBot(type: proguard.gradle.ProGuardTask) {
 task extractMilestoneBots(type: proguard.gradle.ProGuardTask) {
     injars jar
     outjars "${buildDir}/proguard/${name}.jar"
-    libraryjars configurations.runtime
-    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
 
     keep 'public class *,!**.DefaultBot** extends com.scottlogic.hackathon.game.Bot { public *; }'
-    keepnames 'class com.scottlogic.hackathon.bots.**'
+    //keepnames 'class com.scottlogic.hackathon.bots.**'
+}
+
+tasks.withType(proguard.gradle.ProGuardTask) {
+    libraryjars configurations.runtime
+    if(System.getProperty('java.version').startsWith('1.')) {
+        libraryjars("${System.getProperty('java.home')}/lib/rt.jar")
+    } else {
+        libraryjars("${System.getProperty('java.home')}/jmods/java.base.jmod",
+                jarfilter: '!**.jar', filter: '!module-info.class')
+    }
 }
 
 task obfuscate(dependsOn: configurations.obfuscated, type: Jar) {
