@@ -1,9 +1,6 @@
 package com.scottlogic.hackathon.client;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 class Arguments {
@@ -16,7 +13,7 @@ class Arguments {
     private final String[] bots;
     private final String className;
 
-    Arguments(boolean debug, final String map, final String[] bots, final String className) {
+    Arguments(boolean debug, String map, String[] bots, String className) {
         this.debug = debug;
         this.map = map;
         this.bots = bots;

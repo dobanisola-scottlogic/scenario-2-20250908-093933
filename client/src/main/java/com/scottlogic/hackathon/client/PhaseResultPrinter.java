@@ -83,13 +83,13 @@ public class PhaseResultPrinter {
                     .newline();
         }
 
-        printSeperator(ansi);
+        printSeparator(ansi);
         tiles.print(ansi);
-        printSeperator(ansi);
+        printSeparator(ansi);
         System.out.println(ansi);
     }
 
-    private void printSeperator(Ansi ansi) {
+    private void printSeparator(Ansi ansi) {
         ansi
                 .reset()
                 .a(seperator)

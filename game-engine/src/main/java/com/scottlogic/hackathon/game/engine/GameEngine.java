@@ -85,7 +85,7 @@ public class GameEngine {
     }
 
     public static GameEngine create(final String mapName, final Set<Bot> bots, boolean debug) throws IllegalArgumentException {
-        if (bots.size() <= 1) {
+        if (bots.size() < 2) {
             throw new IllegalArgumentException("must have at least 2 bots");
         }
 

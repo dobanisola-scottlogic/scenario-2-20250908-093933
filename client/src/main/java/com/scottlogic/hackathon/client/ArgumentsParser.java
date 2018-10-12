@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class ArgumentsBuilder {
+class ArgumentsParser {
     private static final Pattern WHITESPACE = Pattern.compile("\\s");
 
     private static final Option MAP = Option.builder("m")
@@ -50,7 +50,7 @@ class ArgumentsBuilder {
             .addOption(CLASS)
             .addOption(DEBUG);
 
-    private ArgumentsBuilder() {}
+    private ArgumentsParser() {}
 
     public static Optional<Arguments> create(Class<?> mainClass, String[] args) {
 
