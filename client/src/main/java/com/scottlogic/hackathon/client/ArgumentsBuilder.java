@@ -9,8 +9,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class ArgumentsBuilder {
+    private static final Pattern WHITESPACE = Pattern.compile("\\s");
 
     private static final Option MAP = Option.builder("m")
             .hasArg()
@@ -53,18 +57,26 @@ class ArgumentsBuilder {
         try {
             CommandLine cmd = new DefaultParser().parse(OPTIONS, args);
 
+            String[] bots = cmd.getOptionValues(BOT.getOpt());
+            if (bots == null || bots.length == 0) {
+                bots = new String[]{Arguments.DEFAULT_BOT};
+            }
 
             String className = cmd.getOptionValue(CLASS.getOpt());
             if (className == null) {
                 if (cmd.getArgList().isEmpty()) {
                     throw new MissingArgumentException(CLASS);
                 }
-                className = cmd.getArgList().get(0);
+                className = cmd.getArgList().remove(0);
             }
 
-            String[] bots = cmd.getOptionValues(BOT.getOpt());
-            if (bots == null || bots.length == 0) {
-                bots = new String[]{Arguments.DEFAULT_BOT};
+            if(!cmd.getArgList().isEmpty()) {
+                throw new ParseException("Too many arguments on command line: " +
+                        Stream.of(args)
+                                .map(arg -> WHITESPACE.matcher(arg).find()
+                                        ? "'" + arg.replace("'", "'\"'\"'") + "'"
+                                        : arg)
+                                .collect(Collectors.joining(" ")));
             }
 
             return Optional.of(Arguments.builder()
@@ -79,11 +91,6 @@ class ArgumentsBuilder {
             System.err.println(e.getLocalizedMessage());
 
             HelpFormatter formatter = new HelpFormatter();
-            StringBuilder help = new StringBuilder();
-            for (Option option : OPTIONS.getOptions()) {
-                help.append(String.format("[%s|%s %s] ", option.getOpt(), option.getLongOpt(), option.getDescription().split(":")[0]));
-            }
-            //qformatter.printHelp(help.toString(), options);
             formatter.printHelp("java [-cp <CLASSPATH>] " + mainClass.getName(), OPTIONS, true);
 
             return Optional.empty();
