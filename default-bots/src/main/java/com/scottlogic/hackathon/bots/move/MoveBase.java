@@ -82,7 +82,7 @@ public class MoveBase implements Move {
 
     protected void setDirectionNotCollidingWithOtherPlayersIn2Moves(Stream<Direction> preferredDirections) {
         direction = preferredThenRandom(preferredDirections)
-                .filter(d -> !getMap().straightLineRoute(playerPosition, d, 2).collides(playersPositions))
+                .filter(d -> !getMap().straightLineRoute(playerPosition, d, 2).collides(p -> !p.equals(playerPosition) && playersPositions.contains(p)))
                 .findFirst()
                 .orElseGet(Direction::random);
     }
