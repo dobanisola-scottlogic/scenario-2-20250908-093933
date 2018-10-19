@@ -1,4 +1,48 @@
-# Code Challenge - Contestant
+
+[//]: # (BEGIN SKIP)
+
+# Contestant Repo
+This folder contains a stub project to be given to hackathon contestants, containing:
+  - a small amount of source code to get started with
+  - documentation and tutorials
+  - a Gradle project that contestants can use to build their bot and configure their IDE
+  
+This folder _shouldn't_ be given to contestants directly because:
+ - a small amount of its contents are not for contestants (such as this bit of the README)
+ - its build depends on other subprojects, so will fail in isolation
+ 
+Instead, run `./gradlew contestant:build` to assemble it into a form suitable for consumption by contestants.
+See below for details.
+ 
+## Building & Testing
+
+The normal Gradle lifecycle tasks will turn this subproject into a standalone project that can be given to contestants:
+  - The `assemble` lifecycle task depends on `assembleContestantRepo`
+  - The `check` lifecycle task depends on `checkContestantRepo`
+  
+### `assembleContestantRepo`
+
+This task creates a standalone version of this subproject.
+It copies the entire subproject into folder in the `build` directory, with the following modifications:
+  - Files matching `.gitignore` patterns are not copied
+  - In any file, any lines between (and including) <code>BEGIN&nbsp;SKIP</code> and <code>END&nbsp;SKIP</code>
+    are stripped out (that is how this portion of the README is excluded)
+  - Inter-project and Maven dependencies are replaced with file dependencies in a `libs` subdirectory
+  
+### `checkContestantRepo`
+
+This task depends on `assembleContestantRepo` and runs a separate `gradlew check` process on it.
+If the child process fails, so does this task.
+
+If this task is run alongside other verification tasks (e.g. by running `gradlew check`), then this will be the last to
+run. This ensures other checks succeed before the relatively expensive operation of assembling the contestant repo
+(along with all its dependencies), and then running a separate build process inside it is attempted.
+
+**The remainder of this README file is what contestants will see.**
+
+[//]: # (END SKIP)
+
+# Scott Logic Hackathon
 ## Setup
 ### 1 Ensure Java is installed and set-up
 You need a JDK installed of version 9 or later. If you don't have this, you can download one from the same machine this
@@ -109,5 +153,5 @@ restrictions on the compiled code:
 - you can include more than one Bot class in the uploaded jar file to allow you to test different strategies, however
 only one Bot can be active at any given time
 
-When you're ready to move on this [tutorial](docs/tutorial/index.md) provides a step-by-step guide to adding
+When you're ready to move on this [tutorial](dist/docs/tutorial/index.md) provides a step-by-step guide to adding
 some basic intelligence to your bot.
