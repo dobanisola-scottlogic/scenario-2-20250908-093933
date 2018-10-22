@@ -72,8 +72,8 @@ task('checkContestantRepo', type: Exec) {
     description = "Runs 'gradlew check' on the assembled contestant repo to verify its integrity"
     shouldRunAfter check.dependsOn
 
-    inputs.file assembleContestantRepo
-    outputs.files project.contestantRepoBuildDir, project.contestantRepoGradleCache
+    inputs.files assembleContestantRepo
+    outputs.dirs project.contestantRepoBuildDir, project.contestantRepoGradleCache
 
     workingDir = assembleContestantRepo.destinationDir
     if(System.getProperty('os.name').toLowerCase().contains('win')) {
