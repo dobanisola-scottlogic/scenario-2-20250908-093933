@@ -170,7 +170,16 @@ class GameSelectorController {
                 return this.mapGame(game);
             });
         }
-        this.gridOptions.data = this.gamesList;
+        /*
+         * sort by game time, i.e. latest game at the top, as this is the most common use case
+         *
+         * N.B. columns are sortable by default so users can always sort on any other column as needed
+         */
+        this.gridOptions.data = this.gamesList.sort(
+            function(gameOne, gameTwo) {
+                return gameTwo.time - gameOne.time;
+            }
+        );
     }
     selectGame(game) {
         this.gameService.getGame(game.id).then(response => {
