@@ -41,7 +41,7 @@ class BotUploadController {
                                     title: result.messageLookup[errorKey]
                                 }))
                             });
-                        } else if (result.contestantBots < 1) {
+                        } else if (result.contestantBots.length < 1) {
                             // show a generic error in case BotResource checks fail to add a suitable custom error
                             this.setAlert({
                                 type: AlertTypes.ERROR,

@@ -136,11 +136,8 @@ public class BotResource {
             InputStream inputStream = jar.getInputStream();
             jarService.deleteJar(jarId);
 
-            String name = user.getName();
-            if (teamName != null && user.isAdmin()) {
-                name = teamName;
-            }
-            final Team team = teamService.getTeam(name);
+            final Team team = teamService.getTeam(teamName != null && user.isAdmin() ? teamName : user.getName());
+
             if (user.isAdmin()) {
                 addedBot = botService.addBot(team, botClassName, inputStream);
             } else {
