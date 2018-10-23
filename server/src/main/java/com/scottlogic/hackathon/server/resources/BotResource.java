@@ -24,8 +24,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarEntry;
@@ -35,6 +37,9 @@ import java.util.jar.JarInputStream;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BotResource {
+    private static final String PACKAGE_ROOT = "com/contestantbots/";
+    private static final String PACKAGE_ROOT_DOT_FORMAT = PACKAGE_ROOT.replace("/", ".");
+
     private final BotService botService;
     private final HackathonConfiguration hackathonConfiguration;
     private final TeamService teamService;
@@ -57,44 +62,66 @@ public class BotResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
-    public UploadedJar jarUploaded(@Auth final User user,
-                                      @FormDataParam("file") final InputStream inputStream) throws IOException {
+    public UploadedJar jarUploaded(@Auth final User user, @FormDataParam("file") final InputStream inputStream) {
         UploadedJar jar = new UploadedJar(inputStream);
 
         Set<String> contestantBots = new HashSet<>();
+        Map<String, String> messageLookup = new HashMap<>();
 
-        JarInputStream jarInputStream = new JarInputStream(jar.getInputStream());
-        JarEntry jarEntry;
+        try {
+            JarInputStream jarInputStream = new JarInputStream(jar.getInputStream());
+            JarEntry jarEntry;
 
-        do {
-            jarEntry = jarInputStream.getNextJarEntry();
+            do {
+                jarEntry = jarInputStream.getNextJarEntry();
 
-            if (jarEntry != null) {
-                String fileName = jarEntry.getName();
+                if (jarEntry != null) {
+                    String fileName = jarEntry.getName();
 
-                if (fileName.startsWith("com/contestantbots/") && fileName.endsWith(".class")) {
-                    Bot loadedBot = null;
+                    if (fileName.startsWith(PACKAGE_ROOT) && fileName.endsWith(".class")) {
 
-                    final RemoteClassLoader remoteClassLoader = new RemoteClassLoader(jar.getData());
-                    try {
-                        loadedBot = (Bot) remoteClassLoader.loadClass(fileName.replace("/", ".").replace(".class", "")).newInstance();
-                        contestantBots.add(fileName);
-                    } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                        e.printStackTrace();
+                        final RemoteClassLoader remoteClassLoader = new RemoteClassLoader(jar.getData());
+                        try {
+                            Class loadedClass = remoteClassLoader.loadClass(fileName.replace("/", ".").replace(".class", ""));
+                            Class superclass = loadedClass.getSuperclass();
+                            if (superclass != null && superclass.equals(Bot.class)) {
+                                try {
+                                    Bot loadedBot = (Bot) loadedClass.newInstance();
+                                    contestantBots.add(fileName);
+                                } catch (final IllegalAccessException | InstantiationException e) {
+                                    addMessage(messageLookup, fileName, e.getMessage());
+                                }
+                            }
+                        } catch (final ClassNotFoundException | LinkageError e) {
+                            addMessage(messageLookup, fileName, e.getMessage());
+                        }
                     }
                 }
             }
-        }
-        while (jarEntry != null);
+            while (jarEntry != null);
 
-        jarInputStream.close();
-        jar.setContestantBots(contestantBots);
+            jarInputStream.close();
+            jar.setContestantBots(contestantBots);
+            jar.setMessageLookup(messageLookup);
 
-        if (contestantBots.size() > 0) {
-            jarService.addJar(jar);
+            if (contestantBots.size() > 0) {
+                jarService.addJar(jar);
+            } else {
+                String message = "Bots do not extend com.scottlogic.hackathon.game.Bot, " +
+                        "or are in the wrong package, which should start with '" + PACKAGE_ROOT_DOT_FORMAT + "'" +
+                        (messageLookup.size() > 0 ? ", check other errors for further details" : "");
+                addMessage(messageLookup,"No valid Bots", message);
+            }
+        } catch (final IOException e) {
+            addMessage(messageLookup, "Jar file", "Problems reading the jar file: " + e.getMessage());
         }
 
         return jar;
+    }
+
+    private void addMessage(Map<String, String> messageLookup, String messageKey, String message) {
+        int lastDelimiter = messageKey.lastIndexOf('/');
+        messageLookup.put(messageKey.substring(lastDelimiter + 1).replace(".class", ""), message);
     }
 
     @POST
