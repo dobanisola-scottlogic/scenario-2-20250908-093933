@@ -1,10 +1,8 @@
 package com.scottlogic.hackathon.server.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.scottlogic.hackathon.game.Bot;
-import com.scottlogic.hackathon.server.HackathonConfiguration;
 import com.scottlogic.hackathon.server.authentication.Authorizer;
 import com.scottlogic.hackathon.server.authentication.User;
 import com.scottlogic.hackathon.server.models.Team;
@@ -41,16 +39,13 @@ public class BotResource {
     private static final String PACKAGE_ROOT_DOT_FORMAT = PACKAGE_ROOT.replace("/", ".");
 
     private final BotService botService;
-    private final HackathonConfiguration hackathonConfiguration;
     private final TeamService teamService;
     private final JarService jarService;
 
     @Inject
-    BotResource(final HackathonConfiguration hackathonConfiguration,
-                final BotService botService,
+    BotResource(final BotService botService,
                 final TeamService teamService,
                 final JarService jarService) {
-        this.hackathonConfiguration = hackathonConfiguration;
         this.botService = botService;
         this.teamService = teamService;
         this.jarService = jarService;
@@ -86,7 +81,7 @@ public class BotResource {
                             Class superclass = loadedClass.getSuperclass();
                             if (superclass != null && superclass.equals(Bot.class)) {
                                 try {
-                                    Bot loadedBot = (Bot) loadedClass.newInstance();
+                                    loadedClass.newInstance();
                                     contestantBots.add(fileName);
                                 } catch (final IllegalAccessException | InstantiationException e) {
                                     addMessage(messageLookup, fileName, e.getMessage());
@@ -132,7 +127,7 @@ public class BotResource {
     @RolesAllowed({Authorizer.ROLE_TEAM, Authorizer.ROLE_ADMIN})
     public UploadedBot addBot(@Auth final User user,
                                     @PathParam("botClassName") final String botClassName,
-                                    @FormDataParam("teamName") final Optional<String> teamName,
+                                    @FormDataParam("teamName") final String teamName,
                                     @FormDataParam("id") final UUID jarId) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         UploadedBot addedBot = null;
         UploadedJar jar = jarService.getJar(jarId);
@@ -142,14 +137,13 @@ public class BotResource {
             jarService.deleteJar(jarId);
 
             String name = user.getName();
-            if (teamName.isPresent() && user.isAdmin()) {
-                name = teamName.orNull();
+            if (teamName != null && user.isAdmin()) {
+                name = teamName;
             }
             final Team team = teamService.getTeam(name);
             if (user.isAdmin()) {
                 addedBot = botService.addBot(team, botClassName, inputStream);
-            }
-            else {
+            } else {
                 addedBot = botService.addTeamBot(user, team, botClassName, inputStream);
             }
         }
@@ -162,12 +156,11 @@ public class BotResource {
     @Timed
     @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
     public List<UploadedBot> getUploadedBots(@Auth final User user,
-                                             @QueryParam("teamName") Optional<String> teamName) {
+                                             @QueryParam("teamName") String teamName) {
         List<UploadedBot> uploadedBots;
-        if (teamName.isPresent() && user.isAdmin()) {
-            uploadedBots = botService.getUploadedBots(teamName.orNull());
-        }
-        else {
+        if (teamName != null && user.isAdmin()) {
+            uploadedBots = botService.getUploadedBots(teamName);
+        } else {
             uploadedBots = botService.getUploadedBots(user);
         }
         return uploadedBots;
