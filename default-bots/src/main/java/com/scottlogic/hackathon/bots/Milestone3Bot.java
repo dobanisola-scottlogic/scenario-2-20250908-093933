@@ -2,11 +2,21 @@ package com.scottlogic.hackathon.bots;
 
 import com.scottlogic.hackathon.bots.move.MoveBase;
 import com.scottlogic.hackathon.bots.state.StateAnalyser;
-import com.scottlogic.hackathon.game.*;
+import com.scottlogic.hackathon.game.Bot;
+import com.scottlogic.hackathon.game.GameState;
+import com.scottlogic.hackathon.game.Move;
+import com.scottlogic.hackathon.game.Player;
+import com.scottlogic.hackathon.game.Position;
+import com.scottlogic.hackathon.game.SpawnPoint;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Milestone3Bot extends Bot {
@@ -21,15 +31,19 @@ public class Milestone3Bot extends Bot {
     }
 
     @Override
-    public List<Move> makeMoves(final GameState gameState) {
-        gameState.getRemovedPlayers().forEach(player -> {
-            moves.removeIf(move -> move.getPlayer().equals(player.getId()));
-        });
+    public void initialise(final GameState initialGameState) {
+        initialGameState.getSpawnPoints().stream()
+                .filter(spawnPoint -> spawnPoint.getOwner() == getId())
+                .findFirst()
+                .ifPresent(spawnPoint -> this.spawnPoint = spawnPoint);
+    }
 
-        final Set<UUID> previousPlayers = moves
-                .stream()
-                .map(move -> move.getPlayer())
-                .collect(Collectors.toSet());
+    @Override
+    public List<Move> makeMoves(final GameState gameState) {
+        gameState.getRemovedPlayers()
+                .forEach(player -> moves.removeIf(move -> move.getPlayer().equals(player.getId())));
+
+        final Set<UUID> previousPlayers = moves.stream().map(MoveBase::getPlayer).collect(Collectors.toSet());
 
         final Set<Position> playerPositions = new HashSet<>();
         final Set<Position> opponentPlayerPositions = new HashSet<>();
@@ -41,23 +55,21 @@ public class Milestone3Bot extends Bot {
             }
         });
 
-        final Set<Position> outOfBoundsPositions = gameState.getOutOfBoundsPositions().stream().collect(Collectors.toSet());
-        final Set<SpawnPoint> spawnPoints = gameState.getSpawnPoints().stream().collect(Collectors.toSet());
-        final Set<Collectable> collectables = gameState.getCollectables().stream().collect(Collectors.toSet());
+        this.outOfBoundsPositions.addAll(gameState.getOutOfBoundsPositions());
+        addSpawnPoints(gameState.getSpawnPoints());
 
-        addOutOfBoundsPositions(outOfBoundsPositions);
-        addSpawnPoints(spawnPoints);
-
-        StateAnalyser stateAnalyser = new StateAnalyser(gameState,
+        final StateAnalyser stateAnalyser = new StateAnalyser(
+                gameState,
                 playerPositions,
                 opponentPlayerPositions,
-                this.outOfBoundsPositions,
+                outOfBoundsPositions,
                 spawnPoint,
                 opponentSpawnPoints,
-                collectables);
-        Map<Class, Integer> initialMoveCounts = moves
-                .stream()
-                .collect(Collectors.toMap(move -> move.getClass(), move -> 1, (count, moveCount) -> count + moveCount));
+                gameState.getCollectables()
+        );
+        Map<Class, Integer> initialMoveCounts = moves.stream().collect(
+                Collectors.toMap(Move::getClass, move -> 1, Integer::sum)
+        );
         stateAnalyser.setMoveCounts(initialMoveCounts);
 
         gameState.getPlayers().forEach(player -> {
@@ -67,20 +79,14 @@ public class Milestone3Bot extends Bot {
                     stateAnalyser.setPlayer(player);
                     try {
                         stateAnalyser.setMove(null);
-                    } catch (final NoSuchMethodException e) {
-                        e.printStackTrace();
-                    } catch (final InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (final IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (final InvocationTargetException e) {
+                    } catch (final NoSuchMethodException | InstantiationException | IllegalAccessException |
+                            InvocationTargetException e) {
                         e.printStackTrace();
                     }
                     moves.add(stateAnalyser.getMove());
-                    Map<Class, Integer> moveCounts = moves
-                            .stream()
-                            .collect(Collectors.toMap(iteratedMove -> iteratedMove.getClass(), iteratedMove -> 1, (count, moveCount) -> count + moveCount));
-                    stateAnalyser.setMoveCounts(moveCounts);
+                    stateAnalyser.setMoveCounts(moves.stream()
+                            .collect(Collectors.toMap(Move::getClass, iteratedMove -> 1, Integer::sum))
+                    );
                 } else {
                     moves.forEach(move -> {
                         if (move.getPlayer().equals(player.getId())) {
@@ -92,11 +98,11 @@ public class Milestone3Bot extends Bot {
         });
 
         moves.forEach(move -> {
-            move.setPlayersPositions(playerPositions);
-            move.setOpponentPlayerPositions(opponentPlayerPositions);
+            move.setMyPlayersPositions(playerPositions);
+            move.setOpponentPlayersPositions(opponentPlayerPositions);
             move.addOutOfBoundsPositions(outOfBoundsPositions);
-            move.addSpawnPoints(spawnPoints);
-            move.setCollectables(collectables);
+            move.addSpawnPoints(gameState.getSpawnPoints());
+            move.setCollectables(gameState.getCollectables());
             move.phase();
         });
 
@@ -104,7 +110,7 @@ public class Milestone3Bot extends Bot {
                 .stream()
                 .filter(move -> move.getPlayer().equals(getId()) && !move.isActive())
                 .collect(Collectors.toSet());
-        moves.removeIf(move -> myInactivePlayerMoves.contains(move));
+        moves.removeIf(myInactivePlayerMoves::contains);
         for (MoveBase move : myInactivePlayerMoves) {
             Player movePlayer = gameState.getPlayers()
                     .stream()
@@ -114,49 +120,25 @@ public class Milestone3Bot extends Bot {
             stateAnalyser.setPlayer(movePlayer);
             try {
                 stateAnalyser.setMove(move);
-            } catch (final NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (final InstantiationException e) {
-                e.printStackTrace();
-            } catch (final IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (final InvocationTargetException e) {
+            } catch (final NoSuchMethodException | InstantiationException | IllegalAccessException |
+                    InvocationTargetException e) {
                 e.printStackTrace();
             }
             moves.add(stateAnalyser.getMove());
-            Map<Class, Integer> moveCounts = moves
-                    .stream()
-                    .collect(Collectors.toMap(iteratedMove -> iteratedMove.getClass(), iteratedMove -> 1, (count, moveCount) -> count + moveCount));
+            Map<Class, Integer> moveCounts = moves.stream().collect(
+                    Collectors.toMap(Move::getClass, iteratedMove -> 1, Integer::sum)
+            );
             stateAnalyser.setMoveCounts(moveCounts);
         }
 
         return Collections.unmodifiableList(moves);
     }
 
-    public void addOutOfBoundsPositions(Set<Position> outOfBoundsPositions) {
-        outOfBoundsPositions.stream()
-                .filter(outOfBoundsPosition -> !this.outOfBoundsPositions.contains(outOfBoundsPosition))
-                .forEach(outOfBoundsPosition -> {
-                    this.outOfBoundsPositions.add(outOfBoundsPosition);
-                });
-        this.outOfBoundsPositions = outOfBoundsPositions;
-    }
-
-    public void addSpawnPoints(Set<SpawnPoint> spawnPoints) {
+    private void addSpawnPoints(final Set<SpawnPoint> spawnPoints) {
         if (spawnPoints.size() > 0) {
-            if (spawnPoint == null) {
-                List<SpawnPoint> spawnPointList = spawnPoints.stream()
-                        .filter(spawnPoint -> spawnPoint.getOwner() == getId())
-                        .collect(Collectors.toList());
-                if (spawnPointList.size() > 0) {
-                    spawnPoint = spawnPointList.get(0);
-                }
-            }
             spawnPoints.stream()
-                    .filter(spawnPoint -> spawnPoint.getOwner() != getId() && !this.opponentSpawnPoints.contains(spawnPoint))
-                    .forEach(spawnPoint -> {
-                        this.opponentSpawnPoints.add(spawnPoint);
-                    });
+                    .filter(spawnPoint -> spawnPoint.getOwner() != getId())
+                    .forEach(spawnPoint -> this.opponentSpawnPoints.add(spawnPoint));
         }
     }
 }
