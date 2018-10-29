@@ -31,12 +31,7 @@ dependencies {
     compile project(":game")
     compile project(":game-engine")
     compile project(":default-bots")
-}
-
-task loadProperties {
-    Properties props = new Properties();
-    props.load(new FileInputStream(file("../.env")));
-    applicationDefaultJvmArgs = ["-Ddw.database.url=" + props["JDBC_DATABASE_URL"]];
+    runtime project(path: ':viewer', configuration: 'archives')
 }
 
 jar {
@@ -44,25 +39,13 @@ jar {
         attributes(
                 "Implementation-Title": "hackathon-server",
                 "Implementation-Version": version,
-                "Main-Class": mainClass )
+                "Main-Class": mainClass
+        )
     }
-    from('../viewer') {
-        include 'index.html'
-        include 'build/*'
-        include 'assets/*.png'
-        into "assets"
-    }
-    dependsOn ":viewer:build"
 }
 
-shadowJar {
-    from('../viewer') {
-        include 'index.html'
-        include 'build/*'
-        include 'assets/*.png'
-        into "assets"
-    }
-    dependsOn ":viewer:build"
+if(project.hasProperty('database')) {
+    applicationDefaultJvmArgs += "-Ddw.database.url=jdbc:h2:${rootProject.file(project.database)}"
 }
 
 runShadow {
@@ -75,5 +58,3 @@ run {
     args "server"
     args "..\\server.yml"
 }
-
-build.dependsOn ":viewer:build"
