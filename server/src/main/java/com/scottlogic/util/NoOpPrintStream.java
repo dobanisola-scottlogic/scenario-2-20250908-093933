@@ -19,7 +19,7 @@ public final class NoOpPrintStream extends PrintStream {
      * Use this if you need multiple instances that are not {@linkplain Object#equals(Object) equal}.
      * Otherwise, just use the {@linkplain #SINGLETON singleton}.
      */
-    public NoOpPrintStream() {
+    private NoOpPrintStream() {
         super(NoOpOutputStream.SINGLETON);
     }
 

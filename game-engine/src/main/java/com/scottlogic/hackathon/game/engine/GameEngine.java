@@ -245,7 +245,7 @@ public class GameEngine {
      * <p>
      * The actions is supplied in the form of a {@linkplain BiFunction} that takes a {@linkplain Bot} and associated
      * {@linkplain GameState}, and produces a {@linkplain Runnable}. The BiFunction will run asynchronously as part of
-     * the parralel execution, but the resulting runnable will <em>not</em>. Instead, the Runnables resulting from
+     * the parallel execution, but the resulting runnable will <em>not</em>. Instead, the Runnables resulting from
      * invoking the action on each bot are bundled together and encapsulated in the Runnable returned by this method.
      * <p>
      * The provided action should be careful not to change the state of this class, as it is not thread safe.
@@ -278,8 +278,9 @@ public class GameEngine {
             throw new IllegalStateException("Impossible exception thrown.", e.getCause());
         } catch (TimeoutException e) {
             actions.forEach((bot, f) -> {
+                // The below commands are both no-ops if the future is already complete
                 f.complete(() -> disqualifyBot(bot, Arrays.asList(new SimpleRejection(actionName + " took too long"))));
-                f.cancel(true); //TODO kill thread properly
+                f.cancel(true); //TODO kill thread properly (see GH issue 64)
             });
         }
 
@@ -313,7 +314,7 @@ public class GameEngine {
         final Map<UUID, PlayerImpl> uuidPlayerMap = players.stream()
                 .collect(Collectors.toMap(Player::getId, Function.identity(), (a,b) -> a));
 
-        Runnable applyMoves = invokeBots("makeMoves", makeMovesTimeoutSeconds, (bot, gameState) -> {
+        Runnable applyMovesToAllBots = invokeBots("makeMoves", makeMovesTimeoutSeconds, (bot, gameState) -> {
             List<Move> moves = bot.makeMoves(gameState); // Run in parallel
             return () -> { // Reject and apply moves as part of synchronous post-processing, run <BELOW>
                 List<Rejection> rejectedMoves = getRejectedMoves(bot, moves, uuidPlayerMap);
@@ -329,7 +330,7 @@ public class GameEngine {
         collectables.reset();
         spawnPoints.reset();
 
-        applyMoves.run(); // <BELOW>
+        applyMovesToAllBots.run(); // <BELOW>
 
         collideOutOfBoundsTiles();
         collideOwnPlayers();

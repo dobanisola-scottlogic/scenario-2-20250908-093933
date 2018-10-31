@@ -18,7 +18,7 @@ public final class NoOpOutputStream extends OutputStream {
      * Use this if you need multiple instances that are not {@linkplain Object#equals(Object) equal}.
      * Otherwise, just use the {@linkplain #SINGLETON singleton}.
      */
-    public NoOpOutputStream() {}
+    private NoOpOutputStream() {}
 
     @Override public void write(int b) {}
     @Override public void write(byte[] b) {}
