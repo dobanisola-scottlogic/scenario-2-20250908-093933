@@ -53,3 +53,10 @@ jobs:
         command: ./gradlew check
 
     - save_caches
+
+workflows:
+  version: 2
+  check:
+    jobs:
+      - check
+      
