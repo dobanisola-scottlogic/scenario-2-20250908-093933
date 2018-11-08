@@ -2,6 +2,15 @@ version: 2.1
 
 commands:
 
+  checkout_repo:
+    description: Checks out the GitHub repo
+    steps:
+    - checkout
+    - run:
+        name: Merge PR Commit if PR
+        command: .circleci/merge-pr.sh
+
+
   restore_caches:
     description: Restore all caches
     steps:
@@ -17,9 +26,11 @@ commands:
   save_caches:
     description: Save all caches
     steps:
-    - run: |
-        rm -f ~/.gradle/caches/modules-2/modules-2.lock \
-          && ls -laR ~/.gradle/caches/modules-2 > ~/gradle-cache-listing
+    - run:
+        name: Cleanup Gradle cache dir
+        command: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock \
+            && ls -laR ~/.gradle/caches/modules-2 > ~/gradle-cache-listing
     - save_cache:
         name: Cache Gradle Dependencies
         paths:
@@ -45,14 +56,11 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
 
     steps:
-    - checkout:
-        post: .circleci/merge-pr.sh
+    - checkout_repo
     - restore_caches
-
     - run:
         name: Run checks
         command: ./gradlew check
-
     - save_caches
 
 workflows:
