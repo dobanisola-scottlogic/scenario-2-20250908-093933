@@ -1,0 +1,55 @@
+version: 2.1
+
+commands:
+
+  restore_caches:
+    description: Restore all caches
+    steps:
+    - restore_cache:
+        name: Restore Gradle Wrapper
+        key: v1-gradle-wrapper-{{ arch }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+    - restore_cache:
+        name: Restore Gradle Dependencies
+        keys:
+        - v1-gradle-deps-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-
+        - v1-gradle-deps-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-
+
+  save_caches:
+    description: Save all caches
+    steps:
+    - run: |
+        rm -f ~/.gradle/caches/modules-2/modules-2.lock \
+          && ls -laR ~/.gradle/caches/modules-2 > ~/gradle-cache-listing
+    - save_cache:
+      name: Cache Gradle Dependencies
+      paths:
+      - ~/.gradle/caches/modules-2/
+      key: v1-gradle-deps-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "~/gradle-cache-listing" }}
+
+    - save_cache:
+      name: Cache Gradle Wrapper
+      paths:
+      - ~/.gradle/wrapper/
+      key: v1-gradle-wrapper-{{ arch }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+
+
+jobs:
+  check:
+    docker:
+    - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/repo
+
+    environment:
+      TERM: dumb
+      GRADLE_OPTS: org.gradle.daemon=false
+
+    steps:
+    - checkout
+    - restore_caches
+
+    - run:
+        name: Run checks
+        command: ./gradlew check
+
+    - save_caches
