@@ -120,6 +120,10 @@ task('extractRepo', type: Sync) {
     }
 
     from(configurations.repo.artifacts.files)
+
+    // The following 2 lines are a workaround for https://github.com/gradle/gradle/issues/1348
+    doFirst { DirectoryScanner.getDefaultExcludes().each { DirectoryScanner.removeDefaultExclude(it) } }
+    doLast { DirectoryScanner.resetDefaultExcludes() }
 }
 
 task('installTestContestantRepo', type: Exec) {
