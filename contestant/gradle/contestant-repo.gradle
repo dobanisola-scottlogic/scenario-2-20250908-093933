@@ -115,6 +115,8 @@ task('copyContestantRepo', type: Sync) {
         filter inFileDependencies()
     }
 
+    from("$rootDir/.gitattributes")
+
     from(writeRepoProps) {
         into 'install'
     }
