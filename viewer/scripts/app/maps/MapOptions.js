@@ -7,6 +7,8 @@ const maps = [new MapOption('Very Easy', 'VeryEasy'),
     new MapOption('Easy', 'Easy', true),
     new MapOption('Medium', 'Medium'),
     new MapOption('Large Medium', 'LargeMedium'),
-    new MapOption('Hard', 'Hard')];
+    new MapOption('Hard', 'Hard'),
+    new MapOption('ThreeStar', 'ThreeStar'),
+    new MapOption('ThreeStraight', 'ThreeStraight')];
 
 module.exports = maps;
