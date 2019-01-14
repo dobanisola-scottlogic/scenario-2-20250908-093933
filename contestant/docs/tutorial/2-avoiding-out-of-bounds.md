@@ -124,7 +124,7 @@ Being disqualified for issuing moves to the wrong players is not going to win yo
 stream of players to filter out any that do not belong to your bot:
 
 ```
-moves.addAll(gameState.getPlayers().stream()
+exploreMoves.addAll(gameState.getPlayers().stream()
         .filter(player -> isMyPlayer(player))
         .map(player -> doMove(gameState, nextPositions, player))
         .collect(Collectors.toList());
