@@ -127,7 +127,7 @@ stream of players to filter out any that do not belong to your bot:
 exploreMoves.addAll(gameState.getPlayers().stream()
         .filter(player -> isMyPlayer(player))
         .map(player -> doMove(gameState, nextPositions, player))
-        .collect(Collectors.toList());
+        .collect(Collectors.toList()));
 ```
 
 ```
