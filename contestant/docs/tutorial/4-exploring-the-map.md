@@ -63,7 +63,7 @@ game, so add it as an instance variable:
 private Set<Position> unseenPositions = new HashSet<>();
 ```
 
-And add the following `initialise` method (this only needs to be ran once):
+And override the `initialise` method (this only needs to be ran once):
 
 ```
 @Override
