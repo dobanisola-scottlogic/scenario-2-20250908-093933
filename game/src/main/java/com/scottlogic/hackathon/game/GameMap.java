@@ -157,7 +157,11 @@ public interface GameMap {
      * @return The resulting route
      */
     default Route route(Position start, List<Direction> route) {
-        return new RouteImpl(this, start, route);
+        Position dest = start;
+        for(Direction dir: route) {
+            dest = getNeighbour(dest, dir);
+        }
+        return new RouteImpl(this, start, dest, route);
     }
 
     /**
@@ -170,7 +174,7 @@ public interface GameMap {
      * @return The resulting route
      */
     default Route straightLineRoute(Position start, Direction direction, int length) {
-        return new RouteImpl(this, start, direction, length);
+        return new RouteImpl(this, start, getRelativePosition(start, direction, length), direction, length);
     }
 
     /**
