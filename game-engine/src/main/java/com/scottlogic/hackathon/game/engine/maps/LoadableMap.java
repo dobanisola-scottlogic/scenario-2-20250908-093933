@@ -1,6 +1,8 @@
 package com.scottlogic.hackathon.game.engine.maps;
 
-public class LoadableMap {
+import java.util.Optional;
+
+class LoadableMap {
     private int width;
     private int height;
     private Double perTurnFoodSpawnProbability;
@@ -27,27 +29,27 @@ public class LoadableMap {
         return data;
     }
 
-    public Double getPerTurnFoodSpawnProbability() {
-        return perTurnFoodSpawnProbability;
+    Optional<Double> getPerTurnFoodSpawnProbability() {
+        return Optional.ofNullable(perTurnFoodSpawnProbability);
     }
 
-    public Integer getMaximumFoodCount() {
-        return maximumFoodCount;
+    Optional<Integer> getMaximumFoodCount() {
+        return Optional.ofNullable(maximumFoodCount);
     }
 
-    public Integer getMaximumTurnCount() {
-        return maximumTurnCount;
+    Optional<Integer> getMaximumTurnCount() {
+        return Optional.ofNullable(maximumTurnCount);
     }
 
-    public Integer getInitialUnitSpawnCount() {
-        return initialUnitSpawnCount;
+    Optional<Integer> getInitialUnitSpawnCount() {
+        return Optional.ofNullable(initialUnitSpawnCount);
     }
 
-    public Integer getBattleRadius() {
-        return battleRadius;
+    Optional<Integer> getBattleRadius() {
+        return Optional.ofNullable(battleRadius);
     }
 
-    public Integer getViewDistance() {
-        return viewDistance;
+    Optional<Integer> getViewDistance() {
+        return Optional.ofNullable(viewDistance);
     }
 }

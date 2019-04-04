@@ -11,7 +11,13 @@ import com.scottlogic.hackathon.game.Player;
 import com.scottlogic.hackathon.game.Position;
 import com.scottlogic.hackathon.game.Rejection;
 import com.scottlogic.hackathon.game.SpawnPoint;
+import com.scottlogic.hackathon.game.engine.config.GameConfig;
+import com.scottlogic.hackathon.game.engine.config.GameConfigFileReader;
+import com.scottlogic.hackathon.game.engine.config.GameConfigLayer;
 import com.scottlogic.hackathon.game.engine.maps.Arena;
+import com.scottlogic.hackathon.game.engine.maps.MapDetails;
+import com.scottlogic.hackathon.game.engine.maps.MapFileReader;
+import com.scottlogic.hackathon.game.engine.maps.MapLoadException;
 import com.scottlogic.hackathon.game.engine.models.BotExceptionRejection;
 import com.scottlogic.hackathon.game.engine.models.CollectableImpl;
 import com.scottlogic.hackathon.game.engine.models.DisqualifiedBotImpl;
@@ -26,9 +32,6 @@ import com.scottlogic.hackathon.game.engine.models.builders.PhaseResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -67,15 +69,7 @@ public class GameEngine {
     private final Runnable onShutdown;
     private final Set<Bot> bots;
     private final Arena map;
-    private final int maxPhases;
-    private final int spawnPhases;
-    private final int maxVisibleDistance;
-    private final int maxCollectablesSpawnedPerPhase;
-    private final int minCollectableDistanceFromSpawn;
-    private final double collectablesSpawnFrequency;
-    private final int battleRadius;
-    private final int initialiseTimeoutMillis;
-    private final int makeMovesTimeoutMillis;
+    private final GameConfig gameConfig;
 
     private TrackedSetImpl<PlayerImpl> players;
     private TrackedSetImpl<CollectableImpl> collectables;
@@ -95,89 +89,43 @@ public class GameEngine {
         return createInternal(mapName, bots, Objects.requireNonNull(botThreadFactory));
     }
 
-    private static GameEngine createInternal(final String mapName, final Set<Bot> bots, ThreadFactory botThreadFactory)
-            throws IllegalArgumentException {
+    private static GameEngine createInternal(
+            final String mapName,
+            final Set<Bot> bots,
+            final ThreadFactory botThreadFactory)
+            throws MapLoadException {
+
+        final MapDetails mapDetails = new MapFileReader().readMapFile(mapName);
+
+        final GameConfigLayer configFromConfigFile = new GameConfigFileReader().read("config.properties");
+
+        final GameConfig aggregatedConfig = GameConfig
+            .createFromDefaultsWithOverrides(
+                mapDetails.getMapSpecificConfig(),
+                configFromConfigFile);
+
+        if (botThreadFactory == null) {
+            return new GameEngine(mapDetails.getArena(), bots, Runnable::run, () -> {}, aggregatedConfig);
+        } else {
+            final ExecutorService executorService = Executors.newFixedThreadPool(bots.size(), botThreadFactory);
+            return new GameEngine(mapDetails.getArena(), bots, executorService, executorService::shutdown, aggregatedConfig);
+        }
+    }
+
+    private GameEngine(final Arena map, final Set<Bot> bots, final Executor executor, final Runnable onShutdown, final GameConfig gameConfig) {
+        this.map = map;
+        this.bots = bots;
+        this.executor = executor;
+        this.onShutdown = onShutdown;
+        this.gameConfig = gameConfig;
+
         if (bots.size() < 2) {
             throw new IllegalArgumentException("must have at least 2 bots");
-        }
-
-        final Arena map;
-        try {
-            map = Arena.load(mapName);
-        } catch (final Exception ex) {
-            throw new IllegalArgumentException("map wasn't found");
         }
 
         if (bots.size() > map.getSpawnPointPositions().size()) {
             throw new IllegalArgumentException("must have a spawn point for each bot");
         }
-
-        if (botThreadFactory==null) {
-            return new GameEngine(map, bots, Runnable::run, () -> {});
-        } else {
-            final ExecutorService executorService = Executors.newFixedThreadPool(bots.size(), botThreadFactory);
-            return new GameEngine(map, bots, executorService, executorService::shutdown);
-        }
-    }
-
-    private static Properties loadProperties() {
-        String fileName = "config.properties";
-        Properties props = new Properties();
-
-        File file = new File(fileName);
-        if(file.isFile()) {
-            try (InputStream inputStream = new FileInputStream(file)) {
-                props.load(inputStream);
-            } catch (Exception e) {
-                LOGGER.error("Error loading file config file: ", e);
-            }
-        }
-
-        return props;
-    }
-
-    private static <T> T getConfigValue(Function<String, T> parseFunction, String fieldName, T defaultValue, Properties props) {
-        T value = null;
-        try {
-            String property = props.getProperty(fieldName);
-
-            if (property != null) {
-                value = parseFunction.apply(property);
-            }
-
-        } catch (Exception e) {
-            LOGGER.error("Error parsing config value: {}", fieldName, e);
-        }
-
-        return value != null ? value : defaultValue;
-    }
-
-    private GameEngine(final Arena map, final Set<Bot> bots, final Executor executor, final Runnable onShutdown) {
-        this.map = map;
-        this.bots = bots;
-        this.executor = executor;
-        this.onShutdown = onShutdown;
-
-        Properties props = loadProperties();
-
-        maxPhases = map.getMaximumTurnCount().orElse(
-            getConfigValue(Integer::parseInt, "maxPhases", 512, props));
-        makeMovesTimeoutMillis =
-            getConfigValue(Integer::parseInt, "makeMovesTimeoutMillis", 500, props);
-        initialiseTimeoutMillis =
-            getConfigValue(Integer::parseInt, "initialiseTimeoutMillis", 2000, props);
-        collectablesSpawnFrequency =
-            getConfigValue(Double::parseDouble, "collectablesSpawnFrequency", 0.2 , props);
-        battleRadius = map.getBattleRadius().orElse(
-            getConfigValue(Integer::parseInt, "battleRadius", 2 ,props));
-        maxCollectablesSpawnedPerPhase =
-            getConfigValue(Integer::parseInt, "maxCollectablesSpawnedPerPhase", 4 , props);
-        minCollectableDistanceFromSpawn =
-            getConfigValue(Integer::parseInt, "minCollectableDistanceFromSpawn", 8 , props);
-        spawnPhases = map.getInitialUnitSpawnCount().orElse(
-            getConfigValue(Integer::parseInt, "spawnPhases", 8 , props));
-        maxVisibleDistance = map.getViewDistance().orElse(
-            getConfigValue(Integer::parseInt, "maxVisibleDistance", 6, props));
     }
 
     public Arena getMap() {
@@ -215,7 +163,7 @@ public class GameEngine {
         initialiseBots();
         createSpawnPoints();
 
-        final List<PhaseResult> phaseResults = new ArrayList<>(maxPhases);
+        final List<PhaseResult> phaseResults = new ArrayList<>(gameConfig.getTurnLimit());
 
         spawn();
 
@@ -242,7 +190,7 @@ public class GameEngine {
     }
 
     private void initialiseBots() throws InterruptedException {
-        invokeBots("initialise", initialiseTimeoutMillis, (bot, gameState) -> {
+        invokeBots("initialise", gameConfig.getInitialiseTimeoutMillis(), (bot, gameState) -> {
             bot.initialise(gameState); // Run in parallel
             return () -> {};           // No post-processing required
         })
@@ -325,7 +273,7 @@ public class GameEngine {
         final Map<UUID, PlayerImpl> uuidPlayerMap = players.stream()
                 .collect(Collectors.toMap(Player::getId, Function.identity(), (a,b) -> a));
 
-        Runnable applyMovesToAllBots = invokeBots("makeMoves", makeMovesTimeoutMillis, (bot, gameState) -> {
+        Runnable applyMovesToAllBots = invokeBots("makeMoves", gameConfig.getMakeMovesTimeoutMillis(), (bot, gameState) -> {
             List<Move> moves = bot.makeMoves(gameState); // Run in parallel
             return () -> { // Reject and apply moves as part of synchronous post-processing, run <BELOW>
                 List<Rejection> rejectedMoves = getRejectedMoves(bot, moves, uuidPlayerMap);
@@ -384,7 +332,7 @@ public class GameEngine {
         final Set<Position> visiblePositions = ownPlayers
                 .stream()
                 .map(Player::getPosition)
-                .flatMap(position -> map.getSurroundingPositions(position, maxVisibleDistance))
+                .flatMap(position -> map.getSurroundingPositions(position, gameConfig.getViewDistance()))
                 .collect(Collectors.toSet());
 
         gameStateBuilder
@@ -423,13 +371,19 @@ public class GameEngine {
     }
 
     private CutoffCondition getCutoffCondition() {
-        return (phase > maxPhases)
-                ? CutoffCondition.TURN_LIMIT_REACHED
-                : (spawnPoints.size() == 0)
-                        ? CutoffCondition.RANK_STABLE
-                        : (players.stream().map(Player::getOwner).collect(Collectors.toSet()).size() < 2)
-                                ? CutoffCondition.LONE_SURVIVOR
-                                : null;
+        if (phase > gameConfig.getTurnLimit()) {
+            return CutoffCondition.TURN_LIMIT_REACHED;
+        }
+
+        if (spawnPoints.size() == 0) {
+            return CutoffCondition.RANK_STABLE;
+        }
+
+        if (players.stream().map(Player::getOwner).collect(Collectors.toSet()).size() < 2) {
+            return CutoffCondition.LONE_SURVIVOR;
+        }
+
+        return null;
     }
 
     private void createSpawnPoints() {
@@ -440,7 +394,7 @@ public class GameEngine {
 
         for (final Bot bot : bots) {
             final Position spawnPointPosition = spawnPointPositionsIterator.next();
-            final SpawnPointImpl spawnPoint = new SpawnPointImpl(spawnPointPosition, bot.getId(), spawnPhases);
+            final SpawnPointImpl spawnPoint = new SpawnPointImpl(spawnPointPosition, bot.getId(), gameConfig.getInitialUnitCount());
             spawnPoints.add(spawnPoint);
         }
     }
@@ -501,11 +455,11 @@ public class GameEngine {
         final Collectable.Type[] types = Collectable.Type.values();
 
         for (final Collectable.Type type : types) {
-            if (random.nextDouble() < map.getPerTurnFoodSpawnProbability().orElse(1 - collectablesSpawnFrequency)) {
+            if (random.nextDouble() < gameConfig.getFoodSpawnProbability()) {
                 // generate a random count of food to spawn, but limit it so we don't go over the map's maximum
                 final int count = Math.min(
-                    1 + random.nextInt(maxCollectablesSpawnedPerPhase - 1),
-                    map.getMaximumFoodCount().orElse(Integer.MAX_VALUE) - collectables.size());
+                    1 + random.nextInt(gameConfig.getMaxFoodSpawnedPerTurn() - 1),
+                    gameConfig.getMaximumFoodCount() - collectables.size());
 
                 for (int i = 0; i < count; i++) {
                     spawnCollectable(type);
@@ -532,7 +486,7 @@ public class GameEngine {
             if (attempts++ > 100) {
                 throw new RuntimeException("Too many positions are excluded to allow use to find a free position");
             }
-        } while (excludedPositions.contains(position) || tooCloseToSpawnPoint(position, minCollectableDistanceFromSpawn));
+        } while (excludedPositions.contains(position) || tooCloseToSpawnPoint(position, gameConfig.getMinFoodDistanceFromSpawn()));
 
         final CollectableImpl collectable = new CollectableImpl(type, position);
         collectables.add(collectable);
@@ -587,7 +541,7 @@ public class GameEngine {
     }
 
     private void battlePlayers() {
-        final BattleSystem battleSystem = new BattleSystem(players, map, battleRadius);
+        final BattleSystem battleSystem = new BattleSystem(players, map, gameConfig.getBattleRadius());
         final Set<PlayerImpl> deadPlayers = battleSystem.runBattle();
 
         if (deadPlayers.size() > 0) {
@@ -645,5 +599,4 @@ public class GameEngine {
             }
         }
     }
-
 }
