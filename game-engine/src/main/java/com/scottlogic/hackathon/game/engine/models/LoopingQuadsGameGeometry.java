@@ -1,14 +1,14 @@
 package com.scottlogic.hackathon.game.engine.models;
 
 import com.scottlogic.hackathon.game.Direction;
-import com.scottlogic.hackathon.game.GameMap;
+import com.scottlogic.hackathon.game.GameGeometry;
 import com.scottlogic.hackathon.game.Position;
 
-public class GameMapImpl implements GameMap {
+public class LoopingQuadsGameGeometry implements GameGeometry {
     private final int width;
     private final int height;
 
-    public GameMapImpl(final int width, final int height) {
+    public LoopingQuadsGameGeometry(final int width, final int height) {
         this.width = width;
         this.height = height;
     }
@@ -40,7 +40,7 @@ public class GameMapImpl implements GameMap {
             y += distance;
         }
 
-        return createPosition(x, y);
+        return getPosition(x, y);
     }
 
     @Override
@@ -60,15 +60,9 @@ public class GameMapImpl implements GameMap {
     }
 
     @Override
-    public Position createPosition(int x, int y) {
-        return new Position(mod(x, getWidth()), mod(y, getHeight()));
-    }
-
-    private int mod(int val, int mod) {
-        val %= mod;
-        if(val < 0) {
-            val += mod;
-        }
-        return val;
+    public Position getPosition(int x, int y) {
+        return new Position(
+            Math.floorMod(x, getWidth()),
+            Math.floorMod(y, getHeight()));
     }
 }
