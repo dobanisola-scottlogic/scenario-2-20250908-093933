@@ -2,6 +2,7 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">Hackathon</a>
+            <span class="navbar-brand" ng-show="controller.showTeamName">Team Name: {{teamName}}</span>
         </div>
         <div class="collapse navbar-collapse">
             <div ng-show="controller.selectedHackathon" id="games" class="nav navbar-nav navbar-left navbar-form">
@@ -20,6 +21,7 @@
                 <li ng-if="controller.isAdmin"><a ng-href="#modal_{{teamDashboardController.getId()}}" data-toggle="modal"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Team</a></li>
 				<li ng-if="controller.isAdmin"><a ng-href="#modal_{{adminDashboardController.getId()}}" data-toggle="modal"><span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span> Admin</a></li>
                 <li ng-if="!controller.isAdmin"><a ng-href="#modal_{{botDashboardController.getId()}}" data-toggle="modal"><span class="glyphicon glyphicon-console" aria-hidden="true"></span> Dashboard</a></li>
+                <li ng-if="!controller.isAdmin"><a ng-href="#modal_{{remoteDashboardController.getId()}}" data-toggle="modal">Remote Bot</a></li>
             </ul>
             <div ng-if="controller.isLoggedIn">
                 <hack-transclude></hack-transclude>

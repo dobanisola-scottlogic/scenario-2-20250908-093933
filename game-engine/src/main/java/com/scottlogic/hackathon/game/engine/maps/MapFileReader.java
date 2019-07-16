@@ -7,7 +7,7 @@ import com.scottlogic.hackathon.game.GameGeometry;
 import com.scottlogic.hackathon.game.Position;
 import com.scottlogic.hackathon.game.engine.config.GameConfigLayer;
 import com.scottlogic.hackathon.game.engine.config.GameConfigLayerBuilder;
-import com.scottlogic.hackathon.game.engine.models.LoopingQuadsGameGeometry;
+import com.scottlogic.hackathon.game.LoopingQuadsGameGeometry;
 
 import java.io.IOException;
 import java.io.InputStream;

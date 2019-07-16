@@ -13,13 +13,13 @@ public class ProportionalStateSelector {
     private MoveBase move;
 
     public ProportionalStateSelector(java.util.Map<Class, Integer> moveCounts, HashMap<Class, Integer> spawnProfile,
-            GameGeometry map, Player player)
+                                     GameGeometry map, Player player)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.move = findMinimumSquaresSolution(moveCounts, spawnProfile, map, player);
     }
 
     private MoveBase findMinimumSquaresSolution(java.util.Map<Class, Integer> moveCounts,
-            HashMap<Class, Integer> desiredProportionsMap, GameGeometry map, Player player)
+                                                HashMap<Class, Integer> desiredProportionsMap, GameGeometry map, Player player)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
         double minimumSquaresValue = 0;
         Class moveClass = null;

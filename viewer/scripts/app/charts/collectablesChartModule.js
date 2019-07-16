@@ -12,7 +12,7 @@ collectablesChart.directive('collectablesChart', function() {
         transclude: false,
         scope: {},
         replace: true,
-        template: '<div id="collectables-chart" class="col-md-offset= 10 col-md-2"></div>',
+        template: '<div id="collectables-chart" class="col-md-offset= 10 col-md-2" ng-show="controller.sharedPropertiesService.getSelectedGame()"></div>',
         controller: 'CollectablesChartController',
         controllerAs: 'controller'
     };

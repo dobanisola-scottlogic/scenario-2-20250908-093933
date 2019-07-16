@@ -14,6 +14,11 @@ class NavigationBarController {
     get isAdmin() {
         return this.loginService.isAuthourised('ADMIN');
     }
+    get showTeamName() {
+        this.$scope.teamName = this.loginService.getLoggedInUserName();
+        return !!this.$scope.teamName;
+    }
+
     toggleGameGrid() {
         this.sharedPropertiesService.toggleShowGameGrid();
     }

@@ -32,6 +32,7 @@ public class GameResource {
     private final GameService gameService;
     private final BotService botService;
 
+
     @Inject
     public GameResource(final HackathonConfiguration hackathonConfiguration,
                         final GameService gameService,

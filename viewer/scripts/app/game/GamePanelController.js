@@ -3,18 +3,21 @@ const AlertTypes = require('../alert/AlertTypes');
 const Maps = require('../maps/MapOptions');
 
 class GamePanelController {
-    constructor($scope, $rootScope, teamService, gameService, milestoneService, hackathonService, milestoneBotPrefix) {
+    constructor($scope, $rootScope, $interval, teamService, gameService, milestoneService, hackathonService, remoteService, milestoneBotPrefix) {
         this.$scope = $scope;
         this.$rootScope = $rootScope;
+        this.$interval = $interval;
         this.teamService = teamService;
         this.hackathonService = hackathonService;
         this.gameService = gameService;
         this.milestoneService = milestoneService;
+        this.remoteService = remoteService;
         this.milestoneBotPrefix = milestoneBotPrefix;
 
         this.maps = Maps;
 
         this.teams = [];
+        this.newTeams = [];
         this.hackathons = [];
         this.milestoneTeams = [];
 
@@ -28,6 +31,12 @@ class GamePanelController {
 
         this.initialiseWatchers();
         this.initialiseHackathons();
+        this.updateConnectedTeams();
+        this.initialiseConnectionPolling();
+
+        this.$scope.$on('$destroy', () => {
+            this.$interval.cancel(this.connectionPolling);
+        });
     }
 
     initialiseWatchers() {
@@ -40,6 +49,23 @@ class GamePanelController {
         });
         this.$scope.$on('hackathon:updated', function(event, data) {
             self.initialiseHackathons();
+        });
+    }
+
+    initialiseConnectionPolling() {
+        this.$interval.cancel(this.connectionPolling);
+        this.connectionPolling = this.$interval(() => {
+            this.updateConnectedTeams();
+        }, 4000);
+    }
+
+    updateConnectedTeams() {
+        this.teams.forEach(team => {
+            this.remoteService.getConnectedState(team.name).then(
+                response => {
+                    team.connected = response ? `(${response})` : '';
+                }
+            );
         });
     }
 
@@ -170,6 +196,6 @@ class GamePanelController {
     }
 }
 
-GamePanelController.$inject = ['$scope', '$rootScope', 'TeamService', 'GameService', 'MilestoneService', 'HackathonService', 'MILESTONE_BOT_PREFIX'];
+GamePanelController.$inject = ['$scope', '$rootScope', '$interval', 'TeamService', 'GameService', 'MilestoneService', 'HackathonService', 'RemoteService', 'MILESTONE_BOT_PREFIX'];
 
 module.exports = GamePanelController;

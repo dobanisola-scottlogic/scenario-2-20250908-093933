@@ -1,18 +1,20 @@
 package com.scottlogic.hackathon.server.models;
 
+import com.scottlogic.hackathon.game.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public class Player {
-    private UUID id;
-    private UUID owner;
+    @Getter
+    private Id id;
+    @Getter
+    private Id owner;
 
-    public Player() {
-    }
-
-    public Player(final UUID id, final UUID owner) {
-        this.id = id;
-        this.owner = owner;
-    }
 
     public static Player create(final com.scottlogic.hackathon.game.Player player) {
         return new Player(
@@ -20,11 +22,5 @@ public class Player {
                 player.getOwner());
     }
 
-    public UUID getId() {
-        return id;
-    }
 
-    public UUID getOwner() {
-        return owner;
-    }
 }

@@ -1,16 +1,18 @@
 package com.scottlogic.hackathon.game;
 
-import java.util.UUID;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 
 /**
  * A player's movement.
  */
+@JsonDeserialize(as = MoveImpl.class)
 public interface Move {
     /**
      *
      * @return The id of the player carrying out the movement.
      */
-    UUID getPlayer();
+    Id getPlayer();
 
     /**
      *

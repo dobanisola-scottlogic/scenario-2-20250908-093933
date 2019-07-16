@@ -6,7 +6,7 @@ function get-redirect-url() {
     curl -w "%{redirect_url}" -I -s -S "$1" -o /dev/null
 }
 
-javaVersion=8
+javaVersion=11
 releaseType=releases
 impl=hotspot
 release=latest

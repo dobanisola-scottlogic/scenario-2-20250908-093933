@@ -58,20 +58,8 @@ run. This ensures other checks succeed before the relatively expensive operation
 
 ## Setup
 
-### 1 (Optional) Install Git
-You don't need to have Git installed in order to take part, but it might help if you're collaborating with others.
-However, if you're not familiar with Git, now may not be the best time to learn it.
-
-On Windows, you can download Git for Windows [here](https://gitforwindows.org/).
-This also gives you access to a Linux-style Bash shell terminal called Git Bash.
-
 ### 2 Download this project
-If you have Git installed, you can clone the repository to your local machine using the clone URL above.
-Alternatively, there's also a link above to download the repository as a zip or tar archive.
-
-A third option, which may make working with your team mates easier, is to register a username on this git server,
-then fork the project and clone it from there. That will allow you to share code with your team mates by pushing Git
-commits back up to your forked project.
+You should have access to a zip or tar archive. Download and unzip this in a sensible location.
 
 ### 3 Install
 
@@ -125,66 +113,31 @@ First, ensure you have the downloaded JDK set as one of your SDKs. Hit `Ctrl+Alt
 **_Project Settings &rarr; Project &rarr; New... &rarr; JDK_**, and navigate to the
 `<project_root_dir>/tools/jdk/<jdk_name>` folder.
 
-Now, if you **_Open..._** this repostory's root folder as an existing project,
+Now, if you **_Open..._** this repository's root folder as an existing project,
 IntelliJ should detect Gradle and start the import wizard automatically.
 **You shouldn't create a "new project" in IntelliJ, as this will fail to put required libraries on your classpath.**
 
 ## Building & Running
+In the Gradle tasks on the right hand side of your IntelliJ double click `build`. You will need to build your project
+whenever you make a change to your bot that you wish to reconnect and test.
 
-The repository includes a pre-compiled game simulator application.
-It can be run from either the command line, or your IDE.
+To connect your bot so you can test it against the default bots login to your hackathon viewer with the username and
+password provided. Go to the `Remote Bot` dashboard, click `Connect` then run the following command and wait until it
+has connected.
 
-After each phase of the game, the application prints an ASCII-art representation of the game's current state to the
-console. You can review this before hitting `Enter` to play the next phase.
-Since the printed state takes up quite a few lines in the console,
-you may find that your IDE's output console can't be made big enough to properly review it,
-in which case you may prefer to build and run the game from a command-line terminal.   
-
-### From your IDE
-
-There's a `void main(...)` method in the `ExampleBot` class. You can use that to run or debug a game simulation from
-within your IDE.
-
-### From your command line terminal
-
-Open a command line terminal in the root folder of this project and run one of the following commands.
-
-Windows command prompt:
-```batch
-gradlew run -P mainClass=<your_bot_class_fully_qualified_name>
+```
+java  -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat="yyyy-MM-dd HH:mm:ss:SSS Z"
+-Dorg.slf4j.simpleLogger.defaultLogLevel=all  -jar <path_to_your_repository>/libs/remote-1.0-SNAPSHOT-all.jar
+--botclasspath <path_to_your_repository>/build/classes/java/main --bot com.contestantbots.team.ExampleBot
+--team <your_team_name> --host <host_name_supplied_to_you> --port 8080
 ```
 
-Unix shell:
-```sh
-./gradlew run -P mainClass=<your_bot_class_fully_qualified_name>
-```
+Now you can test your bot against the default bot by clicking `Test` and waiting. Change the speed of the game play to
+more easily see what is going on, you can also replay the game but sliding the slider on the lower chart back.
 
-For example (Windows):
-```sh
-gradlew run -P mainClass=com.contestantbots.team.ExampleBot
-```
-
-
-### Game Output
-The turn-by-turn game output is rendered as an ascii-art representation of the board with the following key:
- - `A`-`D`: spawn point
- - `a`-`d`: player
- - `X`: out of bounds
- - `+`: collectable
-
-With the initial Bot you should see a very short game consisting of 7 phases ending due to the `LONE_SURVIVOR` end
-condition.  The turn-by-turn replay should show 8 players appearing from one spawn point (don't get your hopes up, these
-belong to the default bot), and none appearing from the other spawn point.  This is because the initial Bot does not
-issue any orders, resulting in each player being eliminated by the next player to emerge from the spawn point.
-
-If you have successfully reached this point then you're all set to start improving on the initial Bot to ensure your
-players have a longer, and perhaps more prosperous, life.
-
-## Next Steps
-First things first, rename the Bot class so that there are no namespace clashes when uploading to the server,
-additionally you might want to change the display name which is shown when testing locally.  There are only a few
+## Restrictions
+There are only a few
 restrictions on the compiled code:
-- the jar file must be < 20MB
 - the com.contestantbots.team package should only contain classes that extend `com.scottlogic.hackathon.game.Bot`
 - any helper or utility classes should either be
   - inner classes of your Bot, or
@@ -192,8 +145,6 @@ restrictions on the compiled code:
 - your Bot should take no more than half a second to calculate the moves or else it will be disqualified
 - your Bot should take no more than 2 seconds for its `initialise(...)` method to run (if implemented) or else it will
   be disqualified
-- you can include more than one Bot class in the uploaded jar file to allow you to test different strategies, however
-only one Bot can be active at any given time
 
-When you're ready to move on this [tutorial](docs/tutorial/index.md) provides a step-by-step guide to adding
+When you're ready to move on this [tutorial](docs/tutorials/1-adding-movement.md) provides a step-by-step guide to adding
 some basic intelligence to your bot.

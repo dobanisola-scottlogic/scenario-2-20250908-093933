@@ -3,8 +3,9 @@ package com.scottlogic.hackathon.server.models;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scottlogic.hackathon.game.CutoffCondition;
+import com.scottlogic.hackathon.game.engine.ShortIdGenerator;
+import com.scottlogic.hackathon.remote.serialization.JsonMapper;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,9 +50,7 @@ public class GameResult {
         this.cutoffCondition = cutoffCondition;
     }
 
-    public static GameResult create(final Game game, final com.scottlogic.hackathon.game.GameResult gameResult) {
-        ObjectMapper objectMapper = new ObjectMapper();
-
+    public static GameResult create(ShortIdGenerator idGen, final Game game, final com.scottlogic.hackathon.game.GameResult gameResult) {
         Set<SpawnPoint> spawnPoints = gameResult.getPhaseResults()
                 .stream()
                 .flatMap(phaseResult -> phaseResult.getSpawnPoints().stream())
@@ -62,7 +61,7 @@ public class GameResult {
         List<PhaseResult> phaseResults = gameResult
                 .getPhaseResults()
                 .stream()
-                .map(PhaseResult::create)
+                .map(p -> PhaseResult.create(idGen, p))
                 .collect(Collectors.toList());
 
         String gameStr = "";
@@ -70,9 +69,9 @@ public class GameResult {
         String phaseResultsStr = "";
 
         try {
-            gameStr = objectMapper.writeValueAsString(game);
-            spawnPointsStr = objectMapper.writeValueAsString(spawnPoints);
-            phaseResultsStr = objectMapper.writeValueAsString(phaseResults);
+            gameStr = JsonMapper.getMapper().writeValueAsString(game);
+            spawnPointsStr = JsonMapper.getMapper().writeValueAsString(spawnPoints);
+            phaseResultsStr = JsonMapper.getMapper().writeValueAsString(phaseResults);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

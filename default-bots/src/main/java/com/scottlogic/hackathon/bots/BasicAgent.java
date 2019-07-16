@@ -1,14 +1,17 @@
 package com.scottlogic.hackathon.bots;
 
 import com.scottlogic.hackathon.game.Direction;
+import com.scottlogic.hackathon.game.Id;
 import com.scottlogic.hackathon.game.Move;
+import lombok.Getter;
 
 import java.util.LinkedList;
-import java.util.Random;
-import java.util.UUID;
+
 
 public class BasicAgent implements Move {
-    private final UUID player;
+    @Getter
+    private final Id player;
+    @Getter
     private Direction direction;
     private int x;
     private int y;
@@ -20,7 +23,7 @@ public class BasicAgent implements Move {
     private boolean finished = false;
 
 
-    public BasicAgent(final UUID player, Node start) {
+    public BasicAgent(final Id player, Node start) {
         this.player = player;
         this.x = start.getX();
         this.y = start.getY();
@@ -147,15 +150,6 @@ public class BasicAgent implements Move {
         stayingStill = true;
     }
 
-    @Override
-    public UUID getPlayer() {
-        return player;
-    }
-
-    @Override
-    public Direction getDirection() {
-        return direction;
-    }
 
     @Override
     public String toString() {

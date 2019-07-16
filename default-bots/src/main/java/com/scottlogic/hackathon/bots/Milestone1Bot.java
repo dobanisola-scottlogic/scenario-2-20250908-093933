@@ -1,61 +1,58 @@
 package com.scottlogic.hackathon.bots;
 
-import com.scottlogic.hackathon.bots.move.TimidMove;
-import com.scottlogic.hackathon.game.Bot;
-import com.scottlogic.hackathon.game.GameState;
-import com.scottlogic.hackathon.game.Move;
-import com.scottlogic.hackathon.game.Position;
+import com.scottlogic.hackathon.game.*;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Milestone1Bot extends Bot {
-    private final List<TimidMove> moves = new LinkedList<>();
+    private HashMap<Id, Direction> playerDirectionHashMap;
 
     public Milestone1Bot() {
         super("Milestone 1");
     }
 
     @Override
-    public List<Move> makeMoves(final GameState gameState) {
-        gameState.getRemovedPlayers()
-                .forEach(player -> moves.removeIf(move -> move.getPlayer().equals(player.getId())));
+    public void initialise(GameState gameState) {
+        playerDirectionHashMap = new HashMap<>();
+    }
 
-        final Set<UUID> previousPlayers = moves.stream().map(Move::getPlayer).collect(Collectors.toSet());
+    @Override
+    public List<Move> makeMoves(GameState gameState) {
+        removeDeadPlayers(gameState);
+        moveStraight(gameState);
+        List<Move> moves = extractMoves(gameState);
+        return moves;
+    }
 
-        final Set<Position> myPlayerPositions = new HashSet<>();
-        final Set<Position> opponentPlayerPositions = new HashSet<>();
-        gameState.getPlayers().forEach(player -> {
-            if (player.getOwner().equals(getId())) {
-                myPlayerPositions.add(player.getPosition());
-                if (!previousPlayers.contains(player.getId())) {
-                    moves.add(new TimidMove(gameState.getMap(), player));
-                } else {
-                    moves.forEach(move -> {
-                        if (move.getPlayer().equals(player.getId())) {
-                            move.setPlayerPosition(player.getPosition());
-                        }
-                    });
-                }
-            } else {
-                opponentPlayerPositions.add(player.getPosition());
+    private void moveStraight(GameState gameState){
+        for (Player player : gameState.getPlayers()){
+            Id playerID = player.getId();
+            if (playerDirectionHashMap.containsKey(playerID) && isMyPlayer(player)){
+                // Do nothing, player already exists in the HashMap
             }
-        });
+            else {
+                playerDirectionHashMap.put(playerID, Direction.random());
+            }
+        }
+    }
 
-        moves.forEach(move -> {
-            move.setMyPlayersPositions(myPlayerPositions);
-            move.setOpponentPlayersPositions(opponentPlayerPositions);
-            move.addOutOfBoundsPositions(gameState.getOutOfBoundsPositions());
-            move.addSpawnPoints(gameState.getSpawnPoints());
-            move.setCollectables(gameState.getCollectables());
-            move.phase();
-        });
+    private List<Move> extractMoves(GameState gameState){
+        List<Move> moves = new ArrayList<>();
+        for (Map.Entry<Id, Direction> item : playerDirectionHashMap.entrySet()) {
+            Id playerID = item.getKey();
+            Direction direction = item.getValue();
+            moves.add(new MoveImpl(playerID, direction));
+        }
+        return moves;
+    }
 
-        return Collections.unmodifiableList(moves);
+    private void removeDeadPlayers(GameState gameState) {
+        for (Player player : gameState.getRemovedPlayers()) {
+            playerDirectionHashMap.remove(player.getId());
+        }
+    }
+
+    private boolean isMyPlayer(Player player){
+        return player.getOwner().equals(getId());
     }
 }

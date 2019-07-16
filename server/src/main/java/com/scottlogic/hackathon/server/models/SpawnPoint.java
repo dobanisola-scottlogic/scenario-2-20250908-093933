@@ -1,25 +1,26 @@
 package com.scottlogic.hackathon.server.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.scottlogic.hackathon.game.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public class SpawnPoint {
     @JsonView(Views.List.class)
-    private UUID id;
+    @Getter
+    private Id id;
     @JsonView(Views.List.class)
-    private UUID owner;
+    @Getter
+    private Id owner;
     @JsonView(Views.Details.class)
+    @Getter
     private Position position;
 
-    public SpawnPoint() {
-    }
-
-    public SpawnPoint(final UUID id, final UUID owner, final Position position) {
-        this.id = id;
-        this.owner = owner;
-        this.position = position;
-    }
 
     public static SpawnPoint create(final com.scottlogic.hackathon.game.SpawnPoint spawnPoint) {
         return new SpawnPoint(
@@ -28,15 +29,5 @@ public class SpawnPoint {
                 Position.create(spawnPoint.getPosition()));
     }
 
-    public UUID getId() {
-        return id;
-    }
 
-    public UUID getOwner() {
-        return owner;
-    }
-
-    public Position getPosition() {
-        return position;
-    }
 }

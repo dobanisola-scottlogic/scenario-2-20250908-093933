@@ -1,16 +1,21 @@
 package com.scottlogic.hackathon.server.models;
 
-import java.util.UUID;
+import com.scottlogic.hackathon.game.Id;
+import lombok.Getter;
+
 
 public class Collectable {
-    private UUID id;
+    @Getter
+    private Id id;
+    @Getter
     private int type;
+    @Getter
     private Position position;
 
     public Collectable() {
     }
 
-    public Collectable(final UUID id, final int type, final Position position) {
+    public Collectable(final Id id, final int type, final Position position) {
         this.id = id;
         this.type = type;
         this.position = position;
@@ -23,15 +28,4 @@ public class Collectable {
                 Position.create(collectable.getPosition()));
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public Position getPosition() {
-        return position;
-    }
 }

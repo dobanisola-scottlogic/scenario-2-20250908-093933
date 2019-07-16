@@ -26,15 +26,30 @@ repositories {
     flatDir {
         dirs "libs"
     }
+
+    flatDir {
+        dirs '../remote/build/libs'
+    }
 }
+
+def jacksonVersion = "2.9.9"
 
 // BEGIN SKIP
 dependencies {
     compile project(':game')
-    compile project(':client')
+
+    runtimeOnly("com.scottlogic.hackathon-contestant:remote:1.0-SNAPSHOT:all")
+    implementation group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jacksonVersion
+
+
+    compileOnly (project(":remote")) {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
 }
 // END SKIP
 // DEPENDENCIES (do not remove this line)
+
+
 
 mainClassName = project.hasProperty('mainClass') ? project.mainClass : 'com.contestantbots.team.ExampleBot'
 

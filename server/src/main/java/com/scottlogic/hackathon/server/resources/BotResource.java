@@ -8,14 +8,13 @@ import com.scottlogic.hackathon.server.authentication.User;
 import com.scottlogic.hackathon.server.models.Team;
 import com.scottlogic.hackathon.server.models.UploadedBot;
 import com.scottlogic.hackathon.server.models.UploadedJar;
-import com.scottlogic.hackathon.server.services.BotService;
-import com.scottlogic.hackathon.server.services.JarService;
-import com.scottlogic.hackathon.server.services.RemoteClassLoader;
-import com.scottlogic.hackathon.server.services.TeamService;
+import com.scottlogic.hackathon.server.services.*;
 import com.scottlogic.hackathon.server.services.stores.ActiveBot;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;

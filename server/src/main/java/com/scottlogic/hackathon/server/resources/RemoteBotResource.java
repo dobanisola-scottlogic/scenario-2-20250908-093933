@@ -1,0 +1,122 @@
+package com.scottlogic.hackathon.server.resources;
+
+import com.codahale.metrics.annotation.Timed;
+import com.google.inject.Inject;
+import com.scottlogic.hackathon.server.authentication.Authorizer;
+import com.scottlogic.hackathon.server.authentication.User;
+import com.scottlogic.hackathon.server.models.GameResult;
+import com.scottlogic.hackathon.server.models.Team;
+import com.scottlogic.hackathon.server.models.UploadedBot;
+import com.scottlogic.hackathon.server.services.*;
+import com.scottlogic.hackathon.server.services.stores.ActiveBot;
+import io.dropwizard.auth.Auth;
+import io.dropwizard.hibernate.UnitOfWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.*;
+
+@Path("/remotebot")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class RemoteBotResource {
+    private static final String PACKAGE_ROOT = "com/contestantbots/";
+    private static final String PACKAGE_ROOT_DOT_FORMAT = PACKAGE_ROOT.replace("/", ".");
+
+    private final BotService botService;
+    private final TeamService teamService;
+    private final Logger logger;
+
+
+    @Inject
+    RemoteBotResource(final BotService botService,
+                      final TeamService teamService) {
+        this.botService = botService;
+        this.teamService = teamService;
+        logger = LoggerFactory.getLogger(this.getClass().getName());
+    }
+
+
+    @POST
+    @UnitOfWork
+    @Timed
+    @Path("/connect")
+    @RolesAllowed(Authorizer.ROLE_TEAM)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public void connect(@Auth final User user, final String teamName) {
+        logger.debug("Connect to remote bot {}", teamName);
+        Team team = teamService.getTeam(teamName);
+        botService.addRemoteTeamBot(team);
+    }
+
+    @POST
+    @UnitOfWork
+    @Timed
+    @Path("/test")
+    @RolesAllowed(Authorizer.ROLE_TEAM)
+    public GameResult playDefault(@Auth final User user, final TestGamePayload testGamePayload) {
+        logger.debug("Connect to remote bot {} and play default", testGamePayload.getTeamName());
+        Team team = teamService.getTeam(testGamePayload.getTeamName());
+        GameResult gameResult = botService.playMilestone(user, team, testGamePayload.getMilestone(), testGamePayload.getMap());
+
+        logger.debug("Connected and got game results, gameId: " + gameResult.getId());
+
+        return gameResult;
+    }
+
+    @GET
+    @UnitOfWork
+    @Timed
+    @Path("/connectedState")
+    @Produces(MediaType.TEXT_PLAIN)
+    @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
+    public String getConnectionState(@Auth final User user,
+                                     @QueryParam("teamName") String teamName) {
+        logger.trace("Connect to remote bot {}", teamName);
+        Team team = teamService.getTeam(teamName);
+        try {
+            return botService.getRemoteTeamBotConnectionState(team).name();
+        } catch(RuntimeException e) {
+            return "";
+        }
+    }
+
+
+    @GET
+    @UnitOfWork
+    @Timed
+    @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
+    public List<UploadedBot> getUploadedBots(@Auth final User user,
+                                             @QueryParam("teamName") String teamName) {
+        List<UploadedBot> uploadedBots;
+        if (teamName != null && user.isAdmin()) {
+            uploadedBots = botService.getUploadedBots(teamName);
+        } else {
+            uploadedBots = botService.getUploadedBots(user);
+        }
+        return uploadedBots;
+    }
+
+    @DELETE
+    @UnitOfWork
+    @Timed
+    @Path("/{id}")
+    @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
+    public void deleteBot(@Auth final User user, @PathParam("id") final UUID id) {
+        botService.deleteUploadedBot(user, id);
+    }
+
+    @PUT
+    @UnitOfWork
+    @Timed
+    @Path("/active")
+    @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UploadedBot setActiveBot(@Auth final User user, final ActiveBot activeBot) {
+        return botService.setActiveBot(user, activeBot);
+    }
+}

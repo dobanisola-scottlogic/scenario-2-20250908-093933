@@ -7,15 +7,13 @@ import com.scottlogic.hackathon.game.engine.maps.Arena;
 import com.scottlogic.hackathon.game.engine.maps.FoodSpawnPositionPopulator;
 import com.scottlogic.hackathon.game.engine.maps.MapLoadException;
 import com.scottlogic.hackathon.game.engine.models.BotExceptionRejection;
-import com.scottlogic.hackathon.game.engine.models.CollectableImpl;
 import com.scottlogic.hackathon.game.engine.models.DisqualifiedBotImpl;
 import com.scottlogic.hackathon.game.engine.models.GameResultImpl;
 import com.scottlogic.hackathon.game.engine.models.MoveRejection;
-import com.scottlogic.hackathon.game.engine.models.PlayerImpl;
 import com.scottlogic.hackathon.game.engine.models.SimpleRejection;
-import com.scottlogic.hackathon.game.engine.models.SpawnPointImpl;
 import com.scottlogic.hackathon.game.engine.models.builders.GameStateBuilder;
 import com.scottlogic.hackathon.game.engine.models.builders.PhaseResultBuilder;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +29,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -60,52 +57,59 @@ public class GameEngine {
 
     private final FoodPlacementStrategy foodPlacementStrategy;
 
-    private TrackedSetImpl<PlayerImpl> players;
-    private TrackedSetImpl<CollectableImpl> collectables;
-    private TrackedSetImpl<SpawnPointImpl> spawnPoints;
+    private TrackedSetImpl<Player> players;
+    private TrackedSetImpl<Collectable> collectables;
+    private TrackedSetImpl<SpawnPoint> spawnPoints;
     private TrackedSetImpl<DisqualifiedBotImpl> disqualifiedBots;
     private int phase;
 
+    @Getter
+    private ShortIdGenerator idGenerator;
+
     public static GameEngine createDebug(final GameConfigLayer forcedConfigOverrides, final Arena arena, final Set<Bot> bots) {
-        return createInternal(forcedConfigOverrides, arena, bots, null);
+        return createInternal(forcedConfigOverrides, arena, bots, null, true);
     }
 
     public static GameEngine create(final GameConfigLayer forcedConfigOverrides, final Arena arena, final Set<Bot> bots) {
-        return createInternal(forcedConfigOverrides, arena, bots, Executors.defaultThreadFactory());
+        return createInternal(forcedConfigOverrides, arena, bots, Executors.defaultThreadFactory(), false);
     }
 
     public static GameEngine create(final GameConfigLayer forcedConfigOverrides, final Arena arena, final Set<Bot> bots, ThreadFactory botThreadFactory) {
-        return createInternal(forcedConfigOverrides, arena, bots, Objects.requireNonNull(botThreadFactory));
+        return createInternal(forcedConfigOverrides, arena, bots, Objects.requireNonNull(botThreadFactory), false);
     }
 
     private static GameEngine createInternal(
             final GameConfigLayer forcedConfigOverrides,
             final Arena arena,
             final Set<Bot> bots,
-            final ThreadFactory botThreadFactory)
+            final ThreadFactory botThreadFactory,
+            boolean isDebug)
             throws MapLoadException {
 
         final GameConfig aggregatedConfig = GameConfig.defaults
-            .withOverrides(arena.getMapSpecificConfig())
-            .withOverrides(forcedConfigOverrides);
+                .withOverrides(arena.getMapSpecificConfig())
+                .withOverrides(forcedConfigOverrides)
+                .withDebugMode(isDebug);
 
         final Arena postProcessedArena = new FoodSpawnPositionPopulator().populateFoodSpawnPositions(arena, aggregatedConfig);
 
         if (botThreadFactory == null) {
-            return new GameEngine(postProcessedArena, bots, Runnable::run, () -> {}, aggregatedConfig);
+            return new GameEngine(new ShortIdGenerator(),  postProcessedArena, bots, Runnable::run, () -> {
+            }, aggregatedConfig);
         } else {
             final ExecutorService executorService = Executors.newFixedThreadPool(bots.size(), botThreadFactory);
-            return new GameEngine(postProcessedArena, bots, executorService, executorService::shutdown, aggregatedConfig);
+            return new GameEngine( new ShortIdGenerator(), postProcessedArena, bots, executorService, executorService::shutdown, aggregatedConfig);
         }
     }
 
-    private GameEngine(final Arena arena, final Set<Bot> bots, final Executor executor, final Runnable onShutdown, final GameConfig gameConfig) {
+    private GameEngine(final ShortIdGenerator idGenerator, final Arena arena, final Set<Bot> bots, final Executor executor, final Runnable onShutdown, final GameConfig gameConfig) {
         this.map = arena;
         this.bots = bots;
         this.executor = executor;
         this.onShutdown = onShutdown;
         this.gameConfig = gameConfig;
         this.foodPlacementStrategy = new FoodPlacementStrategy(arena);
+        this.idGenerator = idGenerator;
 
         if (bots.size() < 2) {
             throw new IllegalArgumentException("must have at least 2 bots");
@@ -122,7 +126,7 @@ public class GameEngine {
      * @return The result of running the game simulation
      */
     public GameResult play() throws Exception {
-        return play((a,b) -> true);
+        return play((a, b) -> true);
     }
 
     /**
@@ -141,6 +145,7 @@ public class GameEngine {
         spawnPoints = new TrackedSetImpl<>();
         disqualifiedBots = new TrackedSetImpl<>();
         phase = 0;
+        CutoffCondition cutoffCondition = null;
 
         LOGGER.info("Game Started");
 
@@ -149,20 +154,23 @@ public class GameEngine {
 
         final List<PhaseResult> phaseResults = new ArrayList<>(gameConfig.getTurnLimit());
 
+        if (spawnPoints.size() - disqualifiedBots.size() <= 1) {
+            cutoffCondition = CutoffCondition.LONE_SURVIVOR;
+        }
+
         spawn();
 
         final PhaseResult initialPhaseResult = createPhaseResult();
         phaseResults.add(initialPhaseResult);
 
-        CutoffCondition cutoffCondition;
-        do {
+        while (cutoffCondition == null) {
             final PhaseResult phaseResult = playPhase();
             phaseResults.add(phaseResult);
             cutoffCondition = getCutoffCondition();
-            if(!phaseCallback.test(phaseResult, Optional.ofNullable(cutoffCondition)) && cutoffCondition==null) {
+            if (!phaseCallback.test(phaseResult, Optional.ofNullable(cutoffCondition)) && cutoffCondition == null) {
                 cutoffCondition = CutoffCondition.CLIENT_QUIT;
             }
-        } while (cutoffCondition == null);
+        }
 
         LOGGER.info("Cut Off Condition: " + cutoffCondition);
 
@@ -174,11 +182,13 @@ public class GameEngine {
     }
 
     private void initialiseBots() throws InterruptedException {
-        invokeBots("initialise", gameConfig.getInitialiseTimeoutMillis(), (bot, gameState) -> {
+        int initialiseTimeout = gameConfig.isDebugMode() ? gameConfig.getInitialiseDebugTimeoutMillis() : gameConfig.getInitialiseTimeoutMillis();
+        invokeBots("initialise", initialiseTimeout, (bot, gameState) -> {
             bot.initialise(gameState); // Run in parallel
-            return () -> {};           // No post-processing required
+            return () -> {
+            };           // No post-processing required
         })
-        .run();
+                .run();
     }
 
     /**
@@ -199,8 +209,8 @@ public class GameEngine {
      * actions threw exceptions or exceeded the specified time limit.
      *
      * @param actionName A human-readable name for the action being invoked. Used for error reporting
-     * @param timeout The number of milliseconds the action should be given to run for each bot
-     * @param action The action to take on each bot
+     * @param timeout    The number of milliseconds the action should be given to run for each bot
+     * @param action     The action to take on each bot
      * @return A {@linkplain Runnable} that will perform any post-processing required of the actions, as described above
      * @throws InterruptedException If the current thread is interrupted while waiting for the actions to complete
      */
@@ -231,8 +241,12 @@ public class GameEngine {
 
         return actions.values().stream()
                 .map(CompletableFuture::join)
-                .reduce((r1, r2) -> () -> {r1.run(); r2.run();})
-                .orElse(() -> {});
+                .reduce((r1, r2) -> () -> {
+                    r1.run();
+                    r2.run();
+                })
+                .orElse(() -> {
+                });
     }
 
     private void disqualifyBot(final Bot bot, final List<Rejection> rejectedMoves) {
@@ -254,17 +268,19 @@ public class GameEngine {
 
     private PhaseResult playPhase() throws InterruptedException {
 
-        final Map<UUID, PlayerImpl> uuidPlayerMap = players.stream()
-                .collect(Collectors.toMap(Player::getId, Function.identity(), (a,b) -> a));
+        final Map<Id, Player> idPlayerMap = players.stream()
+                .collect(Collectors.toMap(Player::getId, Function.identity(), (a, b) -> a));
 
-        Runnable applyMovesToAllBots = invokeBots("makeMoves", gameConfig.getMakeMovesTimeoutMillis(), (bot, gameState) -> {
+        int makeMovesTimeOut = gameConfig.isDebugMode() ? gameConfig.getMakeMovesDebugTimeoutMillis() : gameConfig.getMakeMovesTimeoutMillis();
+
+        Runnable applyMovesToAllBots = invokeBots("makeMoves", makeMovesTimeOut, (bot, gameState) -> {
             List<Move> moves = bot.makeMoves(gameState); // Run in parallel
             return () -> { // Reject and apply moves as part of synchronous post-processing, run <BELOW>
-                List<Rejection> rejectedMoves = getRejectedMoves(bot, moves, uuidPlayerMap);
+                List<Rejection> rejectedMoves = getRejectedMoves(bot, moves, idPlayerMap);
                 if (!rejectedMoves.isEmpty()) {
                     disqualifyBot(bot, rejectedMoves);
                 } else {
-                    applyMoves(moves, uuidPlayerMap);
+                    applyMoves(moves, idPlayerMap);
                 }
             };
         });
@@ -280,7 +296,7 @@ public class GameEngine {
         battlePlayers();
 
         // There should now be no more than 1 player at any position
-        Map<Position, UUID> positionOwners = players.stream()
+        Map<Position, Id> positionOwners = players.stream()
                 .collect(Collectors.toMap(Player::getPosition, Player::getOwner));
 
         collideSpawnPoints(positionOwners);
@@ -290,7 +306,7 @@ public class GameEngine {
         final PhaseResult phaseResult = createPhaseResult();
 
         phase++;
-        LOGGER.info("Phase Number: " + phase);
+        LOGGER.debug("Phase Number: " + phase);
 
         return phaseResult;
     }
@@ -378,7 +394,7 @@ public class GameEngine {
 
         for (final Bot bot : bots) {
             final Position spawnPointPosition = spawnPointPositionsIterator.next();
-            final SpawnPointImpl spawnPoint = new SpawnPointImpl(spawnPointPosition, bot.getId(), gameConfig.getInitialUnitCount());
+            final SpawnPoint spawnPoint = new SpawnPoint(idGenerator.next(), spawnPointPosition, bot.getId(), gameConfig.getInitialUnitCount());
             spawnPoints.add(spawnPoint);
         }
     }
@@ -391,12 +407,12 @@ public class GameEngine {
         return bots;
     }
 
-    private static List<Rejection> getRejectedMoves(Bot bot, List<Move> moves, Map<UUID,? extends Player> playerIdMap) {
-        Map<UUID, Move> playerMoves = new HashMap<>();
+    private static List<Rejection> getRejectedMoves(Bot bot, List<Move> moves, Map<Id, ? extends Player> playerIdMap) {
+        Map<Id, Move> playerMoves = new HashMap<>();
         List<Rejection> rejections = new ArrayList<>();
 
         for (Move move : moves) {
-            UUID playerId = move.getPlayer();
+           Id playerId = move.getPlayer();
             Player player = playerIdMap.get(playerId);
 
             if (move.getDirection() == null) {
@@ -421,9 +437,9 @@ public class GameEngine {
         return rejections;
     }
 
-    private void applyMoves(final List<Move> moves, Map<UUID, PlayerImpl> playerIdMap) {
+    private void applyMoves(final List<Move> moves, Map<Id, Player> playerIdMap) {
         for (final Move move : moves) {
-            final PlayerImpl player = playerIdMap.get(move.getPlayer());
+            final Player player = playerIdMap.get(move.getPlayer());
             final Position position = map.getGeometry().getNeighbour(player.getPosition(), move.getDirection());
             players.replace(player, player.move(position));
         }
@@ -452,8 +468,8 @@ public class GameEngine {
     private void spawnFood(int count) {
         final Set<Position> excludedPositions =
             Stream.of(
-                    collectables.stream().map(CollectableImpl::getPosition),
-                    players.stream().map(PlayerImpl::getPosition),
+                    collectables.stream().map(Collectable::getPosition),
+                    players.stream().map(Player::getPosition),
                     spawnPoints.stream().flatMap(base -> map.getGeometry().getSurroundingPositions(
                         base.getPosition(),
                         gameConfig.getMinFoodDistanceFromSpawn() - 1)))
@@ -464,31 +480,31 @@ public class GameEngine {
             .getRandomPositions(excludedPositions::contains)
             .limit(count)
             .forEach(position -> collectables.add(
-                new CollectableImpl(
+                new Collectable(idGenerator.next(),
                     Collectable.Type.PLAYER,
                     position)));
     }
 
     private void spawnPlayers() {
-        for (final SpawnPointImpl spawnPoint : spawnPoints) {
+        for (final SpawnPoint spawnPoint : spawnPoints) {
             final Position spawnPosition = spawnPoint.getPosition();
             if (players.stream().anyMatch(p -> p.getPosition().equals(spawnPosition))) {
                 continue; // the spawn position is blocked; don't spawn anything
             }
 
-            spawnPoint.createPlayerIfAble()
-                .ifPresent(p -> {
-                    players.add(p);
-                    LOGGER.info("Player Spawned: " + p.toString());
-                });
+            spawnPoint.createPlayerIfAble(idGenerator.next())
+                    .ifPresent(p -> {
+                        players.add(p);
+                        LOGGER.debug("Player Spawned: " + p.toString());
+                    });
         }
     }
 
     private void collideOutOfBoundsTiles() {
-        final Set<PlayerImpl> playersToRemove = new HashSet<>();
+        final Set<Player> playersToRemove = new HashSet<>();
         Set<Position> outOfBounds = map.getOutOfBoundsPositions();
 
-        for(PlayerImpl player: players) {
+        for(Player player: players) {
             if(outOfBounds.contains(player.getPosition())) {
                 playersToRemove.add(player);
             }
@@ -498,7 +514,7 @@ public class GameEngine {
     }
 
     private void collideOwnPlayers() {
-        for (List<PlayerImpl> players: players.stream().collect(Collectors.groupingBy(Player::getPosition)).values()) {
+        for (List<Player> players: players.stream().collect(Collectors.groupingBy(Player::getPosition)).values()) {
             if (players.size() > 1) {
                 players.stream()
                         .collect(Collectors.groupingBy(Player::getOwner))
@@ -512,19 +528,19 @@ public class GameEngine {
 
     private void battlePlayers() {
         final BattleSystem battleSystem = new BattleSystem(players, map.getGeometry(), gameConfig.getBattleRadius());
-        final Set<PlayerImpl> deadPlayers = battleSystem.runBattle();
+        final Set<Player> deadPlayers = battleSystem.runBattle();
 
         if (deadPlayers.size() > 0) {
             this.players.removeAll(deadPlayers);
         }
     }
 
-    private void collideSpawnPoints(Map<Position, UUID> positionOwners) {
-        final Set<SpawnPointImpl> spawnPointsToRemove = new HashSet<>();
+    private void collideSpawnPoints(Map<Position, Id> positionOwners) {
+        final Set<SpawnPoint> spawnPointsToRemove = new HashSet<>();
         actionOwnerAtItem(positionOwners, spawnPoints, SpawnPoint::getPosition, (owner, spawnPoint) -> {
             if (owner != spawnPoint.getOwner()) {
                 spawnPointsToRemove.add(spawnPoint);
-                LOGGER.info("Spawn point captured: " + spawnPoint);
+                LOGGER.debug("Spawn point captured: " + spawnPoint);
             }
         });
         if (spawnPoints.size() > 0) {
@@ -532,12 +548,12 @@ public class GameEngine {
         }
     }
 
-    private void collect(Map<Position, UUID> positionOwners) {
-        final Set<CollectableImpl> collectablesToRemove = new HashSet<>();
+    private void collect(Map<Position, Id> positionOwners) {
+        final Set<Collectable> collectablesToRemove = new HashSet<>();
         actionOwnerAtItem(positionOwners, collectables, Collectable::getPosition, (owner, collectable) -> {
             if (collectable.getType() == Collectable.Type.PLAYER && collectPlayer(owner)) {
                 collectablesToRemove.add(collectable);
-                LOGGER.info("Collectable gathered by: " + owner);
+                LOGGER.debug("Collectable gathered by: " + owner);
             }
         });
         if (collectables.size() > 0) {
@@ -545,8 +561,8 @@ public class GameEngine {
         }
     }
 
-    private boolean collectPlayer(final UUID owner) {
-        final Optional<SpawnPointImpl> spawnPoint = spawnPoints
+    private boolean collectPlayer(final Id owner) {
+        final Optional<SpawnPoint> spawnPoint = spawnPoints
                 .stream()
                 .filter(item -> item.getOwner().equals(owner))
                 .findFirst();
@@ -556,12 +572,12 @@ public class GameEngine {
     }
 
     private <T> void actionOwnerAtItem(
-            Map<Position, UUID> positionOwners,
+            Map<Position, Id> positionOwners,
             Iterable<? extends T> items,
             Function<T, Position> getPosition,
-            BiConsumer<UUID, T> action
+            BiConsumer<Id, T> action
     ) {
-        UUID owner;
+        Id owner;
         for (final T item : items) {
             owner = positionOwners.get(getPosition.apply(item));
             if (owner != null) {

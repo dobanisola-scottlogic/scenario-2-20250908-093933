@@ -1,29 +1,27 @@
 package com.scottlogic.hackathon.server.services;
 
+
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.scottlogic.hackathon.game.Bot;
+import com.scottlogic.hackathon.game.UniqueIdGenerator;
+import com.scottlogic.hackathon.remote.RemoteBotConnector;
+import com.scottlogic.hackathon.remote.notify.RemoteBotChangeEvent;
 import com.scottlogic.hackathon.server.authentication.User;
-import com.scottlogic.hackathon.server.models.GameConfiguration;
-import com.scottlogic.hackathon.server.models.Hackathon;
-import com.scottlogic.hackathon.server.models.MilestoneBot;
-import com.scottlogic.hackathon.server.models.Team;
-import com.scottlogic.hackathon.server.models.UploadedBot;
+import com.scottlogic.hackathon.server.models.*;
 import com.scottlogic.hackathon.server.services.stores.ActiveBot;
 import com.scottlogic.hackathon.server.services.stores.BotStore;
+import io.dropwizard.hibernate.UnitOfWork;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Singleton
 public class BotService {
     private final Logger logger;
     private final BotStore botStore;
@@ -31,19 +29,58 @@ public class BotService {
     private final GameService gameService;
     private final MilestoneService milestoneService;
     private final HackathonService hackathonService;
+    private final RemoteBotStore remoteBotStore;
+
+
 
     @Inject
     public BotService(final BotStore botStore,
                       final TeamService teamService,
                       final GameService gameService,
                       final MilestoneService milestoneService,
-                      final HackathonService hackathonService) {
-        logger = LoggerFactory.getLogger(this.getClass().getName());
+                      final HackathonService hackathonService,
+                      final RemoteBotStore remoteBotStore)
+    {
         this.botStore = botStore;
         this.teamService = teamService;
         this.gameService = gameService;
         this.milestoneService = milestoneService;
         this.hackathonService = hackathonService;
+        this.remoteBotStore = remoteBotStore;
+
+        botStore.configureIdGenerator();
+        logger = LoggerFactory.getLogger(this.getClass().getName());
+    }
+
+    public void addRemoteTeamBot(final Team team) {
+        logger.debug("Adding remote team bot:{}", team.getName());
+        RemoteBotConnector remoteBotConnector = new RemoteBotConnector();
+        remoteBotConnector.waitForConnect(team.getName());
+        remoteBotStore.save(team, remoteBotConnector);
+        logger.debug("Team: {} -> connection status {}", remoteBotConnector.getTeam(), remoteBotConnector.getState());
+    }
+
+    public GameResult playMilestone(final User user, final Team team, final String milestone, final String map) {
+        logger.debug("Team:{} playing milestone game.", team.getName());
+        if(getRemoteTeamBotConnectionState(team) == RemoteBotConnector.State.CONNECTED){
+            Hackathon hackathon = hackathonService.getHackathon(team.getHackathonId());
+
+            GameConfiguration gameConfiguration = new GameConfiguration(
+                    new HashSet<>(Arrays.asList(team.getName(), MilestoneBot.MILESTONE_BOT_PREFIX + milestone)),
+                    map,
+                    hackathon.getId()
+            );
+
+            return  gameService.playGameDebug(user, gameConfiguration, createTeamBotMap(user, gameConfiguration));
+        } else {
+            logger.error("Team:{} cannot play default game as not currently connected!.", team.getName());
+        }
+        return null;
+    }
+
+    public RemoteBotConnector.State getRemoteTeamBotConnectionState(final Team team) {
+       return remoteBotStore.getConnectionState(team.getName());
+
     }
 
     public UploadedBot addTeamBot(final User user, final Team team, final String botClassName, final InputStream inputStream) {
@@ -58,7 +95,7 @@ public class BotService {
             Hackathon hackathon = hackathonService.getHackathon(team.getHackathonId());
 
             GameConfiguration gameConfiguration = new GameConfiguration(
-                    new HashSet<String>(Arrays.asList(team.getName(), hackathon.getCurrentMilestoneClassName())),
+                    new HashSet<>(Arrays.asList(team.getName(), hackathon.getCurrentMilestoneClassName())),
                     hackathon.getCurrentMilestoneMap(),
                     hackathon.getId()
             );
@@ -84,7 +121,8 @@ public class BotService {
         return result;
     }
 
-    public UploadedBot getBot(final UUID id) {
+
+    private UploadedBot getBot(final UUID id) {
         return botStore.get(id);
     }
 
@@ -136,7 +174,6 @@ public class BotService {
 
         if (user.isTeam()) {
             final UUID teamId = teamService.getTeam(user.getName()).getId();
-
             activeBots = activeBots
                     .filter(activeBot -> activeBot.getTeamId().equals(teamId));
         }
@@ -146,6 +183,7 @@ public class BotService {
 
         return Collections.unmodifiableList(bots);
     }
+
 
     public UploadedBot setActiveBot(final User user, final ActiveBot activeBot) {
         UploadedBot result = null;
@@ -207,11 +245,16 @@ public class BotService {
                         return milestoneBot.getBot();
                     } else {
                         final UploadedBot uploadedBot = activeUploadedBots.get(team.getId());
-                        return uploadedBot.getBot();
+
+                        return remoteBotStore.get(uploadedBot.getId())
+                                .map(b -> (Bot) b)
+                                .orElseGet(uploadedBot::getBot);
+
                     }
                 }));
 
 
         return teamBots;
     }
+
 }

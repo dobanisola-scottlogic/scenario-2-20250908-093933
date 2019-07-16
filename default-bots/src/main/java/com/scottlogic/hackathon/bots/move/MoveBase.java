@@ -2,6 +2,7 @@ package com.scottlogic.hackathon.bots.move;
 
 import com.scottlogic.hackathon.game.*;
 import com.scottlogic.hackathon.game.GameGeometry;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +19,12 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class MoveBase implements Move {
-    final UUID player;
-    final UUID owner;
+    @Getter
+    final Id player;
+    final Id owner;
     Position playerPosition;
 
+    @Getter
     Direction direction;
     int distance;
     Set<Position> myPlayersPositions = new HashSet<>();
@@ -54,15 +57,7 @@ public class MoveBase implements Move {
         return map;
     }
 
-    @Override
-    public UUID getPlayer() {
-        return player;
-    }
 
-    @Override
-    public Direction getDirection() {
-        return direction;
-    }
 
     public String toString() {
         return String.format("Player %s - Direction %s", player, direction);

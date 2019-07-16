@@ -12,7 +12,7 @@ phaseChart.directive('phaseChart', function() {
         transclude: false,
         scope: {},
         replace: true,
-        template: '<div id="phase-chart"></div>',
+        template: '<div id="phase-chart" ng-show="controller.sharedPropertiesService.getSelectedGame()"></div>',
         controller: 'PhaseChartController',
         controllerAs: 'controller'
     };

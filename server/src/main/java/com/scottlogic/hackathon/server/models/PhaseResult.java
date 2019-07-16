@@ -1,6 +1,8 @@
 package com.scottlogic.hackathon.server.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.scottlogic.hackathon.game.Id;
+import com.scottlogic.hackathon.game.engine.ShortIdGenerator;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,11 +22,11 @@ public class PhaseResult {
     @JsonView(Views.Details.class)
     private Set<Collectable> addedCollectables;
     @JsonView(Views.Details.class)
-    private Set<UUID> removedPlayers;
+    private Set<Id> removedPlayers;
     @JsonView(Views.Details.class)
-    private Set<UUID> removedSpawnPoints;
+    private Set<Id> removedSpawnPoints;
     @JsonView(Views.Details.class)
-    private Set<UUID> removedCollectables;
+    private Set<Id> removedCollectables;
     @JsonView(Views.Details.class)
     private Set<DisqualifiedBot> disqualifiedBots;
 
@@ -35,9 +37,9 @@ public class PhaseResult {
             final Set<PlayerPosition> playerPositions,
             final Set<Player> addedPlayers,
             final Set<Collectable> addedCollectables,
-            final Set<UUID> removedPlayers,
-            final Set<UUID> removedSpawnPoints,
-            final Set<UUID> removedCollectables,
+            final Set<Id> removedPlayers,
+            final Set<Id> removedSpawnPoints,
+            final Set<Id> removedCollectables,
             final Set<DisqualifiedBot> disqualifiedBots) {
         this.id = UUID.randomUUID();
         this.phase = phase;
@@ -50,12 +52,12 @@ public class PhaseResult {
         this.disqualifiedBots = new HashSet<>(disqualifiedBots);
     }
 
-    public static PhaseResult create(final com.scottlogic.hackathon.game.PhaseResult phaseResult) {
+    public static PhaseResult create(ShortIdGenerator idGen, final com.scottlogic.hackathon.game.PhaseResult phaseResult) {
         return new PhaseResult(
                 phaseResult.getPhase(),
                 phaseResult.getPlayers()
                         .stream()
-                        .map(PlayerPosition::create)
+                        .map(p -> PlayerPosition.create(idGen.next(), p))
                         .collect(Collectors.toSet()),
                 phaseResult.getPlayers()
                         .getAdded()
@@ -105,15 +107,15 @@ public class PhaseResult {
         return Collections.unmodifiableSet(addedCollectables);
     }
 
-    public Set<UUID> getRemovedPlayers() {
+    public Set<Id> getRemovedPlayers() {
         return Collections.unmodifiableSet(removedPlayers);
     }
 
-    public Set<UUID> getRemovedSpawnPoints() {
+    public Set<Id> getRemovedSpawnPoints() {
         return Collections.unmodifiableSet(removedSpawnPoints);
     }
 
-    public Set<UUID> getRemovedCollectables() {
+    public Set<Id> getRemovedCollectables() {
         return Collections.unmodifiableSet(removedCollectables);
     }
 

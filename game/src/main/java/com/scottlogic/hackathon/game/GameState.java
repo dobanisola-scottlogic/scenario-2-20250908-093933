@@ -1,5 +1,8 @@
 package com.scottlogic.hackathon.game;
 
+import lombok.Value;
+
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -8,41 +11,75 @@ import java.util.Set;
  * Instances of this are often not complete,
  * instead corresponding to what a particular {@linkplain Bot}'s {@linkplain Player Players} can 'see'.
  */
-public interface GameState {
-
+@Value
+public class GameState {
     /**
-     *
      * @return The current phase of the game. The phase starts at 0 and simply counts up
-     *         during the game.
+     * during the game.
      */
-    int getPhase();
-
+    int phase;
     /**
-     *
      * @return The game's map.
      */
-    GameGeometry getMap();
+    GameGeometry map;
+    Set<Position> outOfBoundsPositions;
+    Set<Player> players;
+    Set<Player> removedPlayers;
+    Set<SpawnPoint> spawnPoints;
+    Set<SpawnPoint> removedSpawnPoints;
+    Set<Collectable> collectables;
 
     /**
-     *
+     * @return The active players that are in the current game.
+     */
+    public Set<Player> getPlayers() {
+        return Collections.unmodifiableSet(players);
+    }
+
+    /**
+     * @return The dead players that were removed after the previous phase.
+     */
+    public Set<Player> getRemovedPlayers() {
+        return Collections.unmodifiableSet(removedPlayers);
+    }
+
+    /**
+     * @return The active spawn points in the current game.
+     */
+    public Set<SpawnPoint> getSpawnPoints() {
+        return Collections.unmodifiableSet(spawnPoints);
+    }
+
+    /**
+     * @return The destroyed spawn points that were removed after the previous phase.
+     */
+    public Set<SpawnPoint> getRemovedSpawnPoints() {
+        return Collections.unmodifiableSet(removedSpawnPoints);
+    }
+
+    /**
+     * @return The collectable items that are in the current game.
+     */
+    public Set<Collectable> getCollectables() {
+        return Collections.unmodifiableSet(collectables);
+    }
+
+    /**
      * @return The out of bounds positions for the current game.
      */
-    Set<Position> getOutOfBoundsPositions();
+    public Set<Position> getOutOfBoundsPositions() {
+        return Collections.unmodifiableSet(outOfBoundsPositions);
+    }
+
 
     /**
      * Checks whether the given position is out of bounds.
      * @param position The position to check
      * @return {@code true} iff the position is out of bounds
      */
-    default boolean isOutOfBounds(Position position) {
+    public boolean isOutOfBounds(Position position) {
         return getOutOfBoundsPositions().contains(position);
     }
-
-    /**
-     *
-     * @return The active players that are in the current game.
-     */
-    Set<Player> getPlayers();
 
     /**
      * Gets the {@linkplain Player} at the given position, if there is one.
@@ -50,55 +87,31 @@ public interface GameState {
      * @return The player at the requested position,
      *         or an {@linkplain Optional#empty() empty Optional} if there is none
      */
-    default Optional<Player> getPlayerAt(Position position) {
+    public Optional<Player> getPlayerAt(Position position) {
         return getPlayers().parallelStream()
                 .filter(p -> p.getPosition().equals(position))
                 .findAny();
     }
 
     /**
-     *
-     * @return The dead players that were removed after the previous phase.
-     */
-    Set<Player> getRemovedPlayers();
-
-    /**
-     *
-     * @return The active spawn points in the current game.
-     */
-    Set<SpawnPoint> getSpawnPoints();
-
-    /**
      * Gets the {@linkplain SpawnPoint} at the given position, if there is one.
      * @param position The position to get the SpawnPoint at
      * @return The SpawnPoint at the requested position,
-     *         or an {@linkplain Optional#empty() empty Optional} if there is none
+     * or an {@linkplain Optional#empty() empty Optional} if there is none
      */
-    default Optional<SpawnPoint> getSpawnPointAt(Position position) {
+    public Optional<SpawnPoint> getSpawnPointAt(Position position) {
         return getSpawnPoints().parallelStream()
                 .filter(p -> p.getPosition().equals(position))
                 .findAny();
     }
 
     /**
-     *
-     * @return The destroyed spawn points that were removed after the previous phase.
-     */
-    Set<SpawnPoint> getRemovedSpawnPoints();
-
-    /**
-     *
-     * @return The collectable items that are in the current game.
-     */
-    Set<Collectable> getCollectables();
-
-    /**
      * Gets the {@linkplain Collectable} at the given position, if there is one.
      * @param position The position to get the Collectable at
      * @return The Collectable at the requested position,
-     *         or an {@linkplain Optional#empty() empty Optional} if there is none
+     * or an {@linkplain Optional#empty() empty Optional} if there is none
      */
-    default Optional<Collectable> getCollectableAt(Position position) {
+    public Optional<Collectable> getCollectableAt(Position position) {
         return getCollectables().parallelStream()
                 .filter(p -> p.getPosition().equals(position))
                 .findAny();
@@ -110,11 +123,15 @@ public interface GameState {
      * @param position The position to check
      * @return {@code true} iff the givien position is empty
      */
-    default boolean isEmpty(Position position) {
+    public boolean isEmpty(Position position) {
         return !(isOutOfBounds(position)
                 || getPlayerAt(position).isPresent()
                 || getSpawnPointAt(position).isPresent()
                 || getCollectableAt(position).isPresent());
+    }
+
+    public boolean isOwnerInactive(Id ownerId) {
+        return getPlayers().stream().noneMatch(p -> p.getOwner().equals(ownerId));
     }
 
 }

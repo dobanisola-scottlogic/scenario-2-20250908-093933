@@ -26,6 +26,8 @@ public class GameConfigFileReader {
         readIntegerIfPresent(props, "maxPhases", configBuilder::setTurnLimit);
         readIntegerIfPresent(props, "makeMovesTimeoutMillis", configBuilder::setMakeMovesTimeoutMillis);
         readIntegerIfPresent(props, "initialiseTimeoutMillis", configBuilder::setInitialiseTimeoutMillis);
+        readIntegerIfPresent(props, "makeMovesDebugTimeoutMillis", configBuilder::setMakeMovesTestTimeoutMillis);
+        readIntegerIfPresent(props, "initialiseDebugTimeoutMillis", configBuilder::setInitialiseTestTimeoutMillis);
         readDoubleIfPresent(props, "perTurnFoodSpawnProbability", configBuilder::setFoodSpawnProbability);
         readIntegerIfPresent(props, "battleRadius", configBuilder::setBattleRadius);
         readIntegerIfPresent(props, "maxCollectablesSpawnedPerPhase", configBuilder::setMaxFoodSpawnedPerTurn);
@@ -55,10 +57,10 @@ public class GameConfigFileReader {
     }
 
     private static <T> void readConfigValueIfPresent(
-        Properties props,
-        String fieldName,
-        Function<String, T> parseFunction,
-        Consumer<T> handleValue) {
+            Properties props,
+            String fieldName,
+            Function<String, T> parseFunction,
+            Consumer<T> handleValue) {
 
         try {
             String property = props.getProperty(fieldName);

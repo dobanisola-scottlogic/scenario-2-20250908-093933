@@ -2,6 +2,7 @@ package com.scottlogic.hackathon.server.services;
 
 import com.google.inject.Inject;
 import com.scottlogic.hackathon.game.Bot;
+import com.scottlogic.hackathon.game.Id;
 import com.scottlogic.hackathon.game.engine.GameEngine;
 import com.scottlogic.hackathon.game.engine.config.GameConfig;
 import com.scottlogic.hackathon.game.engine.config.GameConfigFileReader;
@@ -41,32 +42,31 @@ public class GameService {
         if (game == null) {
             return null;
         }
-
         final Set<Bot> bots = new HashSet<>(teamBotMap.values());
 
-        final GameConfigLayer configFromConfigFile = new GameConfigFileReader()
-            .readIfExists("forced-overrides.properties")
-            .orElse(GameConfigLayerBuilder.createEmpty());
-
         final GameEngine gameEngine = GameEngine.create(
-            configFromConfigFile,
+            retrieveConfig(),
             new MapFileReader().readMapFile(gameConfiguration.getMap()),
             bots,
             botThreadFactory);
 
-        try {
-            final com.scottlogic.hackathon.game.GameResult engineGameResult = gameEngine.play();
-            final GameResult gameResult = GameResult.create(game, engineGameResult);
-            gameStore.saveOrUpdate(gameResult);
-            return gameResult;
-        } catch (final Exception ex) {
-            logger.error("Error playing game", ex);
-
-            return null;
-        } finally {
-            gameEngine.dispose();
-        }
+        return play(game, gameEngine);
     }
+
+    public GameResult playGameDebug(final User user, final GameConfiguration gameConfiguration, Map<Team, Bot> teamBotMap) {
+        final Game game = gameFactory.create(teamBotMap, gameConfiguration);
+        if (game == null) {
+            return null;
+        }
+        final Set<Bot> bots = new HashSet<>(teamBotMap.values());
+
+        final GameEngine gameEngine = GameEngine.createDebug(
+                retrieveConfig(),
+                new MapFileReader().readMapFile(gameConfiguration.getMap()),
+                bots);
+        return play(game, gameEngine);
+    }
+
 
     public List<GameResult> getGameResults() {
         return gameStore.list();
@@ -83,4 +83,25 @@ public class GameService {
     public boolean deleteGameResult(final UUID id) {
         return gameStore.delete(id);
     }
+    private GameConfigLayer retrieveConfig(){
+        return  new GameConfigFileReader()
+                .readIfExists("forced-overrides.properties")
+                .orElse(GameConfigLayerBuilder.createEmpty());
+    }
+
+    private GameResult play(final Game game, final GameEngine gameEngine) {
+        try {
+            final com.scottlogic.hackathon.game.GameResult engineGameResult = gameEngine.play();
+            final GameResult gameResult = GameResult.create(gameEngine.getIdGenerator(), game, engineGameResult);
+            gameStore.saveOrUpdate(gameResult);
+            return gameResult;
+        } catch (final Exception ex) {
+            logger.error("Error playing game", ex);
+
+            return null;
+        } finally {
+            gameEngine.dispose();
+        }
+    }
+
 }

@@ -60,16 +60,14 @@ Point your browser at <http://localhost:8080/application> and login with usernam
 ## Subprojects
 
 This project is made up of a number of subcomponents:
-  - [client](client) - A command-line client application for simulating games and rendering them as ASCII art.
-    Provided to contestants so they can test and debug their code.
   - [contestant](contestant) - The skeleton project to be given to contestants,
     including a stub implementation of the strategy they have to write.
   - [default-bots](default-bots) - A library containing built in game strategies that contestants can play against
-    on the client or server.
+    on the server.
   - [deployment](deployment) - Scripts and configs for automating various modes of production deployment
     (self-hosted server, cloud, etc.).
   - [game](game) - A library containing the API of the game itself, including the interfaces available to contestants
-    _and_ the game state model given to the client and server for rendering.
+    _and_ the game state model given to the server for rendering.
   - [game-engine](game-engine) - A library implementing the game API.
   - [server](server) - The web server application and REST back-end.
   - [viewer](viewer) - The front-end web application.

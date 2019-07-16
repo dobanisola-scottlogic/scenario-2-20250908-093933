@@ -42,10 +42,11 @@ public class HackathonConfiguration extends Configuration {
 
     public List<MilestoneBot> getMilestoneBots() {
         List<MilestoneBot> milestoneBots = new ArrayList<>();
-        milestoneBots.add(new MilestoneBot(new DefaultBot()));
         milestoneBots.add(new MilestoneBot(new Milestone1Bot()));
         milestoneBots.add(new MilestoneBot(new Milestone2Bot()));
         milestoneBots.add(new MilestoneBot(new Milestone3Bot()));
+        milestoneBots.add(new MilestoneBot(new Milestone4Bot()));
+        milestoneBots.add(new MilestoneBot(new Milestone5Bot()));
         milestoneBots.add(new MilestoneBot(new FastExpansionBot()));
         return milestoneBots;
     }

@@ -24,17 +24,31 @@ configurations.all {
 
 dependencies {
     def dropWizardVersion = "1.3.7"
+    def jettyVersion = "9.4.11.v20180605"
+
+//    def dropWizardVersion = "1.3.2"
+//    def jettyVersion = "9.4.10.v20180503"
 
     implementation group: "io.dropwizard", name: "dropwizard-core", version: dropWizardVersion
     implementation group: "io.dropwizard", name: "dropwizard-auth", version: dropWizardVersion
     implementation group: "io.dropwizard", name: "dropwizard-assets", version: dropWizardVersion
     implementation group: "io.dropwizard", name: "dropwizard-forms", version: dropWizardVersion
     implementation group: "io.dropwizard", name: "dropwizard-hibernate", version: dropWizardVersion
+
+    compile group: 'ru.vyarus', name: 'dropwizard-guicey', version: '4.2.0'
+
+
     implementation group: "com.google.inject", name: "guice", version: "3.0"
     implementation project(":game")
     implementation project(":game-engine")
     implementation project(":default-bots")
-    
+    implementation (project(":remote")) {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
+//    implementation group: "org.eclipse.jetty.websocket", name: "websocket-api", version: jettyVersion
+ //   compile "org.java-websocket:Java-WebSocket:1.4.0"
+    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: jettyVersion
+    implementation group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-server-impl', version: jettyVersion
     runtimeOnly group: "org.postgresql", name: "postgresql", version: "9.4.1211"
     runtimeOnly group: "com.h2database", name: "h2", version: "1.4.197"
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.3.0'

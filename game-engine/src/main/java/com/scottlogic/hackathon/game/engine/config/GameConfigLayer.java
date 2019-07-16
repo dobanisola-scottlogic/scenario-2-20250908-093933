@@ -6,6 +6,8 @@ public interface GameConfigLayer {
     Optional<Integer> getTurnLimit();
     Optional<Integer> getMakeMovesTimeoutMillis();
     Optional<Integer> getInitialiseTimeoutMillis();
+    Optional<Integer> getMakeMovesDebugTimeoutMillis();
+    Optional<Integer> getInitialiseDebugTimeoutMillis();
     Optional<Double> getFoodSpawnProbability();
     Optional<Integer> getBattleRadius();
     Optional<Integer> getMaxFoodSpawnedPerTurn();

@@ -1,5 +1,5 @@
-<div class="scoreboard" ng-show="controller.sharedPropertiesService.getSelectedGame()">
-    <div class="game-info">
+<div class="scoreboard">
+    <div class="game-info" ng-show="controller.sharedPropertiesService.getSelectedGame()">
         <span class="map">Map <span class="badge">{{controller.getMapName()}}</span></span>
         <span class="teams">
             <span class="label" ng-repeat-start="team in controller.getTeams()" ng-style="controller.getColour(team.colour.HEX)">{{team.teamName.replace(controller.milestoneBotPrefix, '')}}</span>

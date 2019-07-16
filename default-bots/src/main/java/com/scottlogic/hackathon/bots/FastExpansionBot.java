@@ -2,6 +2,7 @@ package com.scottlogic.hackathon.bots;
 
 import com.scottlogic.hackathon.game.Bot;
 import com.scottlogic.hackathon.game.GameState;
+import com.scottlogic.hackathon.game.Id;
 import com.scottlogic.hackathon.game.Move;
 
 
@@ -91,9 +92,9 @@ public class FastExpansionBot extends Bot {
         });
 
         // create a set of all my previous players
-        final Set<UUID> previousPlayers = agents
+        final Set<Id> previousPlayers = agents
                 .stream()
-                .map(agent -> agent.getPlayer())
+                .map(BasicAgent::getPlayer)
                 .collect(Collectors.toSet());
 
 

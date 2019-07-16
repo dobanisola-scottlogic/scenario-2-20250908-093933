@@ -1,9 +1,10 @@
 let LOGIN_STATE = require('../../enums/loginState.js');
 
 class LoginController {
-    constructor($scope, loginService) {
+    constructor($scope, loginService, sharedPropertiesService) {
         this.$scope = $scope;
         this.loginService = loginService;
+        this.sharedPropertiesService = sharedPropertiesService;
 
         this.credentials = {
             username: '',
@@ -26,6 +27,13 @@ class LoginController {
     logout() {
         this.loginService.logout();
         this.state = this.state = LOGIN_STATE.NONE;
+
+        let engine = this.sharedPropertiesService.getEngine();
+        if (engine) {
+            engine.destroyAndCleanup();
+            this.sharedPropertiesService.setEngine(null);
+            this.sharedPropertiesService.setSelectedGame(null);
+        }
     }
     updateState() {
         this.state = LOGIN_STATE.NONE;
@@ -47,6 +55,6 @@ class LoginController {
     }
 }
 
-LoginController.$inject = ['$scope', 'LoginService'];
+LoginController.$inject = ['$scope', 'LoginService', 'SharedPropertiesService'];
 
 module.exports = LoginController;

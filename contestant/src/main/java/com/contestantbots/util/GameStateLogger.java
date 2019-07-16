@@ -1,56 +1,112 @@
 package com.contestantbots.util;
 
-import com.scottlogic.hackathon.game.Collectable;
-import com.scottlogic.hackathon.game.GameState;
-import com.scottlogic.hackathon.game.Player;
-import com.scottlogic.hackathon.game.Position;
-import com.scottlogic.hackathon.game.SpawnPoint;
+import com.scottlogic.hackathon.game.*;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GameStateLogger {
-    private UUID botId;
+    private static Id botId;
 
-    public GameStateLogger(UUID botId) {
+    public static class GameStateLoggerBuilder {
+        private Boolean logOutOfBounds;
+        private Boolean logSpawnPoints;
+        private Boolean logCollectables;
+        private Boolean logPlayers;
+
+        public GameStateLoggerBuilder() {
+            this.logOutOfBounds = false;
+            this.logSpawnPoints = false;
+            this.logCollectables = false;
+            this.logPlayers = false;
+        }
+
+        public GameStateLoggerBuilder withOutOfBounds() {
+            this.logOutOfBounds = true;
+            return this;
+        }
+
+        public GameStateLoggerBuilder withSpawnPoints() {
+            this.logSpawnPoints = true;
+            return this;
+        }
+
+        public GameStateLoggerBuilder withCollectables() {
+            this.logCollectables = true;
+            return this;
+        }
+
+        public GameStateLoggerBuilder withPlayers() {
+            this.logPlayers = true;
+            return this;
+        }
+
+        public void process(GameState gameState) {
+            StringBuilder output = new StringBuilder();
+
+            output.append(separator(true));
+            output.append("\n" + "turn: " + gameState.getPhase());
+
+            if (logOutOfBounds) {
+                output.append(separator(true));
+                output.append("\n").append(renderOutOfBounds(gameState));
+            }
+
+            if (logSpawnPoints) {
+                output.append(separator(true));
+                output.append("\n").append(renderSpawnPoints(gameState));
+            }
+
+            if (logPlayers) {
+                output.append(separator(true));
+                output.append("\n").append(renderPlayers(gameState));
+            }
+
+            if (logCollectables) {
+                output.append(separator(true));
+                output.append("\n").append(renderCollectables(gameState));
+            }
+
+            output.append("\n" + "\n");
+            System.out.println(output);
+        }
+    }
+
+    private GameStateLogger(Id botId) {
         this.botId = botId;
     }
 
-    public void process(GameState gameState) {
-        renderSeparator(true);
-        System.out.println("turn: " + gameState.getPhase() + "\n" +
-                "map: " + gameState.getMap().getWidth() + " wide by " + gameState.getMap().getHeight() + " high");
-        renderSeparator(true);
+    public static GameStateLoggerBuilder configure(Id botId) {
+        new GameStateLogger(botId);
+        return new GameStateLoggerBuilder();
+    }
 
-        StringBuilder outOfBoundsOutput = new StringBuilder("Out of Bounds");
+    private static StringBuilder renderOutOfBounds(GameState gameState) {
+        StringBuilder outOfBoundsOutput = new StringBuilder("Out of Bounds: ");
         Set<Position> outOfBounds = gameState.getOutOfBoundsPositions();
         if (outOfBounds.isEmpty()) {
-            outOfBoundsOutput.append(": none visible");
+            outOfBoundsOutput.append("none visible");
         } else {
             outOfBounds.forEach(outOfBound -> outOfBoundsOutput.append("\n").append(outOfBound));
         }
-        System.out.println(outOfBoundsOutput);
-        renderSeparator(true);
+        return outOfBoundsOutput;
+    }
 
-        renderSpawnPoints(gameState);
-        renderPlayers(gameState);
-
-        StringBuilder collectablesOutput = new StringBuilder("Collectables");
+    private static StringBuilder renderCollectables(GameState gameState) {
+        StringBuilder collectablesOutput = new StringBuilder("Collectables: ");
         Set<Collectable> collectables = gameState.getCollectables();
         if (collectables.isEmpty()) {
-            collectablesOutput.append(": none visible");
+            collectablesOutput.append("none visible");
         } else {
             collectables.forEach(collectable -> collectablesOutput.append("\n").append(collectable));
         }
-        System.out.println(collectablesOutput);
-        renderSeparator(true);
-        System.out.println();
-        System.out.println();
+        return collectablesOutput;
     }
 
-    private void renderSpawnPoints(GameState gameState) {
+    private static StringBuilder renderSpawnPoints(GameState gameState) {
+        StringBuilder spawnPointsOutput = new StringBuilder("SpawnPoints");
+
         List<SpawnPoint> friendlySpawnPoints = gameState.getSpawnPoints()
                 .stream()
                 .filter(spawnPoint -> spawnPoint.getOwner().equals(botId))
@@ -61,34 +117,34 @@ public class GameStateLogger {
                 .collect(Collectors.toList());
         Set<SpawnPoint> removedSpawnPoints = gameState.getRemovedSpawnPoints();
 
-        System.out.println("SpawnPoints");
-        StringBuilder friendly = new StringBuilder("Friendly");
+        StringBuilder friendly = new StringBuilder("Friendly: ");
         if (friendlySpawnPoints.isEmpty()) {
-            friendly.append(": none");
+            friendly.append("none");
         } else {
             friendlySpawnPoints.forEach(spawnPoint -> friendly.append("\n").append(spawnPoint));
         }
-        System.out.println(friendly);
-        renderSeparator(false);
-        StringBuilder enemy = new StringBuilder("Enemy");
+        spawnPointsOutput.append("\n").append(friendly);
+        spawnPointsOutput.append(separator(false));
+        StringBuilder enemy = new StringBuilder("Enemy: ");
         if (enemySpawnPoints.isEmpty()) {
-            enemy.append(": none visible");
+            enemy.append("none visible");
         } else {
             enemySpawnPoints.forEach(spawnPoint -> enemy.append("\n").append(spawnPoint));
         }
-        System.out.println(enemy);
-        renderSeparator(false);
-        StringBuilder removed = new StringBuilder("Removed");
+        spawnPointsOutput.append("\n").append(enemy);
+        spawnPointsOutput.append(separator(false));
+        StringBuilder removed = new StringBuilder("Removed: ");
         if (removedSpawnPoints.isEmpty()) {
-            removed.append(": none");
+            removed.append("none");
         } else {
             removedSpawnPoints.forEach(spawnPoint -> removed.append("\n").append(spawnPoint));
         }
-        System.out.println(removed);
-        renderSeparator(true);
+        spawnPointsOutput.append("\n").append(removed);
+
+        return spawnPointsOutput;
     }
 
-    private void renderPlayers(GameState gameState) {
+    private static StringBuilder renderPlayers(GameState gameState) {
         List<Player> friendlyPlayers = gameState.getPlayers()
                 .stream()
                 .filter(player -> player.getOwner().equals(botId))
@@ -99,34 +155,40 @@ public class GameStateLogger {
                 .collect(Collectors.toList());
         Set<Player> removedPlayers = gameState.getRemovedPlayers();
 
-        System.out.println("Players");
-        StringBuilder friendly = new StringBuilder("Friendly");
-        friendlyPlayers.forEach(player -> friendly.append("\n").append(player));
-        System.out.println(friendly);
-        renderSeparator(false);
-        StringBuilder enemy = new StringBuilder("Enemy");
+        StringBuilder playersOutput = new StringBuilder("Players");
+
+        StringBuilder friendly = new StringBuilder("Friendly: ");
+        if (friendlyPlayers.isEmpty()) {
+            friendly.append("none");
+        } else {
+            friendlyPlayers.forEach(player -> friendly.append("\n").append(player));
+        }
+        playersOutput.append("\n").append(friendly);
+        playersOutput.append(separator(false));
+        StringBuilder enemy = new StringBuilder("Enemy: ");
         if (enemyPlayers.isEmpty()) {
-            enemy.append(": none visible");
+            enemy.append("none visible");
         } else {
             enemyPlayers.forEach(player -> enemy.append("\n").append(player));
         }
-        System.out.println(enemy);
-        renderSeparator(false);
-        StringBuilder removed = new StringBuilder("Removed");
+        playersOutput.append("\n").append(enemy);
+        playersOutput.append(separator(false));
+        StringBuilder removed = new StringBuilder("Removed: ");
         if (removedPlayers.isEmpty()) {
-            removed.append(": none");
+            removed.append("none");
         } else {
             removedPlayers.forEach(player -> removed.append("\n").append(player));
         }
-        System.out.println(removed);
-        renderSeparator(true);
+        playersOutput.append("\n").append(removed);
+
+        return playersOutput;
     }
 
-    private void renderSeparator(boolean section) {
+    private static String separator(boolean section) {
         if (section) {
-            System.out.println("====================================================================================================");
+            return "\n" + "====================================================================================================";
         } else {
-            System.out.println("----------------------------------------------------------------------------------------------------");
+            return "\n" + "----------------------------------------------------------------------------------------------------";
         }
     }
 }

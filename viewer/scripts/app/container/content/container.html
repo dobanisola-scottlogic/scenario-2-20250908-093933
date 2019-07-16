@@ -29,6 +29,13 @@
                         role="TEAM">
             <hack-bot-panel></hack-bot-panel>
         </hack-dashboard>
+
+        <hack-dashboard controller="$parent.$parent.remoteDashboardController"
+                        title="Remote Bot Dashboard"
+                        role="TEAM">
+            <hack-remote-panel></hack-remote-panel>
+        </hack-dashboard>
+
     </hack-navigation-bar>
     <hack-game-selector></hack-game-selector>
     <hack-viewer>

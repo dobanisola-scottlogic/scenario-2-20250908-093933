@@ -1,5 +1,6 @@
 package com.scottlogic.hackathon.server;
 
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.scottlogic.hackathon.server.authentication.Authenticator;
@@ -13,16 +14,9 @@ import com.scottlogic.hackathon.server.models.MilestoneBot;
 import com.scottlogic.hackathon.server.models.Team;
 import com.scottlogic.hackathon.server.models.UploadedBot;
 import com.scottlogic.hackathon.server.models.UploadedJar;
-import com.scottlogic.hackathon.server.resources.AdminResource;
-import com.scottlogic.hackathon.server.resources.BotResource;
-import com.scottlogic.hackathon.server.resources.GameResource;
-import com.scottlogic.hackathon.server.resources.HackathonResource;
-import com.scottlogic.hackathon.server.resources.LoginResource;
-import com.scottlogic.hackathon.server.resources.MilestoneResource;
-import com.scottlogic.hackathon.server.resources.TeamResource;
+import com.scottlogic.hackathon.server.resources.*;
 import com.scottlogic.hackathon.server.services.AdminService;
 import com.scottlogic.hackathon.server.services.TeamService;
-import com.scottlogic.util.NoOpPrintStream;
 import com.scottlogic.util.ThreadLocalPrintStream;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
@@ -35,14 +29,14 @@ import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import ru.vyarus.dropwizard.guice.GuiceBundle;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 public class HackathonApplication extends Application<HackathonConfiguration> {
     public static void main(final String[] args) throws Exception {
@@ -59,6 +53,7 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
         bootstrap.addBundle(new AssetsBundle("/assets", "/", "index.html"));
         bootstrap.addBundle(new MultiPartBundle());
         bootstrap.addBundle(hibernateBundle);
+        bootstrap.addBundle(GuiceBundle.builder().useWebInstallers().extensions(RemoteBotWebSocketServlet.class).build());
     }
 
     private final HibernateBundle<HackathonConfiguration> hibernateBundle = new HibernateBundle<HackathonConfiguration>(
@@ -105,6 +100,7 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
         environment.jersey().register(injector.getInstance(GameResource.class));
         environment.jersey().register(injector.getInstance(TeamResource.class));
         environment.jersey().register(injector.getInstance(BotResource.class));
+        environment.jersey().register(injector.getInstance(RemoteBotResource.class));
         environment.jersey().register(injector.getInstance(MilestoneResource.class));
         environment.jersey().register(injector.getInstance(LoginResource.class));
     }

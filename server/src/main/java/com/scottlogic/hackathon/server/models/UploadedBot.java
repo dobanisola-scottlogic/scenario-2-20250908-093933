@@ -3,6 +3,7 @@ package com.scottlogic.hackathon.server.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.io.ByteStreams;
 import com.scottlogic.hackathon.game.Bot;
+import com.scottlogic.hackathon.game.UniqueIdGenerator;
 import com.scottlogic.hackathon.server.services.RemoteClassLoader;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -10,7 +11,6 @@ import org.joda.time.DateTimeZone;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @Entity
 public class UploadedBot {
     @Id
-    private UUID id;
+    private long id;
     String teamId;
     @Lob
     private byte[] data;
@@ -31,18 +31,24 @@ public class UploadedBot {
 
     }
 
+    public UploadedBot(final Team team, final com.scottlogic.hackathon.game.Id id) {
+        this.teamId = team.getId().toString();
+        this.timeStamp = DateTime.now(DateTimeZone.UTC).toDate();
+        this.id = id.getId();
+    }
+
     public UploadedBot(final Team team) {
         this.teamId = team.getId().toString();
         this.timeStamp = DateTime.now(DateTimeZone.UTC).toDate();
-        setId(UUID.randomUUID());
+        setId(UniqueIdGenerator.INSTANCE.next());
     }
 
-    public UUID getId() {
-        return id;
+    public com.scottlogic.hackathon.game.Id getId() {
+        return new com.scottlogic.hackathon.game.Id(id);
     }
 
-    public void setId(final UUID id) {
-        this.id = id;
+    public void setId(final com.scottlogic.hackathon.game.Id id) {
+        this.id = id.getId();
     }
 
     public UUID getTeamId() {

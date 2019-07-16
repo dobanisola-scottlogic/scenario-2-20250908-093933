@@ -1,0 +1,14 @@
+package com.scottlogic.hackathon.remote;
+
+import com.scottlogic.hackathon.game.Id;
+import lombok.Value;
+
+import java.util.UUID;
+
+@Value
+public class TeamId {
+
+    private String name;
+    private Id id;
+
+}

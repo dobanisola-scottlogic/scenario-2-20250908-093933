@@ -9,7 +9,7 @@
             Live
             <div class="circle blink"></div>
         </div>
-        <div id="cutoffCondition" ng-if="controller.sharedPropertiesService.getGameOver()">
+        <div id="cutoffCondition" ng-if="controller.sharedPropertiesService.getGameOver()" ng-show="controller.sharedPropertiesService.getSelectedGame()">
             <h1>Game Over. {{controller.endState.cutoffCondition}}</h1>
             <ul>
                 <li ng-repeat="teamStat in controller.endState.teamStats | orderBy:['-players','-spawnPoint','name']">

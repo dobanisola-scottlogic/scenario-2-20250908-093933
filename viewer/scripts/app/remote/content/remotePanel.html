@@ -1,0 +1,47 @@
+<div class="remotePanel">
+    <hack-alert ng-show="controller.alert"
+           close-alert="controller.refreshAlerts()"
+           alert="controller.alert">
+    </hack-alert>
+    <p>To connect your bot click connect then start your bot</p>
+    <button class="btn btn-default"
+        ng-click="controller.onConnect()"
+        ng-disabled="controller.showStatus">
+        Connect
+    </button>
+    <p ng-if="controller.showStatus">
+        Connected: {{connected}}
+    </p>
+    <hr ng-show="controller.isConnected"></hr>
+    <div class="input-group" ng-show="controller.isConnected">
+        <span class="input-group-addon">Map</span>
+        <select
+            class="form-control"
+            ng-model="controller.selectedMap"
+            ng-options="map.value as map.display for map in controller.maps">
+        </select>
+    </div>
+    <h4 ng-show="controller.isConnected">
+        Milestones
+    </h4>
+    <div class="list-group" ng-show="controller.isConnected">
+        <button
+            type="button"
+            class="list-group-item"
+            ng-class="{'active': controller.isMilestoneSelected(team)}"
+            ng-repeat="team in controller.milestoneTeams"
+            ng-click="controller.onMilestoneSelected(team)">
+            {{team}}
+        </button>
+    </div>
+    <button
+        class="btn btn-default"
+        ng-show="controller.isConnected"
+        ng-disabled="!controller.isTestable"
+        ng-click="controller.onTest()">
+        Test
+    </button>
+    <div class="spinner-container" ng-show="controller.isTesting">
+        <div class="spinner"></div>
+    </div>
+</div>

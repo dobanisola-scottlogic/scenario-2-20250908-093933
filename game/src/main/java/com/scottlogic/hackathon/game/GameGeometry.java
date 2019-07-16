@@ -1,5 +1,7 @@
 package com.scottlogic.hackathon.game;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +18,7 @@ import java.util.stream.Stream;
  * Information about these elements must be obtained from the {@linkplain GameState},
  * and, unlike this class, will be limited by what your players can see.
  */
+@JsonDeserialize(as = LoopingQuadsGameGeometry.class)
 public interface GameGeometry {
 
     /**
@@ -150,7 +153,7 @@ public interface GameGeometry {
      *
      * @param from The starting position to determine the direction to move from
      * @param awayFrom The position to move away from (increase the distance to)
-     * @return A stream of all Directions that are towards the target
+     * @return A stream of all Directions that are away from the target
      */
     default Stream<Direction> directionsAwayFrom(Position from, Position awayFrom) {
         int distance = distance(from, awayFrom);

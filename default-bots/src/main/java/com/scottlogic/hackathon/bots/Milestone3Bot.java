@@ -1,144 +1,83 @@
 package com.scottlogic.hackathon.bots;
 
-import com.scottlogic.hackathon.bots.move.MoveBase;
-import com.scottlogic.hackathon.bots.state.StateAnalyser;
-import com.scottlogic.hackathon.game.Bot;
-import com.scottlogic.hackathon.game.GameState;
-import com.scottlogic.hackathon.game.Move;
-import com.scottlogic.hackathon.game.Player;
-import com.scottlogic.hackathon.game.Position;
-import com.scottlogic.hackathon.game.SpawnPoint;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import com.scottlogic.hackathon.game.*;
+import java.util.*;
 
 public class Milestone3Bot extends Bot {
-    private final List<MoveBase> moves = new LinkedList<>();
-
-    private Set<Position> outOfBoundsPositions = new HashSet<>();
-    private SpawnPoint spawnPoint;
-    private Set<SpawnPoint> opponentSpawnPoints = new HashSet<>();
+    private HashMap<Id, Direction> playerDirectionHashMap;
+    private List<Position> nextPositions;
 
     public Milestone3Bot() {
-        super("Milestone 3");
+        super("Milestone 1");
     }
 
     @Override
-    public void initialise(final GameState initialGameState) {
-        initialGameState.getSpawnPoints().stream()
-                .filter(spawnPoint -> spawnPoint.getOwner() == getId())
-                .findFirst()
-                .ifPresent(spawnPoint -> this.spawnPoint = spawnPoint);
+    public void initialise(GameState gameState) {
+        playerDirectionHashMap = new HashMap<>();
     }
 
     @Override
-    public List<Move> makeMoves(final GameState gameState) {
-        gameState.getRemovedPlayers()
-                .forEach(player -> moves.removeIf(move -> move.getPlayer().equals(player.getId())));
-
-        final Set<UUID> previousPlayers = moves.stream().map(MoveBase::getPlayer).collect(Collectors.toSet());
-
-        final Set<Position> playerPositions = new HashSet<>();
-        final Set<Position> opponentPlayerPositions = new HashSet<>();
-        gameState.getPlayers().forEach(player -> {
-            if (player.getOwner().equals(getId())) {
-                playerPositions.add(player.getPosition());
-            } else {
-                opponentPlayerPositions.add(player.getPosition());
-            }
-        });
-
-        this.outOfBoundsPositions.addAll(gameState.getOutOfBoundsPositions());
-        addSpawnPoints(gameState.getSpawnPoints());
-
-        final StateAnalyser stateAnalyser = new StateAnalyser(
-                gameState,
-                playerPositions,
-                opponentPlayerPositions,
-                outOfBoundsPositions,
-                spawnPoint,
-                opponentSpawnPoints,
-                gameState.getCollectables()
-        );
-        Map<Class, Integer> initialMoveCounts = moves.stream().collect(
-                Collectors.toMap(Move::getClass, move -> 1, Integer::sum)
-        );
-        stateAnalyser.setMoveCounts(initialMoveCounts);
-
-        gameState.getPlayers().forEach(player -> {
-            if (player.getOwner().equals(getId())) {
-                if (!previousPlayers.contains(player.getId())) {
-                    // Determines which bot is selected
-                    stateAnalyser.setPlayer(player);
-                    try {
-                        stateAnalyser.setMove(null);
-                    } catch (final NoSuchMethodException | InstantiationException | IllegalAccessException |
-                            InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                    moves.add(stateAnalyser.getMove());
-                    stateAnalyser.setMoveCounts(moves.stream()
-                            .collect(Collectors.toMap(Move::getClass, iteratedMove -> 1, Integer::sum))
-                    );
-                } else {
-                    moves.forEach(move -> {
-                        if (move.getPlayer().equals(player.getId())) {
-                            move.setPlayerPosition(player.getPosition());
-                        }
-                    });
-                }
-            }
-        });
-
-        moves.forEach(move -> {
-            move.setMyPlayersPositions(playerPositions);
-            move.setOpponentPlayersPositions(opponentPlayerPositions);
-            move.addOutOfBoundsPositions(outOfBoundsPositions);
-            move.addSpawnPoints(gameState.getSpawnPoints());
-            move.setCollectables(gameState.getCollectables());
-            move.phase();
-        });
-
-        final Set<MoveBase> myInactivePlayerMoves = moves
-                .stream()
-                .filter(move -> move.getPlayer().equals(getId()) && !move.isActive())
-                .collect(Collectors.toSet());
-        moves.removeIf(myInactivePlayerMoves::contains);
-        for (MoveBase move : myInactivePlayerMoves) {
-            Player movePlayer = gameState.getPlayers()
-                    .stream()
-                    .filter(player -> player.getId().equals(move.getPlayer()))
-                    .collect(Collectors.toList())
-                    .get(0);
-            stateAnalyser.setPlayer(movePlayer);
-            try {
-                stateAnalyser.setMove(move);
-            } catch (final NoSuchMethodException | InstantiationException | IllegalAccessException |
-                    InvocationTargetException e) {
-                e.printStackTrace();
-            }
-            moves.add(stateAnalyser.getMove());
-            Map<Class, Integer> moveCounts = moves.stream().collect(
-                    Collectors.toMap(Move::getClass, iteratedMove -> 1, Integer::sum)
-            );
-            stateAnalyser.setMoveCounts(moveCounts);
-        }
-
-        return Collections.unmodifiableList(moves);
+    public List<Move> makeMoves(GameState gameState) {
+        nextPositions = new ArrayList<>();
+        removeDeadPlayers(gameState);
+        moveRandom(gameState);
+        List<Move> moves = extractMoves(gameState);
+        return moves;
     }
 
-    private void addSpawnPoints(final Set<SpawnPoint> spawnPoints) {
-        if (spawnPoints.size() > 0) {
-            spawnPoints.stream()
-                    .filter(spawnPoint -> spawnPoint.getOwner() != getId())
-                    .forEach(spawnPoint -> this.opponentSpawnPoints.add(spawnPoint));
+    private void moveRandom(GameState gameState){
+        for (Player player : gameState.getPlayers()){
+            Id playerID = player.getId();
+            if (isMyPlayer(player)) {
+                playerDirectionHashMap.put(playerID, Direction.random());
+            }
         }
+    }
+
+    private List<Move> extractMoves(GameState gameState){
+        List<Move> moves = new ArrayList<>();
+        for (Map.Entry<Id, Direction> item : playerDirectionHashMap.entrySet()) {
+            Id playerID = item.getKey();
+            Direction direction = item.getValue();
+            Player player = findPlayerByID(gameState, playerID);
+            if (player != null && canMove(gameState, player, direction)) {
+                moves.add(new MoveImpl(playerID, direction));
+                Position newPosition = gameState.getMap().getNeighbour(player.getPosition(), direction);
+                nextPositions.add(newPosition);
+            }
+            else {
+                // Player cannot move
+            }
+        }
+        return moves;
+    }
+
+    private void removeDeadPlayers(GameState gameState) {
+        for (Player player : gameState.getRemovedPlayers()) {
+            playerDirectionHashMap.remove(player.getId());
+        }
+    }
+
+    private boolean canMove(final GameState gameState, final Player player, final Direction direction) {
+        Set<Position> outOfBounds = gameState.getOutOfBoundsPositions();
+        Position newPosition = gameState.getMap().getNeighbour(player.getPosition(), direction);
+        if (!nextPositions.contains(newPosition) && !outOfBounds.contains(newPosition)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private Player findPlayerByID(GameState gameState, Id id){
+        for (Player player : gameState.getPlayers()){
+            if (player.getId().equals(id)){
+                return player;
+            }
+        }
+        return null;
+    }
+
+    private boolean isMyPlayer(Player player){
+        return player.getOwner().equals(getId());
     }
 }

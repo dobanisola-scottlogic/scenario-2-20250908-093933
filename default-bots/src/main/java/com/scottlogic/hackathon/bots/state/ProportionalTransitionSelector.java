@@ -14,13 +14,13 @@ public class ProportionalTransitionSelector {
     private MoveBase move;
 
     public ProportionalTransitionSelector(java.util.Map<Class, Integer> moveCounts,
-            HashMap<Class, Integer> transitionProfile, GameGeometry map, MoveBase move, Player player)
+                                          HashMap<Class, Integer> transitionProfile, GameGeometry map, MoveBase move, Player player)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.move = findMinimumSquaresSolution(moveCounts, transitionProfile, map, move, player);
     }
 
     private static MoveBase findMinimumSquaresSolution(java.util.Map<Class, Integer> moveCounts,
-            HashMap<Class, Integer> desiredProportionsMap, GameGeometry map, MoveBase move, Player player)
+                                                       HashMap<Class, Integer> desiredProportionsMap, GameGeometry map, MoveBase move, Player player)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
         double minimumSquaresValue = 0;
         Class moveClass = null;

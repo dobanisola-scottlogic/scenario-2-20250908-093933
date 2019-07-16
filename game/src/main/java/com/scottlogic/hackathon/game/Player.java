@@ -1,26 +1,31 @@
 package com.scottlogic.hackathon.game;
 
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Value;
+
 
 /**
  * A player (minion) in the game.
  */
-public interface Player {
+@Value
+@AllArgsConstructor
+public class Player {
     /**
-     *
      * @return The unique id of the current player.
      */
-    UUID getId();
-
+    Id id;
     /**
-     *
      * @return The unique id of the owner of the current player.
      */
-    UUID getOwner();
-
+    Id owner;
     /**
-     *
      * @return The position of the current player.
      */
-    Position getPosition();
+    Position position;
+
+
+
+    public Player move(final Position position) {
+        return new Player(id, owner, position);
+    }
 }

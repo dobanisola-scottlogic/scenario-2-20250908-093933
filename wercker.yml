@@ -8,11 +8,6 @@ build:
         chmod +x gradlew
         ./gradlew --project-cache-dir=$WERCKER_CACHE_DIR :server:test
     - script:
-      name: client test
-      code: |
-        chmod +x gradlew
-        ./gradlew --project-cache-dir=$WERCKER_CACHE_DIR :client:test
-    - script:
       name: viewer install
       code: |
         cd viewer

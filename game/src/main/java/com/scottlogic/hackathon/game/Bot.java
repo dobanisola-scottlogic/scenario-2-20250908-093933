@@ -1,8 +1,10 @@
 package com.scottlogic.hackathon.game;
 
+import lombok.Getter;
+
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
+
 
 /**
  * Represents the overall strategy of an individual contestant in a game.
@@ -11,7 +13,9 @@ import java.util.UUID;
  */
 public abstract class Bot {
 
-    private final UUID id = UUID.randomUUID();
+    @Getter
+    private final Id id;
+    @Getter
     private final String displayName;
 
     /**
@@ -19,6 +23,12 @@ public abstract class Bot {
      * @param displayName The human-readable name for the bot
      */
     protected Bot(String displayName) {
+        id = UniqueIdGenerator.INSTANCE.next();
+        this.displayName = Objects.requireNonNull(displayName);
+    }
+
+    protected Bot(Id id, String displayName) {
+        this.id =  Objects.requireNonNull(id);
         this.displayName = Objects.requireNonNull(displayName);
     }
 
@@ -59,17 +69,7 @@ public abstract class Bot {
      */
     public abstract List<Move> makeMoves(GameState gameState);
 
-    /**
-     * @return The universally unique ID for the bot
-     */
-    public final UUID getId() {
-        return id;
-    }
 
-    /**
-     * @return The human-readable name for the bot
-     */
-    public final String getDisplayName() {
-        return displayName;
-    }
+
+
 }

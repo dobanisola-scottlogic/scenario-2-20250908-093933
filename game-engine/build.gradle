@@ -5,13 +5,12 @@ plugins {
 group "com.scottlogic.hackathon"
 version "1.0-SNAPSHOT"
 
-def jacksonVersion = "2.6.3"
+def jacksonVersion = "2.9.9"
 
 dependencies {
     implementation group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jacksonVersion
     implementation group: "com.fasterxml.jackson.core", name: "jackson-core", version: jacksonVersion
     implementation group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jacksonVersion
-    runtimeOnly group: "org.slf4j", name: "jul-to-slf4j", version: project.slf4jVersion
     implementation group: "org.slf4j", name: "slf4j-api", version: project.slf4jVersion
     api project(":game")
 }

@@ -33,7 +33,7 @@ There should be a number of organisers at the event:
 
 ### Tutorial
 
-There is a [tutorial](contestant/docs/tutorial/index.md) that contestants can follow to get them started with
+There are [tutorials](contestant/docs/tutorials) that contestants can follow to get them started with
 development. Following it to completion will likely take up a significant portion of the available time,
 so in previous events we have warned attendees of this and suggested that they skim it for reference instead.
 Some of the algorithms it suggests lead to sub-optimal solutions, so it's also worth explicitly
@@ -81,21 +81,11 @@ The [deployment](deployment) subproject describes some ways of deploying the ser
 ### Contestant Stub Project
 
 The stub contestant project needs to be available on the computers that attendees will use for development.
-If attendees bring their own laptops to the event, the stub project can be delivered as a Git repository or as a
+If attendees bring their own laptops to the event, the stub project can be delivered as a
 zip/tar archive. Both these methods are described below, or you can see the
 [README of the contestant subproject](contestant) for more details.
 
-#### As A Git Repository
-
-  1. From the root of this project, run:
-      ```bash
-      ./gradlew contestant:gitRepo
-      ```
-      This will extract the stub project into a git repository in the `contestant/build/gitRepo` subfolder.
-  2. Create an empty public project on public Git server (e.g. GitHub)
-  3. Add the repository created in step 2 as a remote to the repository created in step 1, and push.
-
-#### As A Zip/Tar
+####A Zip/Tar
 
    1. From the root of this project, run:
       ```bash

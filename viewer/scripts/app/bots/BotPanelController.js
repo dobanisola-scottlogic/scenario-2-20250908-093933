@@ -21,8 +21,8 @@ class BotPanelController {
 
         this.botService.getBots().then(
             allBots => {
-                this.bots = allBots;
-                this.activeBots = allBots.filter(bot => bot.active);
+                this.bots = allBots.filter(bot => !!bot.botClassName);
+                this.activeBots = this.bots.filter(bot => bot.active);
                 this.makingCall = false;
             },
             () => {this.makingCall = false;}

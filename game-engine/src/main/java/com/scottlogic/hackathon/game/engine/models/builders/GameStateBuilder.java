@@ -1,7 +1,6 @@
 package com.scottlogic.hackathon.game.engine.models.builders;
 
 import com.scottlogic.hackathon.game.*;
-import com.scottlogic.hackathon.game.engine.models.GameStateImpl;
 
 import java.util.Set;
 
@@ -56,6 +55,6 @@ public class GameStateBuilder {
     }
 
     public GameState createGameState() {
-        return new GameStateImpl(phase, map, outOfBoundsPositions, players, removedPlayers, spawnPoints, removedSpawnPoints, collectables);
+        return new GameState(phase, map, outOfBoundsPositions, players, removedPlayers, spawnPoints, removedSpawnPoints, collectables);
     }
 }

@@ -1,9 +1,6 @@
 package com.scottlogic.hackathon.bots.move;
 
-import com.scottlogic.hackathon.game.Direction;
-import com.scottlogic.hackathon.game.GameGeometry;
-import com.scottlogic.hackathon.game.Player;
-import com.scottlogic.hackathon.game.Position;
+import com.scottlogic.hackathon.game.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +28,7 @@ public class HunterMove extends MoveBase {
         if (opponentSpawnPoints.size() > 0) {
             List<Position> opponentSpawnPointsPositions = opponentSpawnPoints
                     .stream()
-                    .map(spawnPoint -> spawnPoint.getPosition())
+                    .map(SpawnPoint::getPosition)
                     .collect(Collectors.toList());
             Position nearestOpponentSpawnPointPosition = null;
             int minDistanceSquared = largestMapRadius;

@@ -1,0 +1,4 @@
+-r requirements.txt
+Sphinx==2.1.1
+sphinx-rtd-theme==0.4.3
+sphinx-tabs==1.1.11
