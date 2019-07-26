@@ -57,7 +57,7 @@ public class RemoteBotResource {
     @Timed
     @Path("/test")
     @RolesAllowed(Authorizer.ROLE_TEAM)
-    public GameResult playDefault(@Auth final User user, final TestGamePayload testGamePayload) {
+    public GameResult playTestGame(@Auth final User user, final TestGamePayload testGamePayload) {
         logger.debug("Connect to remote bot {} and play default", testGamePayload.getTeamName());
         Team team = teamService.getTeam(testGamePayload.getTeamName());
         GameResult gameResult = botService.playMilestone(user, team, testGamePayload.getMilestone(), testGamePayload.getMap());

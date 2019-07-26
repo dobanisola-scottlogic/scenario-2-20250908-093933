@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
     }
 }
 
@@ -11,7 +11,6 @@ plugins {
 group 'com.scottlogic.hackathon'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()

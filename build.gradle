@@ -16,7 +16,7 @@ subprojects {
             jcenter()
         }
 
-        sourceCompatibility = 8
+        sourceCompatibility = 11
 
         dependencies {
             compileOnly 'org.projectlombok:lombok:1.18.8'

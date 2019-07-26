@@ -16,6 +16,8 @@ import com.scottlogic.hackathon.server.models.GameFactory;
 import com.scottlogic.hackathon.server.models.GameResult;
 import com.scottlogic.hackathon.server.models.Team;
 import com.scottlogic.hackathon.server.services.stores.GameStore;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +85,22 @@ public class GameService {
     public boolean deleteGameResult(final UUID id) {
         return gameStore.delete(id);
     }
+
+
+    public void deleteMileStoneGameResults(Team team,  Set<String> milestoneClasses){
+       Criterion criterion =  Restrictions.and(Restrictions.eq("hackathonId", team.getHackathonId()),
+                Restrictions.like("game", team.getName(), MatchMode.ANYWHERE));
+
+        gameStore.list(criterion).stream()
+                .filter(g ->gameContainsAny(g.getGame(), milestoneClasses))
+                .map(GameResult::getId).forEach(this::deleteGameResult);
+
+    }
+
+    public static boolean gameContainsAny(String gameStr, Set<String> milestoneClasses) {
+        return milestoneClasses.stream().parallel().anyMatch(gameStr::contains);
+    }
+
     private GameConfigLayer retrieveConfig(){
         return  new GameConfigFileReader()
                 .readIfExists("forced-overrides.properties")

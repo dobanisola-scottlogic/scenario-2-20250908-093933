@@ -15,11 +15,14 @@ import io.dropwizard.hibernate.UnitOfWork;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 @Singleton
 public class BotService {
@@ -32,15 +35,13 @@ public class BotService {
     private final RemoteBotStore remoteBotStore;
 
 
-
     @Inject
     public BotService(final BotStore botStore,
                       final TeamService teamService,
                       final GameService gameService,
                       final MilestoneService milestoneService,
                       final HackathonService hackathonService,
-                      final RemoteBotStore remoteBotStore)
-    {
+                      final RemoteBotStore remoteBotStore) {
         this.botStore = botStore;
         this.teamService = teamService;
         this.gameService = gameService;
@@ -62,7 +63,7 @@ public class BotService {
 
     public GameResult playMilestone(final User user, final Team team, final String milestone, final String map) {
         logger.debug("Team:{} playing milestone game.", team.getName());
-        if(getRemoteTeamBotConnectionState(team) == RemoteBotConnector.State.CONNECTED){
+        if (getRemoteTeamBotConnectionState(team) == RemoteBotConnector.State.CONNECTED) {
             Hackathon hackathon = hackathonService.getHackathon(team.getHackathonId());
 
             GameConfiguration gameConfiguration = new GameConfiguration(
@@ -70,16 +71,18 @@ public class BotService {
                     map,
                     hackathon.getId()
             );
-
-            return  gameService.playGameDebug(user, gameConfiguration, createTeamBotMap(user, gameConfiguration));
+            removeOldMilestoneGames(team);
+            return gameService.playGameDebug(user, gameConfiguration, createTeamBotMap(user, gameConfiguration));
         } else {
             logger.error("Team:{} cannot play default game as not currently connected!.", team.getName());
         }
         return null;
     }
 
+
+
     public RemoteBotConnector.State getRemoteTeamBotConnectionState(final Team team) {
-       return remoteBotStore.getConnectionState(team.getName());
+        return remoteBotStore.getConnectionState(team.getName());
 
     }
 
@@ -179,7 +182,7 @@ public class BotService {
         }
 
         final List<UploadedBot> bots = activeBots
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return Collections.unmodifiableList(bots);
     }
@@ -212,21 +215,21 @@ public class BotService {
         return result;
     }
 
-    public java.util.Map<Team, Bot> createTeamBotMap(final User user, final GameConfiguration gameConfiguration) {
+    public Map<Team, Bot> createTeamBotMap(final User user, final GameConfiguration gameConfiguration) {
         final java.util.Map<UUID, UploadedBot> activeUploadedBots = this
                 .getActiveBots(user)
                 .stream()
-                .collect(Collectors.toMap(uploadedBot -> uploadedBot.getTeamId(), Function.identity()));
+                .collect(toMap(uploadedBot -> uploadedBot.getTeamId(), Function.identity()));
 
-        final java.util.Map<String, MilestoneBot> milestoneBots = milestoneService
+        final Map<String, MilestoneBot> milestoneBots = milestoneService
                 .getMilestones()
                 .stream()
-                .collect(Collectors.toMap(milestoneBot -> milestoneBot.getMilestoneClassName(), Function.identity()));
+                .collect(toMap(milestoneBot -> milestoneBot.getMilestoneClassName(), Function.identity()));
 
-        final java.util.Map<String, Team> teams = gameConfiguration
+        final Map<String, Team> teams = gameConfiguration
                 .getTeams()
                 .stream()
-                .collect(Collectors.toMap(Function.identity(), teamName -> {
+                .collect(toMap(Function.identity(), teamName -> {
                     if (teamName.startsWith(MilestoneBot.MILESTONE_BOT_PREFIX)) {
                         Team adminTeam = new Team();
                         adminTeam.setName(teamName);
@@ -236,10 +239,10 @@ public class BotService {
                     }
                 }));
 
-        final java.util.Map<Team, Bot> teamBots = teams.values()
+        final Map<Team, Bot> teamBots = teams.values()
                 .stream()
                 .filter(team -> team != null)
-                .collect(Collectors.toMap(Function.identity(), team -> {
+                .collect(toMap(Function.identity(), team -> {
                     if (team.getName().startsWith(MilestoneBot.MILESTONE_BOT_PREFIX)) {
                         final MilestoneBot milestoneBot = milestoneBots.get(team.getName());
                         return milestoneBot.getBot();
@@ -255,6 +258,12 @@ public class BotService {
 
 
         return teamBots;
+    }
+
+    private void removeOldMilestoneGames(Team team) {
+        Set<String> milestoneClasses = milestoneService.getMilestones().stream()
+                .map(MilestoneBot::getMilestoneClassName).collect(toSet());
+        gameService.deleteMileStoneGameResults(team, milestoneClasses);
     }
 
 }
