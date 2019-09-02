@@ -80,6 +80,13 @@ docker  run -it --rm --network="host" -e GAME_SERVER_HOST=127.0.0.1 -e GAME_SERV
 docker  run -it --rm --network="host" -e GAME_SERVER_HOST=127.0.0.1 -e GAME_SERVER_PORT=8080 -e TEAM_NAME=team2 -e PASSWORD='pass2' -e CODE_SERVER_PORT=8445 --name code-server1 --security-opt=seccomp:unconfined hackathon-contestant:latest --allow-http --no-auth
 ``` 
  would spin up two containers one on the default 8443 port and the second on 8445 port
+ 
+ @TODO:
+ ### Code-Server 2
+ ```bash
+docker  run -it --rm --network="host" -e GAME_SERVER_HOST=127.0.0.1 -e GAME_SERVER_PORT=8090 -e TEAM_NAME=team1 -e PASSWORD='pass1'  --name code-server --security-opt=seccomp:unconfined hackathon-contestant:latest --auth password 
+```
+default port is now 8080
 
 ###### Pushing to AWS ECR
 

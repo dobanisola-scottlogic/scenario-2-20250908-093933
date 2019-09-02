@@ -37,5 +37,11 @@ public class BotStore extends AbstractStore<TeamBot> {
         return get(Restrictions.eq("teamId", teamId.toString()));
     }
 
+    public boolean deleteExisting(UUID teamId){
+        return list(Restrictions.eq("teamId", teamId.toString())).stream()
+                .map(t -> t.getId().getId())
+                .map(this::delete).findFirst().isPresent();
+    }
+
 
 }

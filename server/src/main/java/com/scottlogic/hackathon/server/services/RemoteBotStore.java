@@ -81,6 +81,9 @@ public class RemoteBotStore implements ChangeEventListener<RemoteBotChangeEvent>
 
     private TeamBot storeTeamBot(Team team, RemoteBot bot) {
         logger.debug("storeTeamBot " + team.getName());
+        if(botStore.deleteExisting(team.getId())){
+            logger.debug("removing old TeamBot before saving new one");
+        };
         return botStore.saveOrUpdate(new TeamBot(team, bot.getId()));
     }
 

@@ -41,34 +41,89 @@ The following interactions affect the number of players:
 
 ## Quick Start
 
-### 1 - Extract contestant repo
-Run:
-```bash
-./gradlew contestant:extractRepo -P repoDest=<destination_folder_path>
-```
-This will extract a copy of the stub repository given to contestants.
-It contains instructions on how to get started with participating in the challenge.
+The Game Server is hosted on AWS
+Contestants write their code using VSCode through a web browser at a contestant specific url.
 
-### 2 - Run server
+
+### 1 - Configure Game Server Infrastructure
+
+In the deployment submodule there is a directory `hackathon-ai-game/deployment/cli-src`
+
+Run the following in a shell that will ask a series of questions that your answers will be used to setup the infrastructure:
+```bash
+./cli configure
+```
+This creates a `.cli-config` file to save config between runs.  (Note you will need relevant aws credentials)
+
+### 2 - Deploy Game Server Infrastructure to AWS
+
 Run:
 ```bash
-./gradlew server:run
+./cli deploy
 ```
-This will start the web server application running on your local machine.
-Point your browser at <http://localhost:8080/application> and login with username 'admin' and password 'secret'.
+This will deploy the relevant cloud formation templates to aws
+After some time when it is complete you will see a message showing the public url of the Hackathon Game Server
+ 
+### 3 - Define new Hackathon in Game Server Admin 
+
+
+Point your browser at <http://some_aws_domain/application> and login with username 'admin' and password 'secret'.
+
+![define a new hackathon](https://github.com/ScottLogic/hackathon-ai-game/blob/deployment/images/definehackathon.png)
+
+
+### 4 - Deploy Contestant Code Server (VS Code) to AWS
+
+To create a new team in the hackathon
+```bash
+./cli create-team -t <my teamname>
+```
+**This will print the public DNS of the teams instance.**
+
+It creates an entry in `.cli-team-config` to track the deployed teams.  
+If  later to remove an individual team this can be done with the  command 
+```bash
+./cli delete-team -t <my teamname>
+```
+
+One you have the public DNS of the teams instance navigate to the following url for the Java contestant
+http://public_dns/?folder=/home/coder/project/java-contestant
+
+![java contestant](https://github.com/ScottLogic/hackathon-ai-game/blob/deployment/images/javacontestant.png)
+
+or
+http://public_dns/?folder=/home/coder/project/python-contestant for the Python Contestant
+
+![python contestant](https://github.com/ScottLogic/hackathon-ai-game/blob/deployment/images/pythoncontestant.png)
+
+The password is the team name
+
+
+### 5 - Define Contestant Team in Game Server Admin 
+
+Return to the Admin page for the Game Server
+
+![define contestant team](https://github.com/ScottLogic/hackathon-ai-game/blob/deployment/images/defineteam.png)
+
+Here you should define a new team for the chosen Hackathon using the team name from step 4 as password
+
+
 
 ## Subprojects
 
 This project is made up of a number of subcomponents:
-  - [contestant](contestant) - The skeleton project to be given to contestants,
-    including a stub implementation of the strategy they have to write.
+  - [code-server](code-server) - Builds the docker image for a fully bootstrapped VS Code,
+ 
   - [default-bots](default-bots) - A library containing built in game strategies that contestants can play against
     on the server.
-  - [deployment](deployment) - Scripts and configs for automating various modes of production deployment
-    (self-hosted server, cloud, etc.).
+  - [deployment](deployment) - Scripts and configs for automating cloud  production deployment
+ 
   - [game](game) - A library containing the API of the game itself, including the interfaces available to contestants
     _and_ the game state model given to the server for rendering.
   - [game-engine](game-engine) - A library implementing the game API.
+  - [java-contestant](java-contestant) - The java contestant files used in code-server.
+  - [python-contestant](python-contestant) - The python contestant files used in code-server.
+  - [remote](remote) - a distributed client for the game server to run the contestants game code.
   - [server](server) - The web server application and REST back-end.
   - [viewer](viewer) - The front-end web application.
 

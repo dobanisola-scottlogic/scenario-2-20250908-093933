@@ -48,13 +48,14 @@ RUN python3 -m pip install --upgrade setuptools \
 RUN localedef --i en_GB -c -f UTF-8 -A /usr/share/locale/locale.alias en_GB.UTF-8
 ENV LANG=en_GB.UTF-8 \
     DISABLE_TELEMETRY=true \
-    CODE_VERSION="1.1156-vsc1.33.1" \
+    # CODE_VERSION="1.1156-vsc1.33.1" \
+    CODE_VERSION="2.preview.11-vsc1.37.0" \
     VSCODE_USER="/home/coder/.local/share/code-server/User" \
     VSCODE_EXTENSIONS="/home/coder/.local/share/code-server/extensions" \
     PROJ_DIR="/home/coder/project"
 
 # Get Code Server and setup coder user
-RUN curl -sL https://github.com/cdr/code-server/releases/download/${CODE_VERSION}/code-server${CODE_VERSION}-linux-x64.tar.gz | tar --strip-components=1 -zx -C /usr/local/bin code-server${CODE_VERSION}-linux-x64/code-server \
+RUN curl -sL https://github.com/cdr/code-server/releases/download/${CODE_VERSION}/code-server${CODE_VERSION}-linux-x86_64.tar.gz | tar --strip-components=1 -zx -C /usr/local/bin code-server${CODE_VERSION}-linux-x86_64/code-server \
     && groupadd -r coder -g 1024 \
     && useradd -m -r coder -g coder -s /bin/bash \
     && echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
@@ -67,7 +68,7 @@ COPY --chown=coder:coder settings.json /home/coder/.local/share/code-server/User
 RUN mkdir -p ${VSCODE_EXTENSIONS}/python \
     && curl -JLs --retry 10 https://marketplace.visualstudio.com/_apis/public/gallery/publishers/ms-python/vsextensions/python/2019.6.24221/vspackage | bsdtar --strip-components=1 -xf - -C ${VSCODE_EXTENSIONS}/python extension \
     && mkdir -p ${VSCODE_EXTENSIONS}/java \
-    && curl -JLs --retry 10 https://marketplace.visualstudio.com/_apis/public/gallery/publishers/redhat/vsextensions/java/0.46.0/vspackage | bsdtar --strip-components=1 -xf - -C ${VSCODE_EXTENSIONS}/java extension \
+    && curl -JLs --retry 10 https://marketplace.visualstudio.com/_apis/public/gallery/publishers/redhat/vsextensions/java/0.47.0/vspackage | bsdtar --strip-components=1 -xf - -C ${VSCODE_EXTENSIONS}/java extension \
     && mkdir -p ${VSCODE_EXTENSIONS}/java-debugger \
     && curl -JLs --retry 10 https://marketplace.visualstudio.com/_apis/public/gallery/publishers/vscjava/vsextensions/vscode-java-debug/0.20.0/vspackage | bsdtar --strip-components=1 -xf - -C ${VSCODE_EXTENSIONS}/java-debugger extension \
     && mkdir -p ${VSCODE_EXTENSIONS}/java-test \

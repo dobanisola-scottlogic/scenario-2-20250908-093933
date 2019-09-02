@@ -9,5 +9,6 @@
         "**/.project": true,
         "**/.settings": true,
         "**/.factorypath": true
-    }
+    },
+    "terminal.integrated.shell.linux": "/bin/bash"
 }

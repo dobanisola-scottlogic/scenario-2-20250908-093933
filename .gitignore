@@ -35,3 +35,10 @@ data
 
 # Logs
 logs
+
+node_modules/
+bin/
+.serverless/
+.vscode/
+.cli-config
+/deployment/cli-src/command/.cli-team-config

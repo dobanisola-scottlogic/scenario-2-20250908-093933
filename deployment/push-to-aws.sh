@@ -15,24 +15,21 @@ PROJECT_ROOT_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
 cd "$PROJECT_ROOT_DIR" || exit $?
 
 # Variables
-IMAGE_NAME="hackathon-server"
-REPOSITORY_PATH="600982866784.dkr.ecr.eu-west-2.amazonaws.com"
+IMAGE_NAME="hackathon-gameserver"
+REPOSITORY_PATH="032044580362.dkr.ecr.eu-west-2.amazonaws.com"
 FULLY_QUALIFIED_IMAGE_NAME="$REPOSITORY_PATH/$IMAGE_NAME"
-IMAGE_VERSION=`git rev-parse --short HEAD`
+IMAGE_VERSION=$(git rev-parse --short HEAD)
 
-STACK_NAME='hackathon-ai-game'
-TEMPLATE_FILE="$PROJECT_ROOT_DIR/deployment/cloudformation-server.yml"
-INFRASTRUCTURE_STACK_NAME=hack-infrastructure
 
 aws="cmd \/c aws"
 
 # Pushes the latest version of the image both with the `latest` and specific version tags
 pushImage () {
     docker tag $IMAGE_NAME:latest $FULLY_QUALIFIED_IMAGE_NAME:latest \
-        && docker tag $IMAGE_NAME:latest $FULLY_QUALIFIED_IMAGE_NAME:$IMAGE_VERSION \
-        && eval "$($aws ecr get-login --no-include-email)" \
+        && docker tag $IMAGE_NAME:latest $FULLY_QUALIFIED_IMAGE_NAME:"$IMAGE_VERSION" \
+        && eval "$($aws ecr get-login --region eu-west-2 --no-include-email)" \
         && docker push $FULLY_QUALIFIED_IMAGE_NAME:latest  \
-        && docker push $FULLY_QUALIFIED_IMAGE_NAME:$IMAGE_VERSION
+        && docker push $FULLY_QUALIFIED_IMAGE_NAME:"$IMAGE_VERSION"
 }
 
 createRepo () {
@@ -40,21 +37,15 @@ createRepo () {
     echo Created ECR repository: $IMAGE_NAME.
 }
 
-if git diff-index --quiet HEAD; then
-    echo "There are uncommitted changes in the repository." >&2
-    echo "Please commit them then rerun." >&2
-    exit 1
+if [ -n "$(git status --porcelain)" ]; then
+  echo "There are uncommitted changes in the repository." >&2
+  echo "Please commit them then rerun." >&2
+  exit 1
 fi
 
 ./gradlew check server:dockerBuild || exit $?
 
 echo "Server image: $FULLY_QUALIFIED_IMAGE_NAME:$IMAGE_VERSION"
 
-pushImage \
-    && $aws cloudformation deploy \
-        --stack-name "$STACK_NAME" \
-        --template-file "$TEMPLATE_FILE" \
-        --capabilities CAPABILITY_IAM \
-        --parameter-overrides \
-            InfrastructureStackName="$INFRASTRUCTURE_STACK_NAME" \
-            ServerImage="$FULLY_QUALIFIED_IMAGE_NAME:$IMAGE_VERSION"
+pushImage
+

@@ -7,12 +7,6 @@ if [ -n "$DB_TYPE" ] ; then
             DB_DRIVER=org.postgresql.Driver
             DB_DIALECT=org.hibernate.dialect.PostgreSQLDialect
             ;;
-# MYSQL doesn't seem to work
-#        mysql)
-#            DB_PROTO=mysql
-#            DB_DRIVER=org.mariadb.jdbc.Driver
-#            DB_DIALECT=org.hibernate.dialect.MySQLDialect
-#            ;;
         *)
             echo "Unrecognised database type: $DB_TYPE." >&2
             exit 1
