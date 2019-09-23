@@ -47,7 +47,7 @@ Contestants write their code using VSCode through a web browser at a contestant 
 
 ### 1 - Configure Game Server Infrastructure
 
-In the deployment submodule there is a directory `hackathon-ai-game/deployment/cli-src`
+In the deployment submodule there is a directory `hackathon-ai-game/deployment/cli-src`. Navigate here and run an `npm install`.
 
 Run the following in a shell that will ask a series of questions that your answers will be used to setup the infrastructure:
 ```bash
@@ -105,9 +105,23 @@ Return to the Admin page for the Game Server
 
 ![define contestant team](images/defineteam.png)
 
-Here you should define a new team for the chosen Hackathon using the team name from step 4 as password
+Here you should define a new team for the chosen Hackathon using the teamname from step 4 as the name and password. Now you are all set up for your students to begin coding.
 
+### Extra Information
 
+**Delete Team**
+
+To delete an existing team in the hackathon
+```bash
+./cli delete-team -t <my teamname>
+```
+
+**Delete Stack**
+
+To delete both of the CloudFormation stacks
+```bash
+./cli delete
+```
 
 ## Subprojects
 

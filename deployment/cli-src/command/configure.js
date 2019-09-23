@@ -12,7 +12,10 @@ const configDefaults = {
     serverCpu: '4096',
     serverMemory: '8192',
     dbName: 'hackathon',
-    dbUser: 'hackathon'
+    dbUser: 'hackathon',
+    // URLs available on aws in services -> ECR -> Repositories
+    serverImage: '032044580362.dkr.ecr.eu-west-2.amazonaws.com/hackathon-gameserver:latest',
+    clientImage: '032044580362.dkr.ecr.eu-west-2.amazonaws.com/hackathon-contestant:latest'
 }
 
 const configPrompt = async () => {
@@ -24,19 +27,19 @@ const configPrompt = async () => {
     try {
         const questionPrompt = questionPromptFactory(rl);
 
-        const region = await questionPrompt('region (eu-west-2)> ');
+        const region = await questionPrompt(`region (${configDefaults.region})> `);
         const infraStackName = await questionPrompt('Infrastructure Stack Name> ');
         const serverStackName = await questionPrompt('Server Stack Name> ');
-        const serverServiceName = await questionPrompt('ECS Service Name (hackathon-server)> ');
-        const serverHttpPort = await questionPrompt('Server HTTP Port (8080)> ');
-        const serverCpu = await questionPrompt('CPU (4096)> ');
-        const serverMemory = await questionPrompt('Memory (8192)> ');
-        const dbName = await questionPrompt('Database Name (hackathon)> ');
-        const dbUser = await questionPrompt('Database User (hackathon)> ');
+        const serverServiceName = await questionPrompt(`ECS Service Name (${configDefaults.serverServiceName})> `);
+        const serverHttpPort = await questionPrompt(`Server HTTP Port (${configDefaults.serverHttpPort})> `);
+        const serverCpu = await questionPrompt(`CPU (${configDefaults.serverCpu})> `);
+        const serverMemory = await questionPrompt(`Memory (${configDefaults.serverMemory})> `);
+        const dbName = await questionPrompt(`Database Name (${configDefaults.dbName})> `);
+        const dbUser = await questionPrompt(`Database User (${configDefaults.dbUser})> `);
         const dbPassword = await questionPrompt('Database Password (8 characters min)> ');
-        const serverImage = await questionPrompt('Server Image(hackathon-gameserver) URI> ');
-        const clientImage = await questionPrompt('Client Image(hackathon-contestant)  URI> ');
-        const creator = await questionPrompt('Creator [used for tagging]> ');
+        const serverImage = await questionPrompt(`Hackathon Gameserver Image URI (${configDefaults.serverImage})> `);
+        const clientImage = await questionPrompt(`Hackathon Contestant Image URI> (${configDefaults.clientImage}})`);
+        const creator = await questionPrompt('Creator [your name - used for tagging]> ');
 
         return Object.assign({}, {
             region,
