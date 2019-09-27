@@ -53,6 +53,7 @@ Run the following in a shell that will ask a series of questions that your answe
 ```bash
 ./cli configure
 ```
+Note that some of the questions have default values in brackets if you leave these fields blank then the defaults will be applied.
 This creates a `.cli-config` file to save config between runs.  (Note you will need relevant aws credentials)
 
 ### 2 - Deploy Game Server Infrastructure to AWS
