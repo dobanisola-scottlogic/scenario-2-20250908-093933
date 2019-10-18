@@ -4,6 +4,7 @@ const readline = require('readline');
 const path = require('path');
 const { questionPromptFactory } = require('../utils/question');
 const { waitForCFStatus } = require('../utils/waitForDeployment');
+const configFile = path.join(__dirname, '.cli-team-config');
 
 module.exports.deleteStacks = async (config) => {
   const {
@@ -44,4 +45,15 @@ module.exports.deleteStacks = async (config) => {
   });
 
   rl.close();
+  deleteTeamsConfig()
 };
+
+function deleteTeamsConfig(config) {
+  fs.unlink(configFile, (err) => {
+    if (err) {
+      console.log("failed to delete cli-team-config" +  err);
+    } else {
+      console.log('successfully deleted cli-team-config');
+    }
+  });
+}

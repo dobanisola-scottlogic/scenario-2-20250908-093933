@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Optional.ofNullable;
 
@@ -44,7 +45,7 @@ public class RemoteBotStore implements ChangeEventListener<RemoteBotChangeEvent>
     RemoteBotStore(final BotStore botStore, final TeamService teamService) {
         this.botStore = botStore;
         this.teamService = teamService;
-        teamBotMap = new HashMap<>();
+        teamBotMap = new ConcurrentHashMap<>();
         logger = LoggerFactory.getLogger(this.getClass().getName());
 
     }
@@ -96,7 +97,7 @@ public class RemoteBotStore implements ChangeEventListener<RemoteBotChangeEvent>
         logger.debug("storeTeamBot " + team.getName());
         if(botStore.deleteExisting(team.getId())){
             logger.debug("removing old TeamBot before saving new one");
-        };
+        }
         return botStore.saveOrUpdate(new TeamBot(team, bot.getId()));
     }
 

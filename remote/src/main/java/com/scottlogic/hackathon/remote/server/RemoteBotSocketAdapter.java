@@ -2,6 +2,7 @@ package com.scottlogic.hackathon.remote.server;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public class RemoteBotSocketAdapter extends WebSocketAdapter {
         getSession().close();
        try {
            getSession().getRemote().flush();
-       } catch (IOException e) {
+       } catch (IOException | WebSocketException e) {
        }
    }
 

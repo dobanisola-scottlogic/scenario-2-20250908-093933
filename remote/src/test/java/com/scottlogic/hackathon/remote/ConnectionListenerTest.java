@@ -62,7 +62,7 @@ public class ConnectionListenerTest {
         listener.onChangeEvent(evt);
 
         // Then
-        verify(sender, times(1)).sendDisconnect();
+        verify(connector, times(1)).connected(callback);
 
     }
 

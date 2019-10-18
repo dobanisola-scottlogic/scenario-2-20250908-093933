@@ -33,9 +33,10 @@ public class Interactor implements Sender, Receiver {
         }
     }
 
-    public void sendDisconnect() throws IOException {
+    public void sendDisconnect() {
         adapter.close();
         protocol.cancelHeartBeat();
+        protocol.notifyBotDisconnected();
     }
 
     RemoteBotSocketAdapter getAdapter() {

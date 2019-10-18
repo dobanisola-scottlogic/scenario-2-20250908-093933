@@ -58,13 +58,8 @@ public class ConnectionListener implements ChangeEventListener<ConnectionChangeE
         RemoteBotCallback oldValue =  changeEvent.getOldValue();
         RemoteBotCallback newValue =  changeEvent.getNewValue();
         if (isTeamConnect(teamName, newValue)) {
-            if (connector.getState() == RemoteBotConnector.State.WAITING) {
-                connector.connected(newValue);
-                logger.debug("team: {} now connected", connector.getTeam());
-            } else {
-                logger.debug("team: {} already connected - sending close frame", connector.getTeam());
-                sendClientDisconnect(teamName, newValue, oldValue);  // attempt to connect twice
-            }
+            connector.connected(newValue);
+            logger.debug("team: {} now connected", connector.getTeam());
         } else if (isTeamDisconnect(teamName, oldValue)) {
             // disconnected - wait for reconnect
             if ((oldValue).getBot().getId().equals(connector.getId())) {

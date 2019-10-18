@@ -54,10 +54,11 @@ If the local host `project` directory has a group owner with the same 'gid' as '
 gradle dockerBuild
 ```
 
-This will produce a hackathon/hackathon-contestant image that can be started thus
+This will produce a hackathon-contestant image that can be started thus
 
 ```bash
-docker  run -it --rm -e GAME_SERVER_HOST=172.17.0.1 -e GAME_SERVER_PORT=8080 -e TEAM_NAME=team -e PASSWORD='team' --name code-server --security-opt=seccomp:unconfined -p 127.0.0.1:80:8080 --expose 80  hackathon-contestant --auth password
+docker  run -it --rm -e GAME_SERVER_HOST=172.17.0.1 -e GAME_SERVER_PORT=8080 -e TEAM_NAME=team -e PASSWORD='team' --name code-server --security-opt=seccomp:unconfined -p 127.0.0.1:80:8080 -p 127.0.0.1:8081:8081 --expose 80 --expose 8081 hackathon-contestant --auth password
+
 ```
 
 where 
@@ -81,19 +82,15 @@ docker  run -it --rm --network="host" -e GAME_SERVER_HOST=127.0.0.1 -e GAME_SERV
 ``` 
  would spin up two containers one on the default 8443 port and the second on 8445 port
  
- @TODO:
- ### Code-Server 2
- ```bash
-docker  run -it --rm --network="host" -e GAME_SERVER_HOST=127.0.0.1 -e GAME_SERVER_PORT=8090 -e TEAM_NAME=team1 -e PASSWORD='pass1'  --name code-server --security-opt=seccomp:unconfined hackathon-contestant:latest --auth password 
-```
+
 default port is now 8080
 
 ###### Pushing to AWS ECR
 
-To push the hackathon-contestant image to ECR supplying the repository as argument
+To push the hackathon-contestant image to ECR optionally supplying the repository as argument
 
 ```bash
-./push-to-aws.sh 032044580362.dkr.ecr.eu-west-2.amazonaws.com
+./push-to-aws.sh 
 ```
 
 
@@ -101,6 +98,7 @@ To push the hackathon-contestant image to ECR supplying the repository as argume
 
 - In the VS-Code editor open the python-contestant folder (Ctrl - o)
 - Documentation is available at python-contestant/docs_html/index.html. Preview with (Ctrl-shift v) 
+- NOTE currently python documentation is currently served as a static site on port 8081
 - In the Menu: Terminal ->  Run task -> run-python-contestant
 
 ###### Java Contestant Workspace
