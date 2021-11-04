@@ -30,7 +30,7 @@ Be sure to leave the page open in your browser
 ### Python Contestant Build, Execute, Repeat
 The code that you will write will be in the `ExampleBot` class in the file `contestant/bot.py` and should implement the make_moves method.  You will learn how to do this in the tutorial.
 
-In the Menu: _`Terminal ->  Run Terminal `_ 
+In the Menu: _`Terminal ->  New Terminal `_ 
 In the terminal type _` ./run_python_contestant.sh`_ 
 
 If the bot has successfully connected to the Game Server you should see the page change to show options to choose Maps and Milestones to test your bot
