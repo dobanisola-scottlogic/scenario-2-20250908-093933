@@ -8,6 +8,6 @@ include "game",
         'remote',  
         "java-contestant",
         "python-contestant",
-        "code-server"
-
+        "code-server",
+        'ui'
 

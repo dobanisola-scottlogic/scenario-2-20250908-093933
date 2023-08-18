@@ -1,0 +1,24 @@
+plugins {
+    id 'base'
+    id "com.github.node-gradle.node" version "7.0.0"
+}
+
+group "com.scottlogic.hackathon"
+version "1.0-SNAPSHOT"
+
+node {
+    download = true
+}
+
+task npmRunBuild(type: NodeTask) {
+    group = 'Build'
+
+    dependsOn npmInstall
+    script = file('node_modules/react-scripts/bin/react-scripts.js')
+    args = ['build']
+}
+assemble.dependsOn npmRunBuild
+
+
+
+
