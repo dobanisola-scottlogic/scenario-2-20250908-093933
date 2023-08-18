@@ -18,7 +18,3 @@ task npmRunBuild(type: NodeTask) {
     args = ['build']
 }
 assemble.dependsOn npmRunBuild
-
-
-
-
