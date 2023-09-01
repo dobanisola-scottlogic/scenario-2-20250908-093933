@@ -7,10 +7,10 @@ For unit and integration testing of the hackathon UI.
 For this to be functional, make sure that the hackathon is running in the background.
 
 These tests will also generate reports after completion. The report will be opened automatically
-on test failure, or can be opened with the following command:
+on test failure, or can be opened with the following command (the quotes are needed):
 
 ```
-npx playwright show-report playwright\test-results
+npx playwright show-report 'playwright\test-results'
 
 ```
 
