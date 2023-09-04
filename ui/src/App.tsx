@@ -2,16 +2,13 @@ import Login from './components/login/Login';
 import Admin from './components/admin/Admin';
 import Team from './components/team/Team';
 import { useAppSelector } from './hooks';
-import { selectAuthRole } from './components/login/authSlice';
+import { selectUserRole } from './auth/authSlice';
 import { UserRole } from './enums/UserRole';
 
 function App() {
-  const userRole = useAppSelector(selectAuthRole);
-  const status = useAppSelector((state) => state.auth.status);
-  console.log(status);
-  console.log(userRole)
+  const userRole = useAppSelector(selectUserRole);
 
-const renderComponentBasedOnRole = () => {
+  const renderComponentBasedOnRole = () => {
     switch (userRole) {
       case UserRole.ADMIN:
         return <Admin />;
@@ -22,11 +19,7 @@ const renderComponentBasedOnRole = () => {
     }
   };
 
-  return (
-    <>
-    {renderComponentBasedOnRole()}
-    </>
-  );
+  return <>{renderComponentBasedOnRole()}</>;
 }
 
 export default App;

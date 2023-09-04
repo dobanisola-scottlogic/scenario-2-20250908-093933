@@ -1,10 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { logout, selectAuthName } from '../login/authSlice';
+import { logout, selectTeamName } from '../../auth/authSlice';
 import { Button } from '@mui/material';
 
 function Team() {
-  const name = useAppSelector(selectAuthName);
+  const name = useAppSelector(selectTeamName);
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -14,11 +13,7 @@ function Team() {
   return (
     <>
       <h1>You are logged in as team: {name} </h1>
-      <Button
-        onClick={handleLogout}
-      >
-        Logout
-      </Button>
+      <Button onClick={handleLogout}>Logout</Button>
     </>
   );
 }

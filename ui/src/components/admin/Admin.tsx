@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import { useAppDispatch } from '../../hooks';
-import { logout } from '../login/authSlice';
+import { logout } from '../../auth/authSlice';
 
 function Admin() {
   const dispatch = useAppDispatch();
@@ -12,11 +12,7 @@ function Admin() {
   return (
     <>
       <h1>You are logged in as admin</h1>
-      <Button
-        onClick={handleLogout}
-      >
-        Logout
-      </Button>
+      <Button onClick={handleLogout}>Logout</Button>
     </>
   );
 }

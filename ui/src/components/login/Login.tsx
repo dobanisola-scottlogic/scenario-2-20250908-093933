@@ -2,6 +2,7 @@ import { createTheme } from '@mui/material/styles';
 import { useState } from 'react';
 import theme from '../../theme';
 import {
+  Alert,
   AppBar,
   Box,
   Button,
@@ -9,19 +10,20 @@ import {
   CssBaseline,
   IconButton,
   InputAdornment,
+  LinearProgress,
   TextField,
   ThemeProvider,
   Toolbar,
   Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { login, loginSuccess, setCredentials } from './authSlice';
+import { useAppDispatch } from '../../hooks';
+import { setCredentials } from '../../auth/authSlice';
 import { useLoginMutation } from '../../api/api';
 
 function Login() {
   const dispatch = useAppDispatch();
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
@@ -40,8 +42,9 @@ function Login() {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError('');
 
     if (!username || !password) {
       setError('Username and password are required.');
@@ -49,15 +52,19 @@ function Login() {
     }
 
     const credentials: string = btoa(username + ':' + password);
-    await dispatch(setCredentials(credentials));
-    const response: any = await login(credentials);
-    console.log(response.data);
-    // dispatch(loginSuccess(response.data))
-    // try {
-    //   await dispatch(login(credentials));
-    // } catch (e) {
-    //   setError('Login failed. Please check your credentials.');
-    // }
+    dispatch(setCredentials(credentials));
+
+    login()
+      .unwrap() // success handled by the `fulfilled` action creator
+      .catch((e: unknown) => {
+        if ((e as { originalStatus?: number }).originalStatus === 401) {
+          setError(
+            'Invalid username or password. Please check your credentials.'
+          );
+        } else {
+          setError("Sorry we couldn't log you in. Please try again later.");
+        }
+      });
   };
 
   return (
@@ -147,20 +154,33 @@ function Login() {
                   justifyContent: 'flex-end',
                 }}
               >
+                {error && (
+                  <Box
+                    component="div"
+                    sx={{
+                      mt: 2,
+                      mr: 1,
+                      color: 'red',
+                    }}
+                  >
+                    <Alert severity="error">{error}</Alert>
+                  </Box>
+                )}
                 <Button
                   type="submit"
                   variant="text"
+                  disabled={isLoading}
                   sx={{
                     mt: 3,
-                    mb: 2,
+                    mb: 4,
                     fontWeight: 'bold',
                     justifyItems: 'center',
                   }}
                 >
                   Login
                 </Button>
-                {error && <div className="error-message">{error}</div>}
               </Box>
+              {isLoading && <LinearProgress />}
             </Box>
           </Box>
         </Container>

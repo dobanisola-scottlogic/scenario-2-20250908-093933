@@ -1,33 +1,25 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { useAppSelector } from '../hooks';
-import { selectCredentials } from '../components/login/authSlice';
-import store, { RootState } from '../store';
-import { ThunkDispatch } from 'redux-thunk';
-
-// const prepareCredentials = async () => {
-//   const credentials = useAppSelector(selectCredentials);
-//   return credentials;
-// };
+import { RootState } from '../store';
+import { LoginResponse } from '../interfaces/LoginResponse';
 
 // Define a service using a base URL and expected endpoints
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL,
-    prepareHeaders: async (headers, { getState }) => {
-      const credentials = (getState() as RootState).auth.credentials;
-      headers.set('Authorization', `Basic ${credentials}`);
+    prepareHeaders: (headers, { getState }) => {
+      const credentials: string = (getState() as RootState).auth.credentials;
+      if (credentials) {
+        headers.set('Authorization', `Basic ${credentials}`);
+      }
       return headers;
     },
   }),
   endpoints: (builder) => ({
-    login: builder.mutation<any, any>({
-      query: (credentials) => ({
+    login: builder.mutation<LoginResponse, void>({
+      query: () => ({
         url: '/login',
         method: 'POST',
-        body: {
-          Authorization: 'Basic ' + credentials,
-        },
       }),
     }),
   }),
