@@ -12,7 +12,7 @@ export class LoginPage {
     this.usernameField = page.getByPlaceholder("Username");
     this.passwordField = page.getByPlaceholder("Password");
     this.loginButton = page.getByRole("button", {name: "Login"})
-    this.errorMessage = page.locator("class=error-message")
+    this.errorMessage = page.locator("class=MuiAlert-message")
   }
 
   async inputUsername(username: string) {
@@ -27,7 +27,7 @@ export class LoginPage {
     await this.loginButton.click();
   }
 
-  async verifyLoginError(message: string) {
+  async verifyLoginErrorIs(message: string) {
     await expect (this.errorMessage).toHaveText(message);
   }
 }
