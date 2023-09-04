@@ -1,18 +1,16 @@
-import { type Locator, type Page, expect } from '@playwright/test';
+import { type Locator, type Page } from '@playwright/test';
 
 export class LoginPage {
   readonly page: Page;
   readonly usernameField: Locator;
   readonly passwordField: Locator;
   readonly loginButton: Locator;
-  readonly errorMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.usernameField = page.getByPlaceholder("Username");
+    this.usernameField = page.getByPlaceholder("Team Name");
     this.passwordField = page.getByPlaceholder("Password");
     this.loginButton = page.getByRole("button", {name: "Login"})
-    this.errorMessage = page.locator("class=MuiAlert-message")
   }
 
   async inputUsername(username: string) {
@@ -25,9 +23,5 @@ export class LoginPage {
 
   async attemptLogin() {
     await this.loginButton.click();
-  }
-
-  async verifyLoginErrorIs(message: string) {
-    await expect (this.errorMessage).toHaveText(message);
   }
 }
