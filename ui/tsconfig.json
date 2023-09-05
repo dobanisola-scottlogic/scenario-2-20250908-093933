@@ -23,6 +23,6 @@
     /* Testing */
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "setupTests.ts"],
+  "include": ["src", "playwright", "playwright.config.ts", "setupTests.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
