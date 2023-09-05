@@ -3,7 +3,6 @@ import { useState } from 'react';
 import theme from '../../theme';
 import {
   Alert,
-  AppBar,
   Box,
   Button,
   Container,
@@ -13,13 +12,13 @@ import {
   LinearProgress,
   TextField,
   ThemeProvider,
-  Toolbar,
   Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAppDispatch } from '../../hooks';
 import { setCredentials } from '../../auth/authSlice';
 import { useLoginMutation } from '../../api/api';
+import Navbar from '../navbar/Navbar';
 
 function Login() {
   const dispatch = useAppDispatch();
@@ -69,24 +68,9 @@ function Login() {
 
   return (
     <>
+      <Navbar />
       <ThemeProvider theme={loginTheme}>
         <CssBaseline />
-        <AppBar elevation={0} sx={{ backgroundColor: '#EFEFEF' }}>
-          <Toolbar>
-            <Typography
-              variant="h6"
-              component="header"
-              sx={{
-                flexGrow: 1,
-                textAlign: 'left',
-                color: '#000000DE',
-                fontWeight: 'bold',
-              }}
-            >
-              Hackathon
-            </Typography>
-          </Toolbar>
-        </AppBar>
         <Container
           component="main"
           maxWidth="xs"
@@ -131,10 +115,14 @@ function Login() {
                 id="password"
                 name="password"
                 label="Password"
+                aria-label="Password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
                 InputProps={{
+                  inputProps: {
+                    'data-testid': 'password-input',
+                  },
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
