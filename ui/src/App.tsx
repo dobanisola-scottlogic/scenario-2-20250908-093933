@@ -4,7 +4,7 @@ import Team from './components/team/Team';
 import { useAppSelector } from './hooks';
 import { selectUserRole } from './auth/authSlice';
 import { UserRole } from './enums/UserRole';
-import theme from './theme';
+import { theme } from './theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import Navbar from './components/navbar/Navbar';
 

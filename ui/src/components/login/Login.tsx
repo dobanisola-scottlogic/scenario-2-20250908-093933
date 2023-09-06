@@ -1,6 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 import { useState } from 'react';
-import theme from '../../theme';
+import { theme, colours } from '../../theme';
 import {
   Alert,
   Box,
@@ -31,7 +31,7 @@ function Login() {
   const loginTheme = createTheme(theme, {
     palette: {
       background: {
-        default: '#F5F5F5',
+        default: colours.lightGrey,
       },
     },
   });
