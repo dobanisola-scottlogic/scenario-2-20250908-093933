@@ -99,6 +99,7 @@ function CreateHackathon({ createHackathonOpen, setCreateHackathonOpen }: Create
           <FormControl  sx={{ m: 1 }} fullWidth>
               <InputLabel id="demo-simple-select-label">Current milestone bot</InputLabel>
               <Select
+                disabled
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 label="Current milestone bot"
@@ -112,6 +113,7 @@ function CreateHackathon({ createHackathonOpen, setCreateHackathonOpen }: Create
           <FormControl  sx={{ m: 1 }} fullWidth>
               <InputLabel id="demo-simple-select-label">Current milestone map</InputLabel>
               <Select
+                disabled
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 label="Current milestone map"
@@ -131,6 +133,7 @@ function CreateHackathon({ createHackathonOpen, setCreateHackathonOpen }: Create
           <FormControl  sx={{ m: 1 }} fullWidth>
               <InputLabel id="demo-simple-select-label">Number of teams and users to create</InputLabel>
               <Select
+                disabled
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 label="Number of teams and users to create"
@@ -157,7 +160,7 @@ function CreateHackathon({ createHackathonOpen, setCreateHackathonOpen }: Create
             m: 1
           }}>
               <Button onClick={handleClose} sx={{color: '#6c10ef' }} variant="text">CANCEL</Button>
-              <Button onClick={submitForm} sx={{color: '#6c10ef' }} variant="text">ADD A NEW HACKATHON</Button>
+              <Button disabled={!hackathonName} onClick={submitForm} sx={{color: '#6c10ef' }} variant="text">ADD A NEW HACKATHON</Button>
           </Box>
         </DialogContent>
       )}
