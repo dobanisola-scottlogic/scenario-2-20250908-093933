@@ -84,6 +84,7 @@ function Login() {
               backgroundColor: 'white',
               borderRadius: '9px',
               padding: '40px 30px',
+              height: '23rem',
             }}
           >
             <Typography component="h1" variant="h6" fontWeight={'bold'}>
