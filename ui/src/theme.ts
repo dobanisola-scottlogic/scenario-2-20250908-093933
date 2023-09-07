@@ -6,6 +6,7 @@ export const colours = {
   midGrey: '#EFEFEF',
   lightGrey: '#F5F5F5',
   textBlack: '#000000DE',
+  buttonColour: '#6c10ef' // Colour taken from Figma
 };
 
 export const theme = createTheme({

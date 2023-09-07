@@ -15,6 +15,7 @@ import {
 import { useCreateHackathonMutation, useGetMilestonesMutation } from "../../api/api";
 import { useAppSelector } from "../../hooks";
 import { selectMilestones } from "../../hackathon/hackathonSlice";
+import { colours } from '../../theme';
 
 interface CreateHackathonProps {
     createHackathonOpen: boolean;
@@ -155,8 +156,8 @@ function CreateHackathon({ createHackathonOpen, setCreateHackathonOpen }: Create
           flexDirection: 'row',
           m: 1
         }}>
-            <Button onClick={handleClose} sx={{color: '#6c10ef' }} variant="text">CANCEL</Button>
-            <Button disabled={!hackathonName} onClick={submitForm} sx={{color: '#6c10ef' }} variant="text">ADD A NEW HACKATHON</Button>
+            <Button onClick={handleClose} sx={{color: colours.buttonColour }} variant="text">CANCEL</Button>
+            <Button disabled={!hackathonName} onClick={submitForm} sx={{color: colours.buttonColour }} variant="text">ADD A NEW HACKATHON</Button>
         </Box>
       </DialogContent>
       </Dialog>
