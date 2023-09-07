@@ -30,7 +30,7 @@ export const api = createApi({
       }),
     }),
     createHackathon: builder.mutation<CreateHackathonServiceResponse, void>({
-      query: ({name}) => ({
+      query: ({name}: {name: string}) => ({
         url: '/hackathon',
         method: 'POST',
         body: {name}
