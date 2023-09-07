@@ -90,6 +90,7 @@ const CreateHackathon = ({ createHackathonOpen, setCreateHackathonOpen }: Create
             </Select>
         </FormControl>
 
+        {/* Hardcoded options should be removed in future when HAC-100 and HAC-101 are implemented */}
         <FormControl  sx={{ m: 1 }} fullWidth>
             <InputLabel id="demo-simple-select-label">Current milestone map</InputLabel>
             <Select
