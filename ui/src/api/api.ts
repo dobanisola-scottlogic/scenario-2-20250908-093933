@@ -9,7 +9,8 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
-      const credentials: string = (getState() as RootState).auth.credentials;
+      const credentials: string | null = (getState() as RootState).auth
+        .credentials;
       if (credentials) {
         headers.set('Authorization', `Basic ${credentials}`);
       }

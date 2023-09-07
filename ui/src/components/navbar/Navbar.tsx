@@ -1,11 +1,12 @@
 import { AppBar, Toolbar, Typography } from '@mui/material';
+import { colours } from '../../theme';
 
-function Navbar() {
+const Navbar = () => {
   return (
     <>
       <AppBar
         elevation={0}
-        sx={{ backgroundColor: '#EFEFEF', position: 'relative' }}
+        sx={{ backgroundColor: colours.midGrey, position: 'relative' }}
       >
         <Toolbar>
           <Typography
@@ -14,7 +15,7 @@ function Navbar() {
             sx={{
               flexGrow: 1,
               textAlign: 'left',
-              color: '#000000DE',
+              color: colours.textBlack,
               fontWeight: 'bold',
             }}
           >
@@ -24,6 +25,6 @@ function Navbar() {
       </AppBar>
     </>
   );
-}
+};
 
 export default Navbar;

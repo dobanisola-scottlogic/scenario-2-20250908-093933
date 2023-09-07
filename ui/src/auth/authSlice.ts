@@ -1,13 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import { UserRole } from '../enums/UserRole';
 import { api } from '../api/api';
 import { AuthState } from '../interfaces/AuthState';
 
 const initialState: AuthState = {
-  name: '',
-  role: UserRole.NONE,
-  credentials: '',
+  name: null,
+  role: null,
+  credentials: null,
 };
 
 export const authSlice = createSlice({
@@ -17,10 +16,8 @@ export const authSlice = createSlice({
     setCredentials: (state, action: PayloadAction<string>) => {
       state.credentials = action.payload;
     },
-    logout: (state) => {
-      state.role = UserRole.NONE;
-      state.name = '';
-      state.credentials = '';
+    logout: () => {
+      return initialState;
     },
   },
   extraReducers: (builder) => {
