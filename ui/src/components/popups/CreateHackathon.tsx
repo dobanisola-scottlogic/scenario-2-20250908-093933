@@ -17,7 +17,6 @@ import {
   useCreateHackathonMutation,
   useGetMilestonesQuery,
 } from '../../api/api';
-import { colours } from '../../theme';
 
 interface CreateHackathonProps {
   createHackathonOpen: boolean;
@@ -189,7 +188,7 @@ const CreateHackathon = ({
             CANCEL
           </Button>
           <Button
-            disabled={!hackathonName || isLoading}
+            disabled={!hackathonName.trim() || isLoading}
             onClick={submitForm}
             variant="text"
           >
