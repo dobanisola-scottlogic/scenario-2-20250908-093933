@@ -22,6 +22,7 @@ export const api = createApi({
       return headers;
     },
   }),
+  tagTypes: ['Hackathon'],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, void>({
       query: () => ({
