@@ -30,6 +30,7 @@
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
+    "@emotion/eslint-plugin": "^11.11.0",
     "@playwright/test": "^1.37.1",
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/react": "^14.0.0",
