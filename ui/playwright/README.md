@@ -8,7 +8,8 @@ in the ui directory (e.g. if on the base directory, cd into 'ui' before running 
 tests).
 
 **npx playwright test:** will run the Playwright tests against the current local Hackathon. 
-For this to be functional, make sure that the hackathon is running in the background.
+For this to be functional, make sure that both the hackathon and the dev server is running 
+in the background.
 
 These tests will also generate reports after completion. The report will be opened automatically
 on test failure, or can be opened with the following command (the quotes are needed):

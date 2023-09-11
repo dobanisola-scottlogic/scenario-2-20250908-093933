@@ -34,8 +34,8 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }, 
-    }
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:5173' },
+    },
   ],
 
   /* Run your local dev server before starting the tests */
