@@ -25,7 +25,7 @@ module.exports = {
       { allowConstantExport: true },
     ],
     'no-console': 'error',
-    '@emotion/syntax-preference': [2, "object"]
+    '@emotion/syntax-preference': [2, 'object'],
   },
   settings: {
     react: { version: 'detect' },
