@@ -23,9 +23,15 @@ export const api = createApi({
         method: 'POST',
       }),
     }),
+    deleteHackathon: builder.mutation<void, string>({
+      query: ({ id }: { id: string }) => ({
+        url: `/hackathon/${id}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation } = api;
+export const { useDeleteHackathonMutation, useLoginMutation } = api;

@@ -1,0 +1,125 @@
+import { useState } from 'react';
+import {
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  LinearProgress,
+  Typography,
+  Snackbar
+} from '@mui/material';
+import { useDeleteHackathonMutation } from '../../api/api';
+
+interface DeleteHackathonProps {
+  deleteHackathonOpen: boolean;
+  hackathonId: string;
+  setDeleteHackathonOpen: (createHackathonOpen: boolean) => void;
+}
+
+const DeleteHackathon = ({
+  deleteHackathonOpen,
+  hackathonId,
+  setDeleteHackathonOpen,
+}: DeleteHackathonProps) => {
+
+    const [deleteHackathon, {isLoading: isDeleting}] = useDeleteHackathonMutation();
+
+    const [formError, setFormError] = useState<string | undefined>(undefined);
+    const [showSuccessSnackbar, setShowSuccessSnackbar] = useState<boolean>(false);
+    const handleCloseSnackbar = () => setShowSuccessSnackbar(false);
+    
+    const handleClose = () => {
+        setFormError(undefined);
+        setDeleteHackathonOpen(false);
+    }
+
+  const handleDelete = () => {
+    deleteHackathon({ id: hackathonId })
+    .unwrap()
+    .then(() => {
+      setShowSuccessSnackbar(true);
+      handleClose();
+    }) // success handled by the `fulfilled` action creator
+    .catch((createError: unknown) => {
+      const { status } = createError as { status: number };
+      if (status === 400) {
+        setFormError('Error deleting hackathon - bad request');
+      } else {
+        setFormError('Error deleting hackathon - internal server error');
+      }
+    });
+  }
+
+  return (
+    <>
+      <Snackbar 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={3000}
+        key={'top' + 'center'}
+        open={showSuccessSnackbar}  
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+            Hackathon deleted successfully!
+        </Alert>
+      </Snackbar>
+
+      <Dialog onClose={handleClose} open={deleteHackathonOpen}>
+        <DialogContent sx={{ width: 500 }}>
+            <Typography
+                sx={{ m: 1, mx: 'auto' }}
+                role="dialogHeading"
+            >
+                Are you sure you want to delete the hackathon?
+            </Typography>
+            <Typography
+                sx={{ fontWeight: 'normal', m: 1, mx: 'auto' }}
+                role="dialogHeading"
+            >
+                This will delete teams and games in the hackathon as well.
+                You <strong>cannot</strong> undo this action.
+            </Typography>
+
+            <Box
+                sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                flexDirection: 'row',
+                m: 1,
+                }}
+            >
+                <Button
+                    onClick={handleClose}
+                    variant="text"
+                >
+                    CANCEL
+                </Button>
+                <Button
+                    onClick={handleDelete}
+                    variant="text"
+                >
+                    DELETE HACKATHON
+                </Button>
+          </Box>
+
+          {formError && (
+            <Alert 
+                severity="error"
+                sx={{
+                  my: 2,
+                  mr: 1,
+                }}
+            >
+              {formError}
+            </Alert>
+          )}
+          
+          {isDeleting && <LinearProgress />}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+export default DeleteHackathon;
