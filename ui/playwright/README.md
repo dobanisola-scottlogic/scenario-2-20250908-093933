@@ -20,7 +20,7 @@ npx playwright show-report 'playwright\test-results'
 ```
 
 Click [here](https://playwright.dev/docs/test-cli) for a list of command line options that 
-may be used when running Playwright tests. For example, 'npx playwright tests --ui' allows
+may be used when running Playwright tests. For example, 'npx playwright test --ui' allows
 for an interactive UI to be opened, allowing you to examine what is going on at each individual
 step of the test. 'npx playwright codegen' aids in helping find selectors in the case of 
 any new added components.
