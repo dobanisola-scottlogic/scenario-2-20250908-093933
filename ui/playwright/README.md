@@ -8,8 +8,8 @@ When running any of the below commands, make sure that your terminal window is l
 in the ui directory (e.g. if on the base directory, cd into 'ui' before running any
 tests).
 
-**npx playwright test:** will run the Playwright tests against the current local Hackathon. 
-For this to be functional, make sure that the hackathon server, with "ENVIRONMENT=dev" set 
+**npx playwright test:** will run the Playwright tests against the current local Hackathon.
+For this to be functional, make sure that the hackathon server, with "ENVIRONMENT=dev" set
 as an environment variable, is running. The dev server is automatically run as part of
 test configuration.
 

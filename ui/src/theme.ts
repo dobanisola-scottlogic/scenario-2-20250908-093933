@@ -31,6 +31,7 @@ export const theme = createTheme({
         root: {
           color: colours.textBlack,
           fontWeight: 'bold',
+          flexGrow: 1,
         },
       },
     },
