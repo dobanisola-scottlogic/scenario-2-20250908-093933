@@ -19,9 +19,11 @@ project.ext {
 }
 
 application {
-    mainClass.set("${mainClassName}")
+    mainClass = "${mainClassName}"
+    applicationName = "${applicationName}"
 }
 
+startScripts.setApplicationName("${applicationName}")
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
@@ -36,7 +38,6 @@ dependencies {
     def dropWizardVersion = "1.3.7"
     def jettyVersion = "9.4.11.v20180605"
 
-
     implementation group: "io.dropwizard", name: "dropwizard-core", version: dropWizardVersion
     implementation group: "io.dropwizard", name: "dropwizard-auth", version: dropWizardVersion
     implementation group: "io.dropwizard", name: "dropwizard-assets", version: dropWizardVersion
@@ -44,7 +45,6 @@ dependencies {
     implementation group: "io.dropwizard", name: "dropwizard-hibernate", version: dropWizardVersion
 
     implementation group: 'ru.vyarus', name: 'dropwizard-guicey', version: '4.2.0'
-
 
     implementation group: "com.google.inject", name: "guice", version: "3.0"
     implementation project(":game")
