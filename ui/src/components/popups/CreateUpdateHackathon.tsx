@@ -12,24 +12,42 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useCreateHackathonMutation,
+  useGetHackathonQuery,
   useGetMilestonesQuery,
+  useUpdateHackathonMutation,
 } from '../../api/api';
 import { PopupProps } from '../../interfaces/PopupTypes';
 import PopupMessage from '../popupMessage/PopupMessage';
 
-const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
-  const [createHackathon, { isLoading }] = useCreateHackathonMutation();
-  const { data: milestoneBots } = useGetMilestonesQuery();
+const CreateUpdateHackathon = ({
+  hackathonId,
+  isOpen,
+  setIsOpen,
+}: PopupProps) => {
+  const isEditing = Boolean(hackathonId);
 
+  const {
+    data: hackathon,
+    isLoading: isFetching,
+    error: fetchError,
+  } = useGetHackathonQuery(hackathonId, {
+    skip: Boolean(hackathonId) === false, // Prevent query running when no hackathon ID is passed
+  });
+  const { data: milestoneBots } = useGetMilestonesQuery();
+  const [createHackathon, { isLoading: isCreating }] =
+    useCreateHackathonMutation();
+  const [updateHackathon, { isLoading: isUpdating }] =
+    useUpdateHackathonMutation();
+
+  const isLoading = isFetching || isCreating || isUpdating;
+
+  // Form data for hackathon
   const [hackathonName, setHackathonName] = useState<string>('');
-  const [createdHackathonName, setCreatedHackathonName] = useState<string>('');
   const [milestoneMapName, setMilestoneMapName] = useState<string>('');
   const [milestoneBotName, setMilestoneBotName] = useState<string>('');
-  const [numberOfTeamsAndUsers, setNumberOfTeamsAndUsers] =
-    useState<string>('');
 
   const [formError, setFormError] = useState<string | undefined>(undefined);
   const [isSnackbarOpen, setSnackbarOpen] = useState<boolean>(false);
@@ -37,8 +55,21 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
   const readableMilestoneBotClassName = (milestoneBotClassName: string) =>
     milestoneBotClassName.replace('com.scottlogic.hackathon.bots.', '');
 
+  useEffect(() => {
+    // Load data where passed into form
+    if (hackathon) {
+      const { currentMilestoneClassName, currentMilestoneMap, name } =
+        hackathon;
+      setHackathonName(name);
+      setMilestoneMapName(currentMilestoneMap);
+      setMilestoneBotName(currentMilestoneClassName);
+    }
+  }, [hackathon]);
+
   const handleClose = () => {
-    clearForm();
+    if (!isEditing) {
+      clearForm();
+    }
     setIsOpen(false);
   };
 
@@ -46,18 +77,13 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
     setHackathonName('');
     setMilestoneMapName('');
     setMilestoneBotName('');
-    setNumberOfTeamsAndUsers('');
     setFormError(undefined);
   };
 
-  const submitForm = () => {
-    setFormError(undefined);
-    setCreatedHackathonName('');
-
+  const handleCreateHackathon = () => {
     createHackathon(hackathonName)
       .unwrap()
       .then(() => {
-        setCreatedHackathonName(hackathonName);
         setSnackbarOpen(true);
         handleClose();
       })
@@ -71,21 +97,57 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
       });
   };
 
+  const handleUpdateHackathon = () => {
+    const updateHackathonRequest = {
+      id: hackathonId,
+      milestoneMap: milestoneMapName,
+      milestoneClassName: milestoneBotName,
+    };
+
+    updateHackathon(updateHackathonRequest)
+      .unwrap()
+      .then(() => {
+        setSnackbarOpen(true);
+        handleClose();
+      })
+      .catch((createError: unknown) => {
+        const { status } = createError as { status: number };
+        if (status === 400) {
+          setFormError('Error updating hackathon - bad request');
+        } else {
+          setFormError('Error updating hackathon - internal server error');
+        }
+      });
+  };
+
+  const handleSubmit = () => {
+    setFormError(undefined);
+
+    if (isEditing) {
+      handleUpdateHackathon();
+    } else {
+      handleCreateHackathon();
+    }
+  };
+
   return (
     <>
       <PopupMessage
         isSnackbarOpen={isSnackbarOpen}
-        popupMessage={`Hackathon '${createdHackathonName}' created successfully!`}
+        popupMessage={`Hackathon ${
+          isEditing ? 'updated' : 'created'
+        } successfully!`}
         setShowSnackbar={setSnackbarOpen}
       />
 
       <Dialog onClose={handleClose} open={isOpen}>
         <DialogContent sx={{ width: 500 }}>
           <Typography sx={{ m: 1, mx: 'auto' }} role="dialogHeading">
-            Add a new hackathon
+            {isEditing ? 'Edit hackathon' : 'Add a new hackathon'}
           </Typography>
 
           <TextField
+            disabled={isEditing}
             fullWidth
             sx={{ m: 1, mx: 'auto' }}
             id="outlined-basic"
@@ -96,19 +158,21 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
           />
 
           <FormControl sx={{ m: 1, mx: 'auto' }} fullWidth>
-            <InputLabel id="demo-simple-select-label">
+            <InputLabel id="current-milestone-bot-label">
               Current milestone bot
             </InputLabel>
             <Select
-              disabled
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              data-testid="current-milestone-bot"
+              disabled={!isEditing}
+              labelId="current-milestone-bot-select-label"
+              id="current-milestone-bot"
               label="Current milestone bot"
               value={milestoneBotName}
               onChange={(event) => setMilestoneBotName(event.target.value)}
             >
-              {milestoneBots?.map((milestoneBot) => (
+              {milestoneBots?.map((milestoneBot, index) => (
                 <MenuItem
+                  data-testid={`current-milestone-bot-option-${index}`}
                   key={milestoneBot.id}
                   value={milestoneBot.milestoneClassName}
                 >
@@ -126,9 +190,10 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
               Current milestone map
             </InputLabel>
             <Select
-              disabled
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              data-testid="current-milestone-map"
+              disabled={!isEditing}
+              labelId="current-milestone-map-label"
+              id="current-milestone-map"
               label="Current milestone map"
               value={milestoneMapName}
               onChange={(event) => setMilestoneMapName(event.target.value)}
@@ -143,31 +208,6 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
             </Select>
           </FormControl>
 
-          <FormControl sx={{ m: 1, mx: 'auto' }} fullWidth>
-            <InputLabel id="demo-simple-select-label">
-              Number of teams and users to create
-            </InputLabel>
-            <Select
-              disabled
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Number of teams and users to create"
-              value={numberOfTeamsAndUsers}
-              onChange={(event) => setNumberOfTeamsAndUsers(event.target.value)}
-            >
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={2}>2</MenuItem>
-              <MenuItem value={3}>3</MenuItem>
-              <MenuItem value={4}>4</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={6}>6</MenuItem>
-              <MenuItem value={7}>7</MenuItem>
-              <MenuItem value={8}>8</MenuItem>
-              <MenuItem value={9}>9</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-            </Select>
-          </FormControl>
-
           <Box
             sx={{
               display: 'flex',
@@ -179,9 +219,9 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
             <Button onClick={handleClose}>CANCEL</Button>
             <Button
               disabled={!hackathonName.trim() || isLoading}
-              onClick={submitForm}
+              onClick={handleSubmit}
             >
-              ADD A NEW HACKATHON
+              {isEditing ? 'UPDATE HACKATHON' : 'ADD A NEW HACKATHON'}
             </Button>
           </Box>
 
@@ -197,6 +237,20 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
             </Alert>
           )}
 
+          {isEditing && !isFetching && !hackathon && (
+            <Alert
+              severity="error"
+              sx={{
+                my: 2,
+                mr: 1,
+              }}
+            >
+              {fetchError
+                ? 'Error fetching hackathon'
+                : 'No hackathon data found'}
+            </Alert>
+          )}
+
           {isLoading && <LinearProgress />}
         </DialogContent>
       </Dialog>
@@ -204,4 +258,4 @@ const CreateHackathon = ({ isOpen, setIsOpen }: PopupProps) => {
   );
 };
 
-export default CreateHackathon;
+export default CreateUpdateHackathon;

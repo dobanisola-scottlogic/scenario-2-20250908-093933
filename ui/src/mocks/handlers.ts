@@ -3,6 +3,26 @@ import { UserRole } from '../enums/UserRole';
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
+const testHackathonBody = {
+  id: 'test-id',
+  name: 'Test Hackathon',
+  games: [],
+  teams: [],
+  currentMilestoneClassName: 'com.scottlogic.hackathon.bots.Milestone1Bot',
+  currentMilestoneMap: 'Easy',
+};
+
+const getMilestonesResponse = [
+  {
+    id: 'a7d63a7f-0a67-4abf-9eaa-74fc5c52aed4',
+    milestoneClassName: 'com.scottlogic.hackathon.bots.Milestone1Bot',
+  },
+  {
+    id: '559cd7d4-d601-4a45-949e-e8babd10aafa',
+    milestoneClassName: 'com.scottlogic.hackathon.bots.Milestone2Bot',
+  },
+];
+
 export const handlers = [
   rest.post(baseUrl + '/login', (req, res, ctx) => {
     const authorizationHeader = req.headers.get('Authorization');
@@ -33,17 +53,7 @@ export const handlers = [
     const hackathonName = req.body.name as string;
 
     if (hackathonName === 'Test Hackathon') {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          id: 'test-hackathon-id',
-          name: 'Test Hackathon',
-          games: null,
-          teams: null,
-          currentMilestoneClassName: 'Milestone1Bot', // Old service returns a default milestone class
-          currentMilestoneMap: 'VeryEasy', // Old service returns a default milestone map
-        })
-      );
+      return res(ctx.status(200), ctx.json(testHackathonBody));
     } else if (hackathonName === 'Bad Request Hackathon') {
       return res(
         ctx.status(400),
@@ -78,5 +88,17 @@ export const handlers = [
         message: 'An error occurred.',
       })
     );
+  }),
+  rest.get(baseUrl + '/hackathon/test-id', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(testHackathonBody));
+  }),
+  rest.get(baseUrl + '/hackathon/not-found-id', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(null));
+  }),
+  rest.put(baseUrl + '/hackathon/test-id', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(testHackathonBody));
+  }),
+  rest.get(baseUrl + '/milestone', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(getMilestonesResponse));
   }),
 ];
