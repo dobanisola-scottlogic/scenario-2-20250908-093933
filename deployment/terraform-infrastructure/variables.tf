@@ -39,7 +39,7 @@ variable "project" {
 }
 
 locals {
-  workspace = terraform.workspace == "default" ? var.project : terraform.workspace
+  workspace = terraform.workspace == "default" ? var.project : lower(terraform.workspace)
 }
 
 variable "server_service_name" {
