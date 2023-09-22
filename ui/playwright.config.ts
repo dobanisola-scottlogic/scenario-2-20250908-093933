@@ -15,10 +15,6 @@ export default defineConfig({
       password: 'secret',
     },
     trace: 'retain-on-failure',
-    httpCredentials: {
-      username: 'admin',
-      password: 'secret',
-    },
   },
   projects: [
     {

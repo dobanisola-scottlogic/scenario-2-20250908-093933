@@ -4,6 +4,4 @@ export interface Milestone {
   timeStamp: number;
 }
 
-type Milestones = Record<string, Milestone>;
-
-export type GetMilestoneResponse = Milestones[];
+export type GetMilestoneResponse = Milestone[];

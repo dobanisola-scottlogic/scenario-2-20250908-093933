@@ -12,11 +12,19 @@ node {
 
 task formatReactApp(type: NpmTask, dependsOn: npmInstall) {
     group = 'Verification'
-    description = 'Runs prettier and eslint to format UI code'
+    description = 'Runs prettier and eslint to check the format of UI code'
 
     args = ['run', 'format']
 }
 check.dependsOn formatReactApp
+
+task lintTypeScript(type: NpmTask, dependsOn: npmInstall) {
+    group = 'Verification'
+    description = 'Runs tsc to check the TypeScript code'
+
+    args = ['run', 'lint-tsc']
+}
+check.dependsOn lintTypeScript
 
 task testReactApp(type: NpmTask, dependsOn: npmInstall) {
     group = 'Verification'

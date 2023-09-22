@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "husky install",
     "prettier:ui": "cd ui && npm run prettier:write",
-    "lint:ui": "cd ui && npm run lint:fix"
+    "lint:ui": "cd ui && npm run lint:fix && npm run lint-tsc"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

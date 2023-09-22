@@ -18,7 +18,7 @@ module.exports = {
     project: ['./tsconfig.json', './tsconfig.node.json'],
     tsconfigRootDir: __dirname,
   },
-  plugins: ['react-refresh', '@emotion'],
+  plugins: ['react-refresh', '@emotion', '@typescript-eslint'],
   rules: {
     'react-refresh/only-export-components': [
       'warn',

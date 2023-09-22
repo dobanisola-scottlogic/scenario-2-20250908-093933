@@ -1,9 +1,9 @@
-import { Alert, Snackbar } from '@mui/material';
+import { Alert, AlertColor, Snackbar } from '@mui/material';
 
 interface PopupMessageProps {
   isSnackbarOpen: boolean;
   popupMessage: string;
-  severity?: string;
+  severity?: AlertColor;
   setShowSnackbar: (showSuccessSnackbar: boolean) => void;
 }
 

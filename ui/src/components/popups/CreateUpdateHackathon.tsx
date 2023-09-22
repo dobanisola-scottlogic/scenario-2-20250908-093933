@@ -12,6 +12,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 import { useEffect, useState } from 'react';
 import {
   useCreateHackathonMutation,
@@ -29,9 +30,7 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
     data: hackathon,
     isLoading: isFetching,
     error: fetchError,
-  } = useGetHackathonQuery(id, {
-    skip: Boolean(id) === false, // Prevent query running when no hackathon ID is passed
-  });
+  } = useGetHackathonQuery(id ?? skipToken);
   const { data: milestoneBots } = useGetMilestonesQuery();
   const [createHackathon, { isLoading: isCreating }] =
     useCreateHackathonMutation();
@@ -95,7 +94,7 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
 
   const handleUpdateHackathon = () => {
     const updateHackathonRequest = {
-      id,
+      id: id!,
       milestoneMap: milestoneMapName,
       milestoneClassName: milestoneBotName,
     };
