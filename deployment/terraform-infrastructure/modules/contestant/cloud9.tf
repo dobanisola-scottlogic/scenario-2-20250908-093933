@@ -33,3 +33,13 @@ resource "aws_vpc_security_group_egress_rule" "cloud9_security_group_egress_rule
     Name = "${var.workspace}-cloud9-security-group-egress-rule"
   }
 }
+
+# Get the cloud 9 instance using a filter
+data "aws_instance" "cloud9_ec2_instance" {
+  filter {
+    name = "tag:aws:cloud9:environment"
+    values = [
+      aws_cloud9_environment_ec2.cloud9_instance.id
+    ]
+  }
+}

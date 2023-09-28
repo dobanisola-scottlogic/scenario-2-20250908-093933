@@ -40,14 +40,13 @@ resource "aws_lb" "public_load_balancer" {
 
 When you need to deploy resources using Terraform as part of a ticket, you
 should first create an appropriate workspace. For example, if you are working on
-ticket **HAC-125**, you should create a workspace called `hac-125`:
+ticket **HAC-125**, you should create a workspace called `hac125`:
 
 ```bash
-terraform workspace new hac-125
+terraform workspace new hac125
 ```
 
-**Note that the workspace name should be lowercase, since it will be used as
-part of resource names, which in some cases only allow lowercase letters.**
+**Note that the workspace name should be lowercase with no special characters, since it will be used as part of resource names, which in some cases only allow lowercase letters and numbers.**
 
 Make your required changes to the Terraform files, and use `terraform plan`,
 `terraform apply` and `terraform destroy` as usual. When you are finished with
@@ -55,7 +54,7 @@ the ticket, and have ensured that your resources have been destroyed, you can
 delete the workspace:
 
 ```bash
-terraform workspace delete hac-125
+terraform workspace delete hac125
 ```
 ---
 ### N.B. Remember to destroy your resources when they are not needed, since this is a complete copy of the project infrastructure so could incur significant costs if left running.
