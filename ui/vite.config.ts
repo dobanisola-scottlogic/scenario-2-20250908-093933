@@ -12,4 +12,5 @@ export default defineConfig({
     setupFiles: './setupTests.ts',
     exclude: [...configDefaults.exclude, '**/playwright/**'],
   },
+  base: '/application/ui/',
 });

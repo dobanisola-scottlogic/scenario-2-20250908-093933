@@ -61,6 +61,7 @@ dependencies {
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by hibernate in Java 9+
     runtimeOnly project(path: ':viewer', configuration: 'archives')
+    runtimeOnly project(path: ':ui', configuration: 'archives')
 }
 
 jar {

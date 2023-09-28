@@ -40,5 +40,28 @@ task buildReactApp(type: NodeTask, dependsOn: npmInstall) {
 
     script = file('node_modules/vite/bin/vite.js')
     args = ['build']
+
+    outputs.dir('dist')
 }
 assemble.dependsOn buildReactApp
+
+clean {
+    delete 'dist'
+}
+
+task('jar', type: Jar){
+    manifest {
+        attributes(
+                "Implementation-Title": "hackathon-ui",
+                "Implementation-Version": version
+        )
+    }
+        from(buildReactApp) {
+            into 'ui'
+        }
+}
+assemble.dependsOn jar
+
+artifacts {
+    archives jar
+}

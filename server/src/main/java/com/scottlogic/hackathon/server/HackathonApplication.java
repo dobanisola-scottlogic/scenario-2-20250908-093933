@@ -47,7 +47,8 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
 
   @Override
   public void initialize(final Bootstrap<HackathonConfiguration> bootstrap) {
-    bootstrap.addBundle(new AssetsBundle("/assets", "/", "index.html"));
+    bootstrap.addBundle(new AssetsBundle("/assets", "/", "index.html", "viewer"));
+    bootstrap.addBundle(new AssetsBundle("/ui", "/ui", "index.html", "ui"));
     bootstrap.addBundle(new MultiPartBundle());
     bootstrap.addBundle(hibernateBundle);
     bootstrap.addBundle(
