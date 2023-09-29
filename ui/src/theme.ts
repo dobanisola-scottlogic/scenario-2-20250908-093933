@@ -57,6 +57,13 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          wordWrap: 'break-word',
+        },
+      },
+    },
     MuiToolbar: {
       styleOverrides: {
         root: {
