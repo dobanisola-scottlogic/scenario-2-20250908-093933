@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 import { configDefaults } from 'vitest/dist/config.js';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   test: {
     globals: true,
@@ -12,5 +12,5 @@ export default defineConfig({
     setupFiles: './setupTests.ts',
     exclude: [...configDefaults.exclude, '**/playwright/**'],
   },
-  base: '/application/ui/',
-});
+  ...(mode === 'production' && { base: '/application/ui/' }),
+}));
