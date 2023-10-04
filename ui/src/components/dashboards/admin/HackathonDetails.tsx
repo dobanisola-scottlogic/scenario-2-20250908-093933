@@ -2,7 +2,10 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+
+import AddButton from '../../common/AddButton';
 import SnackbarAlert from '../../common/SnackbarAlert';
+import AddTeam from '../../popups/AddTeam';
 import DeleteTeam from '../../popups/DeleteTeam';
 
 const HackathonDetails = () => {
@@ -12,6 +15,9 @@ const HackathonDetails = () => {
 
   const [isDeleteTeamOpen, setIsDeleteTeamOpen] = useState(false);
   const handleDeleteTeamOpen = () => setIsDeleteTeamOpen(true);
+
+  const [isAddTeamOpen, setIsAddTeamOpen] = useState(false);
+  const handleAddTeamOpen = () => setIsAddTeamOpen(true);
 
   return (
     <>
@@ -29,7 +35,9 @@ const HackathonDetails = () => {
             {id}
           </Typography>
         </Box>
-        <Button onClick={handleDeleteTeamOpen}>Delete Team</Button>
+        <AddButton onClick={handleAddTeamOpen} text="Add a new team" />
+        <AddTeam isOpen={isAddTeamOpen} id={id} setIsOpen={setIsAddTeamOpen} />
+        <Button onClick={handleDeleteTeamOpen}>Delete team</Button>
         <DeleteTeam
           isOpen={isDeleteTeamOpen}
           id="5a610af8-4d9d-49d0-a927-72c43f245df9"

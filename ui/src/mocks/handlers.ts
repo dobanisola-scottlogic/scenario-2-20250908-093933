@@ -1,4 +1,5 @@
 import { rest } from 'msw';
+
 import { UserRole } from '../enums/UserRole';
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -102,6 +103,17 @@ export const handlers = [
   rest.get(baseUrl + '/milestone', (_, res, ctx) => {
     return res(ctx.status(200), ctx.json(getMilestonesResponse));
   }),
+  rest.post(baseUrl + '/team', (_, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        hackathonId: 'hackathon1',
+        id: 'cb63cf4b-6683-4d4f-901c-7476bedd658e',
+        name: 'team1',
+        password: 'pa$$w0rd',
+      })
+    );
+  }),
   rest.delete(baseUrl + '/team/test-id', (_, res, ctx) => {
     return res(ctx.status(204));
   }),
@@ -130,5 +142,29 @@ export const getHackathonsNetworkErrorResponseHandler = rest.get(
   baseUrl + '/hackathon',
   (_, res) => {
     return res.networkError('Network error occurred.');
+  }
+);
+
+export const postTeamBadRequestResponseHandler = rest.post(
+  baseUrl + '/team',
+  (_, res, ctx) => {
+    return res(
+      ctx.status(400),
+      ctx.json({
+        message: 'An error occurred - bad request.',
+      })
+    );
+  }
+);
+
+export const postTeamInternalServerErrorResponseHandler = rest.post(
+  baseUrl + '/team',
+  (_, res, ctx) => {
+    return res(
+      ctx.status(503),
+      ctx.json({
+        message: 'Error adding team - internal server error',
+      })
+    );
   }
 );

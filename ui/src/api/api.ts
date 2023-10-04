@@ -1,11 +1,15 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+import { CreateTeamRequest } from '../interfaces/CreateTeamRequest';
 import { Hackathon } from '../interfaces/Hackathon';
 import { LoginResponse } from '../interfaces/LoginResponse';
 import { Milestone } from '../interfaces/Milestone';
 import { RootState } from '../store';
+import { Team } from './../interfaces/Team';
 
 enum RequestType {
   DELETE = 'DELETE',
+  GET = 'GET',
   POST = 'POST',
   PUT = 'PUT',
 }
@@ -39,12 +43,14 @@ export const api = createApi({
     getHackathon: builder.query<Hackathon, string>({
       query: (id) => ({
         url: `/hackathon/${id}`,
+        method: RequestType.GET,
       }),
       providesTags: ['Hackathon'],
     }),
     getMilestones: builder.query<Milestone[], void>({
       query: () => ({
         url: '/milestone',
+        method: RequestType.GET,
       }),
       transformResponse: (response: Milestone[]) => {
         return response.map((milestone) => ({
@@ -81,7 +87,30 @@ export const api = createApi({
       }),
       invalidatesTags: ['Hackathon'],
     }),
-    deleteTeam: builder.mutation<void, string>({
+    createTeam: builder.mutation<Team, CreateTeamRequest>({
+      query: (createTeamRequest) => ({
+        url: '/team',
+        method: RequestType.POST,
+        body: createTeamRequest,
+      }),
+      invalidatesTags: ['Team'],
+    }),
+    getTeam: builder.query<Team, string>({
+      query: (id) => ({
+        url: `/team/${id}`,
+        method: RequestType.GET,
+      }),
+      providesTags: ['Team'],
+    }),
+    getHackathonTeams: builder.query<Team[], string>({
+      query: (hackathonId) => ({
+        url: '/team',
+        method: RequestType.GET,
+        params: { hackathonId: hackathonId },
+      }),
+      providesTags: ['Team'],
+    }),
+    deleteTeam: builder.mutation<boolean, string>({
       query: (id) => ({
         url: `/team/${id}`,
         method: RequestType.DELETE,
@@ -91,6 +120,7 @@ export const api = createApi({
     getHackathons: builder.query<Hackathon[], void>({
       query: () => ({
         url: '/hackathon',
+        method: RequestType.GET,
       }),
       transformResponse: (response: Hackathon[]) => {
         return response.map((hackathon) => ({
@@ -109,11 +139,14 @@ export const api = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useCreateHackathonMutation,
+  useCreateTeamMutation,
   useDeleteHackathonMutation,
-  useUpdateHackathonMutation,
-  useGetHackathonQuery,
-  useGetMilestonesQuery,
   useDeleteTeamMutation,
-  useLoginMutation,
+  useGetHackathonQuery,
+  useGetHackathonTeamsQuery,
   useGetHackathonsQuery,
+  useGetMilestonesQuery,
+  useGetTeamQuery,
+  useLoginMutation,
+  useUpdateHackathonMutation,
 } = api;
