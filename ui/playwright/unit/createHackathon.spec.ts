@@ -31,6 +31,10 @@ test.beforeEach(async ({ page, hackathonListPage }) => {
   await hackathonListPage.verifyLoginSuccess();
 });
 
+test.afterEach(async ({ hackathonListPage }) => {
+  await hackathonListPage.clearAnyExistingHackathonWithName(hackathonName);
+});
+
 test('admin can create a new hackathon', async ({
   createHackathonPage,
   hackathonListPage,
@@ -47,6 +51,11 @@ test('admin can create a new hackathon', async ({
     true
   );
   await hackathonListPage.clearAnyExistingHackathonWithName(hackathonName);
+  await hackathonListPage.verifyHackathonDetails(
+    hackathonName,
+    'Easy',
+    'Milestone1Bot'
+  );
 });
 
 test('admin cannot create a new hackathon without a name', async ({

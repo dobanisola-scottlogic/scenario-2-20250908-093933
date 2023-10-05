@@ -29,18 +29,6 @@ export class DeleteHackathonPage {
     this.errorIcon = page.getByTestId('ErrorOutlineIcon');
   }
 
-  async createHackathon() {
-    const check = await this.page.request.post(
-      'http://localhost:8080/application/api/hackathon',
-      {
-        data: {
-          name: 'test',
-        },
-      }
-    );
-    expect(check.status()).toBe(200);
-  }
-
   async confirmPopupIsVisible() {
     await expect(this.popupBox).toBeVisible();
   }
