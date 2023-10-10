@@ -172,7 +172,6 @@ const CreateUpdateTeam = ({
               fullWidth
               label="Password"
               sx={{ m: 1, mx: 'auto' }}
-              type="password"
               value={teamPassword}
               variant="outlined"
               onChange={(e) => setTeamPassword(e.target.value)}

@@ -39,6 +39,10 @@ public class Team {
     this.name = name;
   }
 
+  public String getPassword() {
+    return password;
+  }
+
   public void setPassword(final String password) {
     this.password = password;
   }

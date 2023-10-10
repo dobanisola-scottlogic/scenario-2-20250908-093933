@@ -50,7 +50,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       expect(screen.getByText('Add a new team')).toBeInTheDocument();
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       const submitButton = screen.getByRole('button', { name: 'Add team' });
 
@@ -79,7 +79,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       );
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const submitButton = screen.getByRole('button', { name: 'Add team' });
 
       fireEvent.change(nameInput, { target: { value: teamName } });
@@ -107,7 +107,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       );
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const submitButton = screen.getByRole('button', { name: 'Add team' });
 
       fireEvent.change(nameInput, { target: { value: teamName } });
@@ -133,7 +133,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       );
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const submitButton = screen.getByRole('button', { name: 'Add team' });
 
       fireEvent.change(nameInput, { target: { value: teamName } });
@@ -164,7 +164,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       expect(screen.getByText('Edit team')).toBeInTheDocument();
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       const submitButton = screen.getByRole('button', { name: 'Update team' });
 
@@ -187,7 +187,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       expect(screen.getByText('Edit team')).toBeInTheDocument();
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       const submitButton = screen.getByRole('button', { name: 'Update team' });
 
@@ -223,7 +223,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       );
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const submitButton = screen.getByRole('button', { name: 'Update team' });
 
       fireEvent.change(nameInput, { target: { value: teamName } });
@@ -258,7 +258,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       );
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const submitButton = screen.getByRole('button', { name: 'Update team' });
 
       fireEvent.change(nameInput, { target: { value: teamName } });
@@ -292,7 +292,7 @@ describe('CreateUpdateTeam Popup Component', () => {
       );
 
       const nameInput = screen.getByRole('textbox', { name: 'Name' });
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = screen.getByRole('textbox', { name: 'Password' });
       const submitButton = screen.getByRole('button', { name: 'Update team' });
 
       fireEvent.change(nameInput, { target: { value: teamName } });
