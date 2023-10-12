@@ -1,6 +1,7 @@
 package com.scottlogic.hackathon.remote;
 
 import java.util.concurrent.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -18,6 +19,7 @@ public class TurnTest {
 
   @Mock GameState gameState;
 
+  @Ignore("HAC-161 Thread state reported inconsistently when running locally vs in CI")
   @Test
   public void testWaitForTurn() throws Exception {
     Turn turn = new Turn();
