@@ -1,4 +1,6 @@
+.env.*
 .gradle
+.prettierignore
 build
 dist
 node_modules

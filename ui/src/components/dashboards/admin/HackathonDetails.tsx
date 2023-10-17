@@ -1,7 +1,8 @@
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container, Grid, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 
+import GameResultList from './GameResultList';
 import TeamList from './TeamList';
 
 const HackathonDetails = () => {
@@ -22,7 +23,14 @@ const HackathonDetails = () => {
             {id}
           </Typography>
         </Box>
-        <TeamList hackathonId={id!} />
+        <Grid container spacing={2}>
+          <Grid item xs={3}>
+            <TeamList hackathonId={id!} />
+          </Grid>
+          <Grid item xs={9}>
+            <GameResultList hackathonId={id!} />
+          </Grid>
+        </Grid>
       </Container>
     </>
   );

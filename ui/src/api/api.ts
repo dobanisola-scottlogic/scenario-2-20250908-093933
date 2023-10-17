@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { CreateTeamRequest } from '../interfaces/CreateTeamRequest';
+import { GameResult } from '../interfaces/GameResult';
 import { Hackathon } from '../interfaces/Hackathon';
 import { LoginResponse } from '../interfaces/LoginResponse';
 import { Milestone } from '../interfaces/Milestone';
@@ -32,7 +33,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Hackathon', 'Team'],
+  tagTypes: ['Game', 'Hackathon', 'Team'],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, void>({
       query: () => ({
@@ -140,6 +141,28 @@ export const api = createApi({
       },
       providesTags: ['Hackathon'],
     }),
+    getHackathonGames: builder.query<GameResult[], string>({
+      query: (hackathonId) => ({
+        url: '/game',
+        method: RequestType.GET,
+        params: { hackathonId: hackathonId },
+      }),
+      transformResponse: (response: GameResult[]) => {
+        return response.map((result) => {
+          const { teams } = result.game;
+          return {
+            ...result,
+            game: {
+              ...result.game,
+              title: teams
+                .map((team) => removeMilestoneBotPrefix(team.teamName))
+                .join(' vs '),
+            },
+          };
+        });
+      },
+      providesTags: ['Game'],
+    }),
   }),
 });
 
@@ -151,6 +174,7 @@ export const {
   useDeleteHackathonMutation,
   useDeleteTeamMutation,
   useGetHackathonQuery,
+  useGetHackathonGamesQuery,
   useGetHackathonTeamsQuery,
   useGetHackathonsQuery,
   useGetMilestonesQuery,

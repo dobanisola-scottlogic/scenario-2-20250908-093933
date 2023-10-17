@@ -30,18 +30,13 @@ const TeamListTable = ({ hackathonId }: TeamListTableProps) => {
       <Box
         sx={{
           background: 'white',
+          borderRadius: '9px',
           margin: '10px 0',
           p: '10px 10px 30px 10px',
-          borderRadius: '9px',
         }}
       >
-        <TableContainer sx={{ maxHeight: '60vh' }}>
-          <Table
-            stickyHeader
-            size='small'
-            aria-label='List of hackathon teams'
-            style={{ tableLayout: 'fixed' }}
-          >
+        <TableContainer sx={{ height: '60vh', overflowY: 'auto' }}>
+          <Table stickyHeader size='small' aria-label='List of hackathon teams'>
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
