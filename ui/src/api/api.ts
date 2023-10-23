@@ -41,11 +41,25 @@ export const api = createApi({
         url: '/login',
         method: RequestType.POST,
       }),
+      invalidatesTags: ['Hackathon', 'Team', 'Game'],
     }),
     getHackathon: builder.query<Hackathon, string>({
       query: (id) => ({
         url: `/hackathon/${id}`,
         method: RequestType.GET,
+      }),
+      providesTags: ['Hackathon'],
+    }),
+    getHackathonForTeamUser: builder.query<Hackathon, void>({
+      query: () => ({
+        url: '/hackathon/team',
+        method: RequestType.GET,
+      }),
+      transformResponse: (response: Hackathon) => ({
+        ...response,
+        readableCurrentMilestoneClassName: removeMilestoneBotPrefix(
+          response.currentMilestoneClassName
+        ),
       }),
       providesTags: ['Hackathon'],
     }),
@@ -192,4 +206,5 @@ export const {
   useLoginMutation,
   useUpdateHackathonMutation,
   useUpdateTeamMutation,
+  useGetHackathonForTeamUserQuery,
 } = api;

@@ -17,6 +17,15 @@ const testHackathonBody = {
   currentMilestoneMap: 'Easy',
 };
 
+const testHackathonForTeamBody = {
+  id: 'test-id',
+  name: 'Test Hackathon',
+  games: [],
+  teams: [],
+  currentMilestoneClassName: 'com.scottlogic.hackathon.bots.Milestone2Bot',
+  currentMilestoneMap: 'Hard',
+};
+
 const testTeamBody = {
   hackathonId: 'test-id',
   id: 'team1',
@@ -207,6 +216,15 @@ export const handlers = [
   }),
   rest.post(baseUrl + '/game', (_, res, ctx) => {
     return res(ctx.status(200), ctx.json(testGameResultBody));
+  }),
+  rest.get(baseUrl + '/hackathon/team', (req, res, ctx) => {
+    const authorizationHeader = req.headers.get('Authorization');
+
+    if (authorizationHeader === 'Basic team') {
+      return res(ctx.status(200), ctx.json(testHackathonForTeamBody));
+    } else {
+      return res.networkError('Network error occurred.');
+    }
   }),
 ];
 

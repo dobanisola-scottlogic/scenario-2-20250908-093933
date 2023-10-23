@@ -30,7 +30,7 @@ describe('Routing', () => {
     });
 
     expect(
-      screen.getByRole('heading', { name: 'Team: team' })
+      screen.getByRole('button', { name: 'View information' })
     ).toBeInTheDocument();
   });
 

@@ -11,7 +11,7 @@ const HackathonDetails = () => {
 
   return (
     <>
-      <Container maxWidth={false} style={{ padding: '40px 50px' }}>
+      <Container maxWidth={false} style={{ padding: '30px 50px' }}>
         <Box>
           <Typography
             sx={{
