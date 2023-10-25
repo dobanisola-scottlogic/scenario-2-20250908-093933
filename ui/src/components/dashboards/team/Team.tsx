@@ -8,9 +8,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
 import { useGetHackathonForTeamUserQuery } from '../../../api/api';
 import { colours } from '../../../theme';
 import AddButton from '../../common/AddButton';
+import ViewInformation from '../../popups/ViewInformation';
 
 const Team = () => {
   const {
@@ -19,7 +21,9 @@ const Team = () => {
     isError,
   } = useGetHackathonForTeamUserQuery();
 
-  // TODO implement actions/popups on HAC-83, HAC-84, HAC-85
+  const [isViewInformationOpen, setIsViewInformationOpen] = useState(false);
+  const handleIsViewInformationOpen = () => setIsViewInformationOpen(true);
+
   const handleClick = () => alert('Not yet functional');
 
   return (
@@ -43,7 +47,7 @@ const Team = () => {
             environment, click here:
             <Button
               variant='outlined'
-              onClick={handleClick}
+              onClick={handleIsViewInformationOpen}
               startIcon={<VisibilityOutlinedIcon />}
               sx={{ ml: 2 }}
             >
@@ -85,6 +89,10 @@ const Team = () => {
           Placeholder for games table
         </Box>
       </Container>
+      <ViewInformation
+        isOpen={isViewInformationOpen}
+        setIsOpen={setIsViewInformationOpen}
+      />
     </>
   );
 };
