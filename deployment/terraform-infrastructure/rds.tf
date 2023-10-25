@@ -16,7 +16,7 @@ resource "aws_db_instance" "database" {
   db_subnet_group_name       = aws_db_subnet_group.db_subnet_group.name
   engine                     = var.db_type
   identifier                 = local.db_name
-  instance_class             = "db.t3.micro"
+  instance_class             = "db.t3.small"
   password                   = var.db_password
   skip_final_snapshot        = true
   username                   = var.db_user
