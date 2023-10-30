@@ -1,8 +1,4 @@
-import { test as base } from '@playwright/test';
-import { HackathonListPage } from '../pageObjectModel/admin-hackathon-list-page';
-import { CommonPageObjects } from '../pageObjectModel/common-page-objects';
-import { LoginPage } from '../pageObjectModel/login-page';
-import { TeamDashboardPage } from '../pageObjectModel/team-dashboard-page';
+import test from '../fixtures';
 
 const emptyFieldErrors: {
   username: string;
@@ -13,33 +9,8 @@ const emptyFieldErrors: {
   { username: ' ', password: 'secret' },
 ];
 
-const test = base.extend<{
-  login: LoginPage;
-  hackathonListPage: HackathonListPage;
-  teamDashboardPage: TeamDashboardPage;
-  commonPageObjects: CommonPageObjects;
-}>({
-  login: async ({ page }, use) => {
-    const login = new LoginPage(page);
-    await use(login);
-  },
-  hackathonListPage: async ({ page }, use) => {
-    const hackathonListPage = new HackathonListPage(page);
-    await use(hackathonListPage);
-  },
-  teamDashboardPage: async ({ page }, use) => {
-    const teamDashboardPage = new TeamDashboardPage(page);
-    await use(teamDashboardPage);
-  },
-  commonPageObjects: async ({ page }, use) => {
-    const commonPageObjects = new CommonPageObjects(page);
-    await use(commonPageObjects);
-  },
-});
-
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.getByText('Hackathon').click();
 });
 
 test('admin can successfully log in', async ({ login, hackathonListPage }) => {

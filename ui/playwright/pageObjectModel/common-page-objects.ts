@@ -3,7 +3,7 @@ import { expect, type Locator, type Page } from '@playwright/test';
 export class CommonPageObjects {
   readonly page: Page;
   readonly popupBox: Locator;
-  readonly navigationBarDropdownButton: Locator;
+  readonly navigationBarDropdownButton: ({ user }: { user: string }) => Locator;
   readonly logoutButton: Locator;
   readonly popupHeaderText: Locator;
   readonly popupBodyText: Locator;
@@ -22,9 +22,8 @@ export class CommonPageObjects {
   constructor(page: Page) {
     this.page = page;
     this.popupBox = page.getByRole('dialog');
-    this.navigationBarDropdownButton = page.getByRole('button', {
-      name: 'admin',
-    });
+    this.navigationBarDropdownButton = ({ user }) =>
+      page.getByRole('button', { name: `${user}` });
     this.logoutButton = page.getByRole('menuitem', { name: 'Logout' });
     this.popupHeaderText = page.locator('[role="dialogHeading"]').nth(0);
     this.popupBodyText = page.locator('[role="dialogHeading"]').nth(1);
@@ -56,8 +55,8 @@ export class CommonPageObjects {
     await this.cancelButton.click();
   }
 
-  async logoutUsingDropdown() {
-    await this.navigationBarDropdownButton.click();
+  async logoutOfAccountWithName(user: string) {
+    await this.navigationBarDropdownButton({ user: user }).click();
     await this.logoutButton.click();
   }
 

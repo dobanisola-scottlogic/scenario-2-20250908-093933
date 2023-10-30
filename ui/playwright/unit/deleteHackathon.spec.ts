@@ -1,46 +1,17 @@
-import { test as base } from '@playwright/test';
+import test from '../fixtures';
 import { HackathonHelpers } from '../helpers';
-import { HackathonListPage } from '../pageObjectModel/admin-hackathon-list-page';
-import { CommonPageObjects } from '../pageObjectModel/common-page-objects';
-import { CreateHackathonPage } from '../pageObjectModel/create-hackathon-page';
-import { DeleteHackathonPage } from '../pageObjectModel/delete-hackathon-page';
-import { LoginPage } from '../pageObjectModel/login-page';
-
-const test = base.extend<{
-  deleteHackathonPage: DeleteHackathonPage;
-  hackathonListPage: HackathonListPage;
-  createHackathonPage: CreateHackathonPage;
-  commonPageObjects: CommonPageObjects;
-}>({
-  deleteHackathonPage: async ({ page }, use) => {
-    const deleteHackathonPage = new DeleteHackathonPage(page);
-    await use(deleteHackathonPage);
-  },
-  hackathonListPage: async ({ page }, use) => {
-    const hackathonListPage = new HackathonListPage(page);
-    await use(hackathonListPage);
-  },
-  createHackathonPage: async ({ page }, use) => {
-    const createHackathonPage = new CreateHackathonPage(page);
-    await use(createHackathonPage);
-  },
-  commonPageObjects: async ({ page }, use) => {
-    const commonPageObjects = new CommonPageObjects(page);
-    await use(commonPageObjects);
-  },
-});
 
 const uniqueHackathonId = new HackathonHelpers().generateRandomString;
 let hackathonName = '';
 
 test.beforeEach(
   async ({
+    login,
     page,
     createHackathonPage,
     hackathonListPage,
     commonPageObjects,
   }) => {
-    const login = new LoginPage(page);
     hackathonName = 'deleteHackathon' + uniqueHackathonId;
     await page.goto('/');
     await page.getByText('Hackathon').click();

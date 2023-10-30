@@ -86,6 +86,23 @@ export class EditHackathonPage {
     await expect(this.alertNotification).toContainText(alertMessage);
   }
 
+  async updateHackathonDetailsViaAPITo(
+    hackathon: string,
+    map: string,
+    bot: string
+  ) {
+    const hackathonPutResponse = await this.page.request.put(
+      `http://localhost:8080/application/api/hackathon/${hackathon}`,
+      {
+        data: {
+          milestoneClassName: `com.scottlogic.hackathon.bots.${bot}`,
+          milestoneMap: map,
+        },
+      }
+    );
+    expect(hackathonPutResponse.status()).toBe(200);
+  }
+
   async mock400ErrorOnUpdatingHackathon() {
     await this.page.route(
       `http://localhost:8080/application/api/hackathon/*`,

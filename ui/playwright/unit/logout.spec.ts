@@ -1,36 +1,43 @@
-import { test as base } from '@playwright/test';
-import { HackathonListPage } from '../pageObjectModel/admin-hackathon-list-page';
-import { CommonPageObjects } from '../pageObjectModel/common-page-objects';
-import { LoginPage } from '../pageObjectModel/login-page';
+import test from '../fixtures';
+import { HackathonHelpers } from '../helpers';
 
-const test = base.extend<{
-  login: LoginPage;
-  hackathonListPage: HackathonListPage;
-  commonPageObjects: CommonPageObjects;
-}>({
-  login: async ({ page }, use) => {
-    const login = new LoginPage(page);
-    await use(login);
-  },
-  hackathonListPage: async ({ page }, use) => {
-    const hackathonListPage = new HackathonListPage(page);
-    await use(hackathonListPage);
-  },
-  commonPageObjects: async ({ page }, use) => {
-    const commonPageObjects = new CommonPageObjects(page);
-    await use(commonPageObjects);
-  },
+const uniqueHackathonId = new HackathonHelpers();
+let hackathonName = '';
+let teamName = '';
+
+test.beforeEach(async ({ page }) => {
+  await page.goto('/');
 });
 
-test.beforeEach(async ({ page, login, hackathonListPage }) => {
-  await page.goto('/');
-  await page.getByText('Hackathon').click();
+test('admin can successfully log out', async ({
+  login,
+  hackathonListPage,
+  commonPageObjects,
+}) => {
   await login.inputCredentials('admin', 'secret');
   await login.attemptLogin();
   await hackathonListPage.verifyLoginSuccess();
+  await commonPageObjects.logoutOfAccountWithName('admin');
+  await login.verifyLogoutSuccess();
 });
 
-test('admin can successfully log out', async ({ login, commonPageObjects }) => {
-  await commonPageObjects.logoutUsingDropdown();
+test('team can successfully log out', async ({
+  login,
+  createHackathonPage,
+  createTeamPage,
+  teamDashboardPage,
+  commonPageObjects,
+}) => {
+  hackathonName = teamName =
+    'teamLogout' + uniqueHackathonId.generateRandomString;
+  await createHackathonPage.createHackathonUsingAPIWithName(hackathonName);
+  await createTeamPage.createTeamUsingAPIWithHackathonAndTeamName(
+    hackathonName,
+    teamName
+  );
+  await login.inputCredentials(teamName, 'teamPassword');
+  await login.attemptLogin();
+  await teamDashboardPage.verifyLoginSuccess();
+  await commonPageObjects.logoutOfAccountWithName(teamName);
   await login.verifyLogoutSuccess();
 });

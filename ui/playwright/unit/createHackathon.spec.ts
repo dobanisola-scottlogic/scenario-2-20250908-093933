@@ -1,44 +1,22 @@
-import { test as base } from '@playwright/test';
+import test from '../fixtures';
 import { HackathonHelpers } from '../helpers';
-import { HackathonListPage } from '../pageObjectModel/admin-hackathon-list-page';
-import { CommonPageObjects } from '../pageObjectModel/common-page-objects';
-import { CreateHackathonPage } from '../pageObjectModel/create-hackathon-page';
-import { LoginPage } from '../pageObjectModel/login-page';
-
-const test = base.extend<{
-  createHackathonPage: CreateHackathonPage;
-  hackathonListPage: HackathonListPage;
-  commonPageObjects: CommonPageObjects;
-}>({
-  createHackathonPage: async ({ page }, use) => {
-    const createHackathonPage = new CreateHackathonPage(page);
-    await use(createHackathonPage);
-  },
-  hackathonListPage: async ({ page }, use) => {
-    const hackathonListPage = new HackathonListPage(page);
-    await use(hackathonListPage);
-  },
-  commonPageObjects: async ({ page }, use) => {
-    const commonPageObjects = new CommonPageObjects(page);
-    await use(commonPageObjects);
-  },
-});
 
 const invalidCharacterErrors = new HackathonHelpers().invalidCharacterErrors;
 const uniqueHackathonId = new HackathonHelpers().generateRandomString;
 let hackathonName = '';
 
-test.beforeEach(async ({ page, hackathonListPage, createHackathonPage }) => {
-  hackathonName = 'createHackathon' + uniqueHackathonId;
-  const login = new LoginPage(page);
-  await page.goto('/');
-  await page.getByText('Hackathon').click();
-  await login.inputCredentials('admin', 'secret');
-  await login.attemptLogin();
-  await hackathonListPage.verifyLoginSuccess();
-  await hackathonListPage.openCreateHackathonPopup();
-  await createHackathonPage.verifyCreateHackathonPopUp('Add a new hackathon');
-});
+test.beforeEach(
+  async ({ login, page, hackathonListPage, createHackathonPage }) => {
+    hackathonName = 'createHackathon' + uniqueHackathonId;
+    await page.goto('/');
+    await page.getByText('Hackathon').click();
+    await login.inputCredentials('admin', 'secret');
+    await login.attemptLogin();
+    await hackathonListPage.verifyLoginSuccess();
+    await hackathonListPage.openCreateHackathonPopup();
+    await createHackathonPage.verifyCreateHackathonPopUp('Add a new hackathon');
+  }
+);
 
 test.afterEach(async ({ hackathonListPage }) => {
   await hackathonListPage.clearAnyExistingHackathonWithName(hackathonName);

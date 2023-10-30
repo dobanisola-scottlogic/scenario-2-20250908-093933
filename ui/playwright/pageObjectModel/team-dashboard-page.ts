@@ -2,14 +2,80 @@ import { expect, type Locator, type Page } from '@playwright/test';
 
 export class TeamDashboardPage {
   readonly page: Page;
-  readonly loggedInTitle: Locator;
+  readonly viewInformationButton: Locator;
+  readonly connectButton: Locator;
+  readonly addGameButton: Locator;
+  readonly milestoneInformation: ({
+    map,
+    bot,
+  }: {
+    map: string;
+    bot: string;
+  }) => Locator;
+  readonly milestoneNotFoundText: Locator;
+  readonly connectionStatistics: ({
+    connectionStatus,
+  }: {
+    connectionStatus: string;
+  }) => Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.loggedInTitle = page.getByRole('heading');
+    this.viewInformationButton = page.getByRole('button', {
+      name: 'View information',
+    });
+    this.connectButton = page.getByRole('button', {
+      name: 'Connect',
+    });
+    this.addGameButton = page.getByRole('button', {
+      name: 'Add a new game',
+    });
+    this.milestoneInformation = ({ map, bot }) =>
+      page.getByText(`Current Milestone: Map: ${map} - Bot: ${bot}`);
+    this.milestoneNotFoundText = page.getByText(
+      'Failed to fetch current milestone.'
+    );
+    this.connectionStatistics = ({ connectionStatus }) =>
+      page.getByText(`Status: ${connectionStatus}`);
   }
 
   async verifyLoginSuccess() {
-    await expect(this.loggedInTitle).toContainText('Team');
+    await expect(this.viewInformationButton).toBeEnabled();
+    await expect(this.connectButton).toBeEnabled();
+    await expect(this.addGameButton).toBeDisabled();
+  }
+
+  async clickViewInformationButton() {
+    await this.viewInformationButton.click();
+  }
+
+  async clickConnectButton() {
+    await this.connectButton.click();
+  }
+
+  async verifyGameCanBeAdded() {
+    await expect(this.addGameButton).toBeEnabled();
+  }
+
+  async verifyMilestoneInformationIs({
+    map,
+    bot,
+  }: {
+    map: string;
+    bot: string;
+  }) {
+    await expect(
+      this.milestoneInformation({ map: map, bot: bot })
+    ).toBeVisible();
+  }
+
+  async verifyMilestoneErrorMessageAppears() {
+    await expect(this.milestoneNotFoundText).toBeVisible();
+  }
+
+  async verifyConnectionStatusIs(connectionStatus: string) {
+    await expect(
+      this.connectionStatistics({ connectionStatus: connectionStatus })
+    ).toBeVisible();
   }
 }

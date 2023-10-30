@@ -1,40 +1,5 @@
-import { test as base } from '@playwright/test';
+import test from '../fixtures';
 import { HackathonHelpers } from '../helpers';
-import { HackathonDetailsPage } from '../pageObjectModel/admin-hackathon-details-page';
-import { HackathonListPage } from '../pageObjectModel/admin-hackathon-list-page';
-import { CommonPageObjects } from '../pageObjectModel/common-page-objects';
-import { CreateHackathonPage } from '../pageObjectModel/create-hackathon-page';
-import { CreateTeamPage } from '../pageObjectModel/create-team-page';
-import { LoginPage } from '../pageObjectModel/login-page';
-
-const test = base.extend<{
-  createHackathonPage: CreateHackathonPage;
-  createTeamPage: CreateTeamPage;
-  hackathonListPage: HackathonListPage;
-  hackathonDetailsPage: HackathonDetailsPage;
-  commonPageObjects: CommonPageObjects;
-}>({
-  createHackathonPage: async ({ page }, use) => {
-    const createHackathonPage = new CreateHackathonPage(page);
-    await use(createHackathonPage);
-  },
-  createTeamPage: async ({ page }, use) => {
-    const createTeamPage = new CreateTeamPage(page);
-    await use(createTeamPage);
-  },
-  hackathonListPage: async ({ page }, use) => {
-    const hackathonListPage = new HackathonListPage(page);
-    await use(hackathonListPage);
-  },
-  hackathonDetailsPage: async ({ page }, use) => {
-    const hackathonDetailsPage = new HackathonDetailsPage(page);
-    await use(hackathonDetailsPage);
-  },
-  commonPageObjects: async ({ page }, use) => {
-    const commonPageObjects = new CommonPageObjects(page);
-    await use(commonPageObjects);
-  },
-});
 
 const invalidCharacterErrors = new HackathonHelpers().invalidCharacterErrors;
 const uniqueHackathonId = new HackathonHelpers().generateRandomString;
@@ -43,13 +8,13 @@ let teamName = '';
 
 test.beforeEach(
   async ({
+    login,
     page,
     createHackathonPage,
     hackathonListPage,
     hackathonDetailsPage,
     commonPageObjects,
   }) => {
-    const login = new LoginPage(page);
     hackathonName = teamName = 'createTeam' + uniqueHackathonId;
     await createHackathonPage.createHackathonUsingAPIWithName(hackathonName);
     await page.goto('/');
