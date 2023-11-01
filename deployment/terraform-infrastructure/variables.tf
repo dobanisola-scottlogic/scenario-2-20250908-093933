@@ -97,3 +97,9 @@ variable "vpc_cidr_block" {
   type        = string
   default     = "10.0.0.0/16"
 }
+
+variable "allow_default_workspace" {
+  description = "Enforce deployment to the default workspace being an explicit choice"
+  type        = bool
+  default     = false
+}
