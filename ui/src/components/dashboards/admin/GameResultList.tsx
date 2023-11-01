@@ -2,7 +2,6 @@ import { Container } from '@mui/material';
 import { useState } from 'react';
 
 import AddButton from '../../common/AddButton';
-import SnackbarAlert from '../../common/SnackbarAlert';
 import CreateGame from '../../popups/CreateGame';
 import GameResultListTable from '../../tables/GameResultListTable';
 
@@ -16,8 +15,6 @@ const GameResultList = ({ hackathonId }: GameResultListProps) => {
 
   return (
     <>
-      <SnackbarAlert />
-
       <Container maxWidth={false} style={{ padding: '10px 0' }}>
         <AddButton onClick={handleAddGameOpen} text='Add a new game' />
         <CreateGame

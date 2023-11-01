@@ -12,7 +12,9 @@ export default defineConfig(({ mode }) => ({
     setupFiles: './setupTests.ts',
     exclude: [...configDefaults.exclude, '**/playwright/**'],
     onConsoleLog(log) {
-      if (log.includes('Download the React DevTools')) {return false;}
+      if (log.includes('Download the React DevTools')) {
+        return false;
+      }
     },
   },
   ...(mode === 'production' && { base: '/application/ui/' }),

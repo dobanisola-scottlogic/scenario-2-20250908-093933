@@ -5,11 +5,7 @@ import TeamList from './TeamList';
 
 describe('TeamList', () => {
   beforeEach(() => {
-    renderWithRouterAndProvider(<TeamList hackathonId='test-id' />, {
-      preloadedState: {
-        snackbar: { isOpen: true, message: 'Team created successfully!' },
-      },
-    });
+    renderWithRouterAndProvider(<TeamList hackathonId='test-id' />);
   });
 
   it('should render the TeamList component correctly', () => {
@@ -25,11 +21,5 @@ describe('TeamList', () => {
   it('should open the create team popup on clicking add a new Team', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add a new team' }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
-  });
-
-  it('should render the success snackbar correctly', () => {
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Team created successfully!'
-    );
   });
 });

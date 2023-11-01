@@ -9,11 +9,22 @@ describe('HackathonDetails', () => {
       <Routes>
         <Route path='/:id' element={<HackathonDetails />}></Route>
       </Routes>,
-      { initialEntries: ['/test-id'] }
+      {
+        initialEntries: ['/test-id'],
+        preloadedState: {
+          snackbar: { isOpen: true, message: 'Team created successfully!' },
+        },
+      }
     );
   });
 
   it('should render the hackathon details of the hackathon with ID specified in the url path', () => {
     expect(screen.getByText('test-id')).toBeInTheDocument();
+  });
+
+  it('should render the success snackbar correctly', () => {
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Team created successfully!'
+    );
   });
 });

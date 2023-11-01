@@ -18,7 +18,6 @@ export class CommonPageObjects {
   readonly successCloseButton: Locator;
   readonly cancelButton: Locator;
 
-  //Remove .first() from lines 31 and 35, nth(1) from line 36 once HAC-179 is resolved
   constructor(page: Page) {
     this.page = page;
     this.popupBox = page.getByRole('dialog');
@@ -27,12 +26,12 @@ export class CommonPageObjects {
     this.logoutButton = page.getByRole('menuitem', { name: 'Logout' });
     this.popupHeaderText = page.locator('[role="dialogHeading"]').nth(0);
     this.popupBodyText = page.locator('[role="dialogHeading"]').nth(1);
-    this.successIcon = page.getByTestId('SuccessOutlinedIcon').first();
+    this.successIcon = page.getByTestId('SuccessOutlinedIcon');
     this.errorIcon = page.getByTestId('ErrorOutlineIcon');
     this.fieldValidationText = ({ fieldValidationMessage }) =>
       page.getByText(fieldValidationMessage);
-    this.alertNotification = page.getByRole('alert').first();
-    this.successCloseButton = page.getByLabel('Close').nth(1);
+    this.alertNotification = page.getByRole('alert');
+    this.successCloseButton = page.getByLabel('Close');
     this.cancelButton = page.getByRole('button', {
       name: 'Cancel',
     });

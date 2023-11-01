@@ -5,11 +5,7 @@ import GameResultList from './GameResultList';
 
 describe('GameResultList', () => {
   beforeEach(() => {
-    renderWithRouterAndProvider(<GameResultList hackathonId='hackathonId' />, {
-      preloadedState: {
-        snackbar: { isOpen: true, message: 'Game created successfully!' },
-      },
-    });
+    renderWithRouterAndProvider(<GameResultList hackathonId='hackathonId' />);
   });
 
   it('should render the GameResultList component correctly', () => {
@@ -20,11 +16,5 @@ describe('GameResultList', () => {
     expect(
       screen.getByLabelText('List of hackathon games')
     ).toBeInTheDocument();
-  });
-
-  it('should render the success snackbar correctly', () => {
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Game created successfully!'
-    );
   });
 });

@@ -2,7 +2,6 @@ import { Container } from '@mui/material';
 import { useState } from 'react';
 
 import AddButton from '../../common/AddButton';
-import SnackbarAlert from '../../common/SnackbarAlert';
 import CreateUpdateTeam from '../../popups/CreateUpdateTeam';
 import TeamListTable from '../../tables/TeamListTable';
 
@@ -16,8 +15,6 @@ const TeamList = ({ hackathonId }: TeamListProps) => {
 
   return (
     <>
-      <SnackbarAlert />
-
       <Container maxWidth={false} style={{ padding: '10px 0' }}>
         <AddButton onClick={handleAddTeamOpen} text='Add a new team' />
         <CreateUpdateTeam
