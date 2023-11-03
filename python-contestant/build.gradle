@@ -66,10 +66,15 @@ task copyContestantFiles(type: Copy) {
         include 'main.py'
         include 'README.md'
         include 'requirements.txt'
-    }
-    from 'scripts'
-    from 'docs/build'
 
+        from 'docs'
+        include '*.md'
+    }
+    into('docs') {
+        from 'docs/build/html'
+    }
+
+    from 'scripts'
     into 'build/python-contestant'
 }
 
