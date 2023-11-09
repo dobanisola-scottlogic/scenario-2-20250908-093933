@@ -1,9 +1,12 @@
 import { screen } from '@testing-library/react';
 import { UserRole } from '../enums/UserRole';
+import { testHackathonId } from '../mocks/test-data/hackathon';
 import { renderWithRouterAndProvider } from '../utils/test-utils';
 import Routing from './Routing';
 
 describe('Routing', () => {
+  const hackathonId = testHackathonId.valid;
+
   it('renders the Login component when userRole is null', () => {
     renderWithRouterAndProvider(<Routing />);
 
@@ -39,15 +42,17 @@ describe('Routing', () => {
       preloadedState: {
         auth: { name: 'admin', role: UserRole.ADMIN, credentials: '' },
       },
-      initialEntries: ['/test-id'],
+      initialEntries: [`/${hackathonId}`],
     });
 
-    expect(screen.getByText('test-id')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Hackathons' })
+    ).toBeInTheDocument();
   });
 
   it('redirects the user back to landing page when userRole is not ADMIN and url is a specified hackathon ID', () => {
     renderWithRouterAndProvider(<Routing />, {
-      initialEntries: ['/test-id'],
+      initialEntries: [`/${hackathonId}`],
     });
 
     expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();

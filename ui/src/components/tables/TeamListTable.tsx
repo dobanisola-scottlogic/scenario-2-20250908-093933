@@ -60,7 +60,7 @@ const TeamListTable = ({ hackathonId }: TeamListTableProps) => {
                           Failed to fetch teams. Please try again later.
                         </p>
                       )}
-                      {teams?.length === 0 && <p>No teams to display</p>}
+                      {teams?.length === 0 && <p>No teams to display.</p>}
                     </Box>
                   </TableCell>
                 </TableRow>

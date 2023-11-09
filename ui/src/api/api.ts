@@ -42,11 +42,21 @@ export const api = createApi({
       }),
       invalidatesTags: ['Hackathon', 'Team', 'Game'],
     }),
-    getHackathon: builder.query<Hackathon, string>({
+    getHackathon: builder.query<Hackathon | undefined, string>({
       query: (id) => ({
         url: `/hackathon/${id}`,
         method: RequestType.GET,
       }),
+      transformResponse: (response: Hackathon | undefined) => {
+        if (response) {
+          return {
+            ...response,
+            readableCurrentMilestoneClassName: removeMilestoneBotPrefix(
+              response.currentMilestoneClassName
+            ),
+          };
+        }
+      },
       providesTags: ['Hackathon'],
     }),
     getHackathonForTeamUser: builder.query<Hackathon, void>({

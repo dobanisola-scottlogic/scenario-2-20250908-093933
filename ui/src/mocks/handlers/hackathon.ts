@@ -47,6 +47,9 @@ export const handlers = [
   http.get(`${hackathonEndpoint}/${testHackathonId.notFound}`, () => {
     return noContentResponse();
   }),
+  http.get(`${hackathonEndpoint}/${testHackathonId.networkError}`, () => {
+    return errorResponse();
+  }),
   http.put(`${hackathonEndpoint}/${testHackathonId.valid}`, () => {
     return jsonOkResponse(testHackathonBody);
   }),

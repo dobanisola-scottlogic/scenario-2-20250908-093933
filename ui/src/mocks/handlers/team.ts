@@ -62,3 +62,17 @@ export const postTeamInternalServerErrorResponseHandler = http.post(
     return errorResponse();
   }
 );
+
+export const putTeamBadRequestResponseHandler = http.put(
+  `${teamEndpoint}/${testTeamId.valid}`,
+  () => {
+    return badRequestResponse();
+  }
+);
+
+export const putTeamInternalServerErrorResponseHandler = http.put(
+  `${teamEndpoint}/${testTeamId.valid}`,
+  () => {
+    return errorResponse();
+  }
+);

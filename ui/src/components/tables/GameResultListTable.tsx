@@ -64,9 +64,7 @@ const GameResultListTable = ({ hackathonId }: GameResultListTableProps) => {
                           Failed to fetch games. Please try again later.
                         </p>
                       )}
-                      {games?.length === 0 && (
-                        <p>There is no game to display.</p>
-                      )}
+                      {games?.length === 0 && <p>No games to display.</p>}
                     </Box>
                   </TableCell>
                 </TableRow>
