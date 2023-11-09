@@ -51,6 +51,48 @@ Cloud9 IDE through a web browser at a contestant-specific URL.
 > Troubleshooting](https://docs.google.com/document/d/1CzyiH_8Bfh17RUTPnEtmIUXO5On2Q-dxhx4L2sv2jVo/edit?usp=sharing)
 > document.
 
+
+### 0 - Running Locally
+
+The easiest way to run everything locally is to use the VSCode Dev Container.
+To do this you will need the following on your machine:
+
+1. VSCode (updated to latest version)
+2. Docker Desktop - request via ScottLogic Helpdesk: https://scottlogic.atlassian.net/servicedesk/customer/portal/1/article/3853615116?src=1268890430
+3. VSCode Dev Containers extension
+
+The image has everything you need (Java, Python, PostgreSQL, Gradle etc) to run
+the Hackathon locally - you don't need to install anything else and the versions
+of all the packages are correct.
+
+As the image has a PostgreSQL database installed, you can point your API Server
+at this rather than using the default in-memory database. To do so, open the
+`server.yaml` file in the `server` folder and replace the entire `database`
+element with the following (note that the `url`, `user` and `password` must
+match those in `.devcontainer/docker-compose.yml`):
+
+```
+database:
+  # Database properties
+  driverClass: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5432/hackathon
+  user: hackathon
+  password: hackathon
+  properties:
+    hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.hbm2ddl.auto: update
+```
+
+Once you have everything installed, simply open the Hackathon root folder in
+VSCode - it will detect that you have the Dev Containers configuration and
+download the required Docker image. The first time it takes a while to
+download and build the image, and you may need to close VSCode and re-open.
+
+You can then open VSCode terminals and start your server API and React App UI.
+You can also code Java and Python contestants and run then just as you would
+if you were running against the AWS stack.
+
+
 ### 1 - Configure Game Server Infrastructure
 
 <!--- TODO: HAC-146 Rewrite documentation for deployment --->
