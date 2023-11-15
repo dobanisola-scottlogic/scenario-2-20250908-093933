@@ -1,8 +1,8 @@
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
-import { selectUserRole } from '../../slices/authSlice';
-import NavbarMenu from '../menus/NavbarMenu';
+import NavbarMenu from '~/components/menus/NavbarMenu';
+import { useAppSelector } from '~/hooks';
+import { selectUserRole } from '~/slices/authSlice';
 
 const Navbar = () => {
   const userRole = useAppSelector(selectUserRole);

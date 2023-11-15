@@ -6,9 +6,9 @@ import {
   testHackathonBody,
   testHackathonId,
   testHackathonName,
-} from '../../mocks/test-data/hackathon';
-import { removeMilestoneBotPrefix } from '../../utils/milestone-utils';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+} from '~/mocks/test-data/hackathon';
+import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import CreateUpdateHackathon from './CreateUpdateHackathon';
 
 describe('Create Update Hackathon Popup Component', () => {

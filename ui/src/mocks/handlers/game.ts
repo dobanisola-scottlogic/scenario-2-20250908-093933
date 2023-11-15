@@ -1,6 +1,6 @@
 import { http } from 'msw';
-import { baseUrl } from '../../api/api';
-import { testGameResultBody } from '../test-data/game';
+import { baseUrl } from '~/api/api';
+import { testGameResultBody } from '~/mocks/test-data/game';
 import { badRequestResponse, errorResponse, jsonOkResponse } from './utils';
 
 const gameEndpoint = baseUrl + '/game';

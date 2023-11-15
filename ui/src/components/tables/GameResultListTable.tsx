@@ -10,9 +10,9 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-import { useGetHackathonGamesQuery } from '../../api/api';
-import { colours } from '../../theme';
-import { getGameTimeString } from '../../utils/game-utils';
+import { useGetHackathonGamesQuery } from '~/api/api';
+import { colours } from '~/theme';
+import { getGameTimeString } from '~/utils/game-utils';
 
 const gameViewerBaseUrl = import.meta.env.VITE_GAME_VIEWER_BASE_URL;
 

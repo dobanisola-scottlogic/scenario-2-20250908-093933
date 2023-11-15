@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react';
 
-import { getGameResultsNetworkErrorResponseHandler } from '../../mocks/handlers/game';
-import { server } from '../../mocks/server';
-import { testGameResultBody } from '../../mocks/test-data/game';
-import { testHackathonId } from '../../mocks/test-data/hackathon';
-import { getGameTimeString } from '../../utils/game-utils';
-import { removeMilestoneBotPrefix } from '../../utils/milestone-utils';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { getGameResultsNetworkErrorResponseHandler } from '~/mocks/handlers/game';
+import { server } from '~/mocks/server';
+import { testGameResultBody } from '~/mocks/test-data/game';
+import { testHackathonId } from '~/mocks/test-data/hackathon';
+import { getGameTimeString } from '~/utils/game-utils';
+import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import GameResultListTable from './GameResultListTable';
 
 describe('GameResultListTable', () => {

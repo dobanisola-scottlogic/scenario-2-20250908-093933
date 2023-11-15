@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import KebabMenu from '../common/KebabMenu';
-import CreateUpdateTeam from '../popups/CreateUpdateTeam';
-import DeleteTeam from '../popups/DeleteTeam';
+import KebabMenu from '~/components/common/KebabMenu';
+import CreateUpdateTeam from '~/components/popups/CreateUpdateTeam';
+import DeleteTeam from '~/components/popups/DeleteTeam';
 
 interface TeamMenuProps {
   hackathonId: string;

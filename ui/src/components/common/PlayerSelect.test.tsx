@@ -1,6 +1,6 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import PlayerSelect from './PlayerSelect';
 
 const mockFunction = () => null;

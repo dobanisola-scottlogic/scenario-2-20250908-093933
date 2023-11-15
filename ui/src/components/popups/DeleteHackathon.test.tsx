@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { testHackathonId } from '../../mocks/test-data/hackathon';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { testHackathonId } from '~/mocks/test-data/hackathon';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import DeleteHackathon from './DeleteHackathon';
 
 describe('Delete Hackathon Popup Component', () => {

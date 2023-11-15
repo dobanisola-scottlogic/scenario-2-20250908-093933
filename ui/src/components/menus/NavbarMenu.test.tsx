@@ -1,6 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react';
-import { UserRole } from '../../enums/UserRole';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { UserRole } from '~/enums/UserRole';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import NavbarMenu from './NavbarMenu';
 
 describe('NavbarMenu', () => {

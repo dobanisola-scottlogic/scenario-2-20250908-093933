@@ -8,10 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useDeleteHackathonMutation } from '../../api/api';
-import { useAppDispatch } from '../../hooks';
-import { PopupProps } from '../../interfaces/PopupProps';
-import { setSnackbarState } from '../../slices/snackbarSlice';
+import { useDeleteHackathonMutation } from '~/api/api';
+import { useAppDispatch } from '~/hooks';
+import { PopupProps } from '~/interfaces/PopupProps';
+import { setSnackbarState } from '~/slices/snackbarSlice';
 import { handleEnterKeyPress } from './utils';
 
 const DeleteHackathon = ({ isOpen, id, setIsOpen }: PopupProps) => {

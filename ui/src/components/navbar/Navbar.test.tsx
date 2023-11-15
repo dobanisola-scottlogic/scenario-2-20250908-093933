@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
-import { UserRole } from '../../enums/UserRole';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { UserRole } from '~/enums/UserRole';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import Navbar from './Navbar';
 
 describe('Navbar', () => {

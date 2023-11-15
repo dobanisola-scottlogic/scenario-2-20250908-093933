@@ -1,9 +1,9 @@
 import { Container } from '@mui/material';
 import { useState } from 'react';
 
-import AddButton from '../../common/AddButton';
-import CreateGame from '../../popups/CreateGame';
-import GameResultListTable from '../../tables/GameResultListTable';
+import AddButton from '~/components/common/AddButton';
+import CreateGame from '~/components/popups/CreateGame';
+import GameResultListTable from '~/components/tables/GameResultListTable';
 
 interface GameResultListProps {
   hackathonId: string;

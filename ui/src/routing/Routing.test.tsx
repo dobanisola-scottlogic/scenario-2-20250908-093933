@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
-import { UserRole } from '../enums/UserRole';
-import { testHackathonId } from '../mocks/test-data/hackathon';
-import { renderWithRouterAndProvider } from '../utils/test-utils';
+import { UserRole } from '~/enums/UserRole';
+import { testHackathonId } from '~/mocks/test-data/hackathon';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import Routing from './Routing';
 
 describe('Routing', () => {

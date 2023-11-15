@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import KebabMenu from '../common/KebabMenu';
-import CreateUpdateHackathon from '../popups/CreateUpdateHackathon';
-import DeleteHackathon from '../popups/DeleteHackathon';
+import KebabMenu from '~/components/common/KebabMenu';
+import CreateUpdateHackathon from '~/components/popups/CreateUpdateHackathon';
+import DeleteHackathon from '~/components/popups/DeleteHackathon';
 
 interface HackathonMenuProps {
   selectedHackathonId: string;

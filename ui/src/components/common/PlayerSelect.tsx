@@ -7,10 +7,7 @@ import {
 } from '@mui/material';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 
-import {
-  useGetHackathonTeamsQuery,
-  useGetMilestonesQuery,
-} from '../../api/api';
+import { useGetHackathonTeamsQuery, useGetMilestonesQuery } from '~/api/api';
 
 interface PlayerSelectProps {
   hackathonId: string;

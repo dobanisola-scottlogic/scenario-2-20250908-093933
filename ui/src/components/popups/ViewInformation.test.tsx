@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import ViewInformation from './ViewInformation';
 
 const mockFunction = () => null;

@@ -9,13 +9,13 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-import { useCreateGameMutation } from '../../api/api';
-import { useAppDispatch } from '../../hooks';
-import { CreateGameRequest } from '../../interfaces/CreateGameRequest';
-import { PopupProps } from '../../interfaces/PopupProps';
-import { setSnackbarState } from '../../slices/snackbarSlice';
-import MapSelect from '../common/MapSelect';
-import PlayerSelect from '../common/PlayerSelect';
+import { useCreateGameMutation } from '~/api/api';
+import MapSelect from '~/components/common/MapSelect';
+import PlayerSelect from '~/components/common/PlayerSelect';
+import { useAppDispatch } from '~/hooks';
+import { CreateGameRequest } from '~/interfaces/CreateGameRequest';
+import { PopupProps } from '~/interfaces/PopupProps';
+import { setSnackbarState } from '~/slices/snackbarSlice';
 
 interface CreateGameProps extends PopupProps {
   hackathonId: string;

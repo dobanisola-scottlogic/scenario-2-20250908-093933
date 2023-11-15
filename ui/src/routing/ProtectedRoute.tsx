@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { UserRole } from '../enums/UserRole';
-import { useAppSelector } from '../hooks';
-import { selectUserRole } from '../slices/authSlice';
+import { UserRole } from '~/enums/UserRole';
+import { useAppSelector } from '~/hooks';
+import { selectUserRole } from '~/slices/authSlice';
 
 interface ProtectedRouteProps {
   allowedRoles: UserRole;

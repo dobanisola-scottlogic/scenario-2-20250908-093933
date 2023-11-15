@@ -1,5 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import PasswordTextField from './PasswordTextField';
 
 const mockOnChange = () => null;

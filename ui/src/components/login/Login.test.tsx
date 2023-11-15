@@ -1,10 +1,10 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { UserRole } from '../../enums/UserRole';
+import { UserRole } from '~/enums/UserRole';
 import {
   networkErrorLoginCredentials,
   successfulLoginCredentials,
-} from '../../mocks/test-data/login';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+} from '~/mocks/test-data/login';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import Login from './Login';
 
 describe('Login', () => {

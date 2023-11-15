@@ -3,9 +3,9 @@ import { Route, Routes } from 'react-router-dom';
 import {
   testHackathonBody,
   testHackathonId,
-} from '../../../mocks/test-data/hackathon';
-import { removeMilestoneBotPrefix } from '../../../utils/milestone-utils';
-import { renderWithRouterAndProvider } from '../../../utils/test-utils';
+} from '~/mocks/test-data/hackathon';
+import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import HackathonDetails from './HackathonDetails';
 
 describe('HackathonDetails', () => {

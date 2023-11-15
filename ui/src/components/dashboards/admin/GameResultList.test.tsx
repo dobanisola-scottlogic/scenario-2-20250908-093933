@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 
-import { renderWithRouterAndProvider } from '../../../utils/test-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import GameResultList from './GameResultList';
 
 describe('GameResultList', () => {

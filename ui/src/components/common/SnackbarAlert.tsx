@@ -1,11 +1,8 @@
 import { Alert, Snackbar } from '@mui/material';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import {
-  selectSnackbarState,
-  setSnackbarState,
-} from '../../slices/snackbarSlice';
+import { useAppDispatch, useAppSelector } from '~/hooks';
+import { selectSnackbarState, setSnackbarState } from '~/slices/snackbarSlice';
 
 const SnackbarAlert = () => {
   const dispatch = useAppDispatch();

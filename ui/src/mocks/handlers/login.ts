@@ -1,10 +1,10 @@
 import { http } from 'msw';
-import { baseUrl } from '../../api/api';
+import { baseUrl } from '~/api/api';
 import {
   loginResponse,
   networkErrorLoginCredentials,
   successfulLoginCredentials,
-} from '../test-data/login';
+} from '~/mocks/test-data/login';
 import { errorResponse, jsonOkResponse, unauthorizedResponse } from './utils';
 
 const loginEndpoint = baseUrl + '/login';

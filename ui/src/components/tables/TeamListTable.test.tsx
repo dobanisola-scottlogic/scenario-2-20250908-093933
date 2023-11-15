@@ -1,10 +1,10 @@
 import { screen } from '@testing-library/react';
 
-import { getTeamsNetworkErrorResponseHandler } from '../../mocks/handlers/team';
-import { server } from '../../mocks/server';
-import { testHackathonId } from '../../mocks/test-data/hackathon';
-import { testTeamBody } from '../../mocks/test-data/team';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { getTeamsNetworkErrorResponseHandler } from '~/mocks/handlers/team';
+import { server } from '~/mocks/server';
+import { testHackathonId } from '~/mocks/test-data/hackathon';
+import { testTeamBody } from '~/mocks/test-data/team';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import TeamListTable from './TeamListTable';
 
 describe('TeamListTable', () => {

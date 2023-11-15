@@ -1,6 +1,6 @@
 import { http } from 'msw';
-import { baseUrl } from '../../api/api';
-import { testTeamBody, testTeamId } from '../test-data/team';
+import { baseUrl } from '~/api/api';
+import { testTeamBody, testTeamId } from '~/mocks/test-data/team';
 import {
   badRequestResponse,
   errorResponse,

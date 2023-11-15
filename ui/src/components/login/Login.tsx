@@ -8,10 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useLoginMutation } from '../../api/api';
-import { useAppDispatch } from '../../hooks';
-import { setCredentials } from '../../slices/authSlice';
-import PasswordTextField from '../common/PasswordTextField';
+import { useLoginMutation } from '~/api/api';
+import PasswordTextField from '~/components/common/PasswordTextField';
+import { useAppDispatch } from '~/hooks';
+import { setCredentials } from '~/slices/authSlice';
 
 const Login = () => {
   const dispatch = useAppDispatch();

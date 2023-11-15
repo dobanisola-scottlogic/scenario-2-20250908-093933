@@ -8,10 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useDeleteTeamMutation } from '../../api/api';
-import { useAppDispatch } from '../../hooks';
-import { PopupProps } from '../../interfaces/PopupProps';
-import { setSnackbarState } from '../../slices/snackbarSlice';
+import { useDeleteTeamMutation } from '~/api/api';
+import { useAppDispatch } from '~/hooks';
+import { PopupProps } from '~/interfaces/PopupProps';
+import { setSnackbarState } from '~/slices/snackbarSlice';
 import { handleEnterKeyPress } from './utils';
 
 const DeleteTeam = ({ isOpen, id, setIsOpen }: PopupProps) => {

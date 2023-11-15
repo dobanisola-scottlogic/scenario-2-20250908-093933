@@ -1,12 +1,12 @@
 import { PathParams, http } from 'msw';
-import { baseUrl } from '../../api/api';
-import { Hackathon } from '../../interfaces/Hackathon';
+import { baseUrl } from '~/api/api';
+import { Hackathon } from '~/interfaces/Hackathon';
 import {
   testHackathonBody,
   testHackathonId,
   testHackathonName,
   validTeamCredentials,
-} from '../test-data/hackathon';
+} from '~/mocks/test-data/hackathon';
 import {
   badRequestResponse,
   errorResponse,

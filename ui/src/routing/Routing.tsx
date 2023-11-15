@@ -1,11 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
-import HackathonDetails from '../components/dashboards/admin/HackathonDetails';
-import HackathonList from '../components/dashboards/admin/HackathonList';
-import Team from '../components/dashboards/team/Team';
-import Login from '../components/login/Login';
-import { UserRole } from '../enums/UserRole';
-import { useAppSelector } from '../hooks';
-import { selectUserRole } from '../slices/authSlice';
+import HackathonDetails from '~/components/dashboards/admin/HackathonDetails';
+import HackathonList from '~/components/dashboards/admin/HackathonList';
+import Team from '~/components/dashboards/team/Team';
+import Login from '~/components/login/Login';
+import { UserRole } from '~/enums/UserRole';
+import { useAppSelector } from '~/hooks';
+import { selectUserRole } from '~/slices/authSlice';
 import ProtectedRoute from './ProtectedRoute';
 
 const Routing = () => {

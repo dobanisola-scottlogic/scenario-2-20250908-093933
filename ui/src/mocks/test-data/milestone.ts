@@ -1,4 +1,4 @@
-import { Milestone } from '../../interfaces/Milestone';
+import { Milestone } from '~/interfaces/Milestone';
 
 export const getMilestonesResponse: Milestone[] = [
   {

@@ -1,11 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 
-import { getHackathonsNetworkErrorResponseHandler } from '../../mocks/handlers/hackathon';
-import { server } from '../../mocks/server';
-import { testHackathonBody } from '../../mocks/test-data/hackathon';
-import { removeMilestoneBotPrefix } from '../../utils/milestone-utils';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { getHackathonsNetworkErrorResponseHandler } from '~/mocks/handlers/hackathon';
+import { server } from '~/mocks/server';
+import { testHackathonBody } from '~/mocks/test-data/hackathon';
+import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import HackathonListTable from './HackathonListTable';
 
 describe('HackathonListTable', () => {

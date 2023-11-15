@@ -9,10 +9,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useGetHackathonForTeamUserQuery } from '../../../api/api';
-import { colours } from '../../../theme';
-import AddButton from '../../common/AddButton';
-import ViewInformation from '../../popups/ViewInformation';
+import { useGetHackathonForTeamUserQuery } from '~/api/api';
+import AddButton from '~/components/common/AddButton';
+import ViewInformation from '~/components/popups/ViewInformation';
+import { colours } from '~/theme';
 
 const Team = () => {
   const {

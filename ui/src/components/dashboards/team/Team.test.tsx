@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react';
 
-import { UserRole } from '../../../enums/UserRole';
+import { UserRole } from '~/enums/UserRole';
 import {
   testHackathonBody,
   validTeamCredentials,
-} from '../../../mocks/test-data/hackathon';
-import { removeMilestoneBotPrefix } from '../../../utils/milestone-utils';
-import { renderWithRouterAndProvider } from '../../../utils/test-utils';
+} from '~/mocks/test-data/hackathon';
+import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import Team from './Team';
 
 describe('Team', () => {

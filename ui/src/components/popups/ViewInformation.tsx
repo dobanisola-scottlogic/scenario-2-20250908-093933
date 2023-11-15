@@ -1,7 +1,7 @@
 import { Box, Button, Dialog, DialogContent, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { PopupProps } from '../../interfaces/PopupProps';
-import CopyTextField from '../common/CopyTextField';
+import CopyTextField from '~/components/common/CopyTextField';
+import { PopupProps } from '~/interfaces/PopupProps';
 
 const ViewInformation = ({ isOpen, setIsOpen }: PopupProps) => {
   const handleClose = () => {

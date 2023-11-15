@@ -1,11 +1,25 @@
 /// <reference types="vitest" />
+import alias from '@rollup/plugin-alias';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { configDefaults } from 'vitest/dist/config.js';
 
+const projectRootDir = resolve(__dirname);
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+  plugins: [
+    react(),
+    alias({
+      entries: [
+        {
+          find: '~',
+          replacement: resolve(projectRootDir, 'src'),
+        },
+      ],
+    }),
+  ],
   test: {
     globals: true,
     environment: 'happy-dom',

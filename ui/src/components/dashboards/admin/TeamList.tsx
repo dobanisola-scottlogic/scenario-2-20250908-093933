@@ -1,9 +1,9 @@
 import { Container } from '@mui/material';
 import { useState } from 'react';
 
-import AddButton from '../../common/AddButton';
-import CreateUpdateTeam from '../../popups/CreateUpdateTeam';
-import TeamListTable from '../../tables/TeamListTable';
+import AddButton from '~/components/common/AddButton';
+import CreateUpdateTeam from '~/components/popups/CreateUpdateTeam';
+import TeamListTable from '~/components/tables/TeamListTable';
 
 interface TeamListProps {
   hackathonId: string;

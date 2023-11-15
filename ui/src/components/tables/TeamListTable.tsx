@@ -9,10 +9,10 @@ import {
   TableRow,
 } from '@mui/material';
 
-import { useGetHackathonTeamsQuery } from '../../api/api';
-import { colours } from '../../theme';
-import MenuTableCell from '../common/MenuTableCell';
-import TeamMenu from '../menus/TeamMenu';
+import { useGetHackathonTeamsQuery } from '~/api/api';
+import MenuTableCell from '~/components/common/MenuTableCell';
+import TeamMenu from '~/components/menus/TeamMenu';
+import { colours } from '~/theme';
 
 interface TeamListTableProps {
   hackathonId: string;

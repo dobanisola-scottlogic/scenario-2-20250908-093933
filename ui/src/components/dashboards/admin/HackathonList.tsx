@@ -1,9 +1,9 @@
 import { Box, Container } from '@mui/material';
 import { useState } from 'react';
-import AddButton from '../../common/AddButton';
-import SnackbarAlert from '../../common/SnackbarAlert';
-import CreateUpdateHackathon from '../../popups/CreateUpdateHackathon';
-import HackathonListTable from '../../tables/HackathonListTable';
+import AddButton from '~/components/common/AddButton';
+import SnackbarAlert from '~/components/common/SnackbarAlert';
+import CreateUpdateHackathon from '~/components/popups/CreateUpdateHackathon';
+import HackathonListTable from '~/components/tables/HackathonListTable';
 
 const HackathonList = () => {
   const [isCreateHackathonOpen, setIsCreateHackathonOpen] = useState(false);

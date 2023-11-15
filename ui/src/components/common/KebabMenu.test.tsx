@@ -1,5 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import KebabMenu from './KebabMenu';
 
 const mockOptions = [{ name: 'Test Item', onClick: () => null }];

@@ -7,11 +7,11 @@ import {
   postTeamInternalServerErrorResponseHandler,
   putTeamBadRequestResponseHandler,
   putTeamInternalServerErrorResponseHandler,
-} from '../../mocks/handlers/team';
-import { server } from '../../mocks/server';
-import { testHackathonId } from '../../mocks/test-data/hackathon';
-import { testTeamBody, testTeamId } from '../../mocks/test-data/team';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+} from '~/mocks/handlers/team';
+import { server } from '~/mocks/server';
+import { testHackathonId } from '~/mocks/test-data/hackathon';
+import { testTeamBody, testTeamId } from '~/mocks/test-data/team';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import CreateUpdateTeam, { teamNameErrorMsg } from './CreateUpdateTeam';
 
 describe('CreateUpdateTeam Popup Component', () => {

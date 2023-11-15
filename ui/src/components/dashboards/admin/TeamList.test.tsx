@@ -1,6 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react';
 
-import { renderWithRouterAndProvider } from '../../../utils/test-utils';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import TeamList from './TeamList';
 
 describe('TeamList', () => {

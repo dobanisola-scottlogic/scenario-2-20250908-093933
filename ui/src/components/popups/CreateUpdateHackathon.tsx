@@ -20,11 +20,11 @@ import {
   useGetHackathonQuery,
   useGetMilestonesQuery,
   useUpdateHackathonMutation,
-} from '../../api/api';
-import { useAppDispatch } from '../../hooks';
-import { PopupProps } from '../../interfaces/PopupProps';
-import { setSnackbarState } from '../../slices/snackbarSlice';
-import MapSelect from '../common/MapSelect';
+} from '~/api/api';
+import MapSelect from '~/components/common/MapSelect';
+import { useAppDispatch } from '~/hooks';
+import { PopupProps } from '~/interfaces/PopupProps';
+import { setSnackbarState } from '~/slices/snackbarSlice';
 import { isValidName } from './utils';
 
 const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {

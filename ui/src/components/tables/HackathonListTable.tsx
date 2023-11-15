@@ -9,10 +9,10 @@ import {
   TableRow,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useGetHackathonsQuery } from '../../api/api';
-import { colours } from '../../theme';
-import MenuTableCell from '../common/MenuTableCell';
-import HackathonMenu from '../menus/HackathonMenu';
+import { useGetHackathonsQuery } from '~/api/api';
+import MenuTableCell from '~/components/common/MenuTableCell';
+import HackathonMenu from '~/components/menus/HackathonMenu';
+import { colours } from '~/theme';
 
 const HackathonListTable = () => {
   const { data: hackathons, isLoading, isError } = useGetHackathonsQuery();

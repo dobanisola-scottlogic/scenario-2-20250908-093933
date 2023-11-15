@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { testTeamId } from '../../mocks/test-data/team';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { testTeamId } from '~/mocks/test-data/team';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import DeleteTeam from './DeleteTeam';
 
 describe('Delete Team Popup Component', () => {

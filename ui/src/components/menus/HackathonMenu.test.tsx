@@ -1,6 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react';
-import { testHackathonId } from '../../mocks/test-data/hackathon';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+import { testHackathonId } from '~/mocks/test-data/hackathon';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import HackathonMenu from './HackathonMenu';
 
 describe('HackathonMenu', () => {

@@ -14,13 +14,13 @@ import {
   useCreateTeamMutation,
   useGetTeamQuery,
   useUpdateTeamMutation,
-} from '../../api/api';
-import { useAppDispatch } from '../../hooks';
-import { CreateTeamRequest } from '../../interfaces/CreateTeamRequest';
-import { PopupProps } from '../../interfaces/PopupProps';
-import { Team } from '../../interfaces/Team';
-import { setSnackbarState } from '../../slices/snackbarSlice';
-import PasswordTextField from '../common/PasswordTextField';
+} from '~/api/api';
+import PasswordTextField from '~/components/common/PasswordTextField';
+import { useAppDispatch } from '~/hooks';
+import { CreateTeamRequest } from '~/interfaces/CreateTeamRequest';
+import { PopupProps } from '~/interfaces/PopupProps';
+import { Team } from '~/interfaces/Team';
+import { setSnackbarState } from '~/slices/snackbarSlice';
 import { isValidName } from './utils';
 
 interface CreateUpdateTeamProps extends PopupProps {

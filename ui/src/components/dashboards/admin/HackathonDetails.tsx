@@ -2,9 +2,9 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import { CircularProgress, Container, Grid, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 
-import { useGetHackathonQuery } from '../../../api/api';
-import { colours } from '../../../theme';
-import SnackbarAlert from '../../common/SnackbarAlert';
+import { useGetHackathonQuery } from '~/api/api';
+import SnackbarAlert from '~/components/common/SnackbarAlert';
+import { colours } from '~/theme';
 import GameResultList from './GameResultList';
 import TeamList from './TeamList';
 

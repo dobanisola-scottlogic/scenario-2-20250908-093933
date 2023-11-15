@@ -1,14 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { CreateGameRequest } from '../interfaces/CreateGameRequest';
-import { CreateTeamRequest } from '../interfaces/CreateTeamRequest';
-import { GameResult } from '../interfaces/GameResult';
-import { Hackathon } from '../interfaces/Hackathon';
-import { LoginResponse } from '../interfaces/LoginResponse';
-import { Milestone } from '../interfaces/Milestone';
-import { RootState } from '../store';
-import { removeMilestoneBotPrefix } from '../utils/milestone-utils';
-import { Team } from './../interfaces/Team';
+import { CreateGameRequest } from '~/interfaces/CreateGameRequest';
+import { CreateTeamRequest } from '~/interfaces/CreateTeamRequest';
+import { GameResult } from '~/interfaces/GameResult';
+import { Hackathon } from '~/interfaces/Hackathon';
+import { LoginResponse } from '~/interfaces/LoginResponse';
+import { Milestone } from '~/interfaces/Milestone';
+import { Team } from '~/interfaces/Team';
+import { RootState } from '~/store';
+import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
 
 export const baseUrl = import.meta.env.VITE_API_BASE_URL;
 

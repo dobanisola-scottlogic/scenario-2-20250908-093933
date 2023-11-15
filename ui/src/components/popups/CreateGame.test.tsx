@@ -12,10 +12,10 @@ import userEvent from '@testing-library/user-event';
 import {
   postGameBadRequestResponseHandler,
   postGameInternalServerErrorResponseHandler,
-} from '../../mocks/handlers/game';
-import { server } from '../../mocks/server';
-import { testHackathonId } from '../../mocks/test-data/hackathon';
-import { renderWithRouterAndProvider } from '../../utils/test-utils';
+} from '~/mocks/handlers/game';
+import { server } from '~/mocks/server';
+import { testHackathonId } from '~/mocks/test-data/hackathon';
+import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import CreateGame from './CreateGame';
 
 const hackathonId = testHackathonId.valid;
