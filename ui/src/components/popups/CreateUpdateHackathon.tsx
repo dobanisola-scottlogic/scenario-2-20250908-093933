@@ -22,6 +22,7 @@ import {
   useUpdateHackathonMutation,
 } from '~/api/api';
 import MapSelect from '~/components/common/MapSelect';
+import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { setSnackbarState } from '~/slices/snackbarSlice';
@@ -145,8 +146,8 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
   return (
     <>
       <Dialog onClose={handleClose} open={isOpen}>
-        <DialogContent sx={{ width: 500 }}>
-          <Typography sx={{ m: 1, mx: 'auto' }} role='dialogHeading'>
+        <DialogContent sx={popupStyles.dialogContentStyle}>
+          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
             {isEditing ? 'Edit hackathon' : 'Add a new hackathon'}
           </Typography>
 
@@ -160,7 +161,7 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
                   : null
               }
               fullWidth
-              sx={{ m: 1, mx: 'auto' }}
+              sx={commonStyles.spacingStyle}
               id='outlined-basic'
               label='Hackathon name'
               variant='outlined'
@@ -171,7 +172,7 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
             {/* TODO on HAC-98: bot and map dropdowns should be reimplemented on the create hackathon popup when server functionality has been added on HAC-97 */}
             {isEditing && (
               <>
-                <FormControl sx={{ m: 1, mx: 'auto' }} fullWidth>
+                <FormControl sx={commonStyles.spacingStyle} fullWidth>
                   <InputLabel id='current-milestone-bot-label'>
                     Current milestone bot
                   </InputLabel>
@@ -205,14 +206,7 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
                 />
               </>
             )}
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                flexDirection: 'row',
-                m: 1,
-              }}
-            >
+            <Box sx={popupStyles.popupBoxStyle}>
               <Button onClick={handleClose}>Cancel</Button>
               <Button
                 disabled={isLoading || !isValidName(hackathonName)}
@@ -224,25 +218,13 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
           </form>
 
           {formError && (
-            <Alert
-              severity='error'
-              sx={{
-                my: 2,
-                mr: 1,
-              }}
-            >
+            <Alert severity='error' sx={commonStyles.alertStyle}>
               {formError}
             </Alert>
           )}
 
           {isEditing && !isFetching && !hackathon && (
-            <Alert
-              severity='error'
-              sx={{
-                my: 2,
-                mr: 1,
-              }}
-            >
+            <Alert severity='error' sx={commonStyles.alertStyle}>
               {fetchError
                 ? 'Error fetching hackathon'
                 : 'No hackathon data found'}

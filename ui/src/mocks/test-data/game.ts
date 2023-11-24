@@ -1,5 +1,5 @@
+import { CutoffCondition } from '~/enums/CutoffCondition';
 import { Arena } from '~/interfaces/Arena';
-import { CutoffCondition } from '~/interfaces/CutoffCondition';
 import { GameResult } from '~/interfaces/GameResult';
 import { testHackathonId } from './hackathon';
 

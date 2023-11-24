@@ -1,4 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { commonStyles } from '~/components/commonStyles';
 
 interface MapSelectProps {
   labelText: string;
@@ -9,7 +10,7 @@ interface MapSelectProps {
 // Hardcoded options should be removed in future when HAC-100 and HAC-101 are implemented
 const MapSelect = ({ labelText, mapName, setMapName }: MapSelectProps) => {
   return (
-    <FormControl sx={{ m: 1, mx: 'auto' }} fullWidth>
+    <FormControl sx={commonStyles.spacingStyle} fullWidth>
       <InputLabel id='game-map-label'>{labelText}</InputLabel>
       <Select
         data-testid='game-map'

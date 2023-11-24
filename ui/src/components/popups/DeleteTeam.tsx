@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useDeleteTeamMutation } from '~/api/api';
+import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { setSnackbarState } from '~/slices/snackbarSlice';
@@ -60,38 +61,22 @@ const DeleteTeam = ({ isOpen, id, setIsOpen }: PopupProps) => {
         }
         open={isOpen}
       >
-        <DialogContent sx={{ width: 500 }}>
-          <Typography sx={{ m: 1, mx: 'auto' }} role='dialogHeading'>
+        <DialogContent sx={popupStyles.dialogContentStyle}>
+          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
             Are you sure you want to delete the team?
           </Typography>
-          <Typography
-            sx={{ fontWeight: 'normal', m: 1, mx: 'auto' }}
-            role='dialogHeading'
-          >
+          <Typography sx={commonStyles.spacingStyleNormal} role='dialogHeading'>
             This will delete the team&apos;s games as well. You{' '}
             <strong>cannot</strong> undo this action.
           </Typography>
 
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              flexDirection: 'row',
-              m: 1,
-            }}
-          >
+          <Box sx={popupStyles.popupBoxStyle}>
             <Button onClick={handleClose}>Cancel</Button>
             <Button onClick={handleDelete}>Delete team</Button>
           </Box>
 
           {formError && (
-            <Alert
-              severity='error'
-              sx={{
-                my: 2,
-                mr: 1,
-              }}
-            >
+            <Alert severity='error' sx={commonStyles.alertStyle}>
               {formError}
             </Alert>
           )}

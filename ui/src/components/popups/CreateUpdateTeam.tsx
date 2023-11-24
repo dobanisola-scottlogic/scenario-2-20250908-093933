@@ -10,12 +10,14 @@ import {
 } from '@mui/material';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { useEffect, useState } from 'react';
+
 import {
   useCreateTeamMutation,
   useGetTeamQuery,
   useUpdateTeamMutation,
 } from '~/api/api';
 import PasswordTextField from '~/components/common/PasswordTextField';
+import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
 import { CreateTeamRequest } from '~/interfaces/CreateTeamRequest';
 import { PopupProps } from '~/interfaces/PopupProps';
@@ -160,8 +162,8 @@ const CreateUpdateTeam = ({
   return (
     <>
       <Dialog onClose={handleClose} open={isOpen}>
-        <DialogContent sx={{ width: 500 }}>
-          <Typography sx={{ m: 1, mx: 'auto' }} role='dialogHeading'>
+        <DialogContent sx={popupStyles.dialogContentStyle}>
+          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
             {isEditing ? 'Edit team' : 'Add a new team'}
           </Typography>
 
@@ -172,7 +174,7 @@ const CreateUpdateTeam = ({
               helperText={teamNameShowError() ? teamNameErrorMsg : null}
               fullWidth
               label='Name'
-              sx={{ m: 1, mx: 'auto' }}
+              sx={commonStyles.spacingStyle}
               value={teamName}
               variant='outlined'
               onChange={(e) => setTeamName(e.target.value)}
@@ -183,14 +185,7 @@ const CreateUpdateTeam = ({
               onChange={(e) => setTeamPassword(e.target.value)}
             />
 
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                flexDirection: 'row',
-                m: 1,
-              }}
-            >
+            <Box sx={popupStyles.popupBoxStyle}>
               <Button onClick={handleClose}>Cancel</Button>
 
               <Button
@@ -207,25 +202,13 @@ const CreateUpdateTeam = ({
           </form>
 
           {formError && (
-            <Alert
-              severity='error'
-              sx={{
-                my: 2,
-                mr: 1,
-              }}
-            >
+            <Alert severity='error' sx={commonStyles.alertStyle}>
               {formError}
             </Alert>
           )}
 
           {isEditing && !isFetching && fetchError && !teamName && (
-            <Alert
-              severity='error'
-              sx={{
-                my: 2,
-                mr: 1,
-              }}
-            >
+            <Alert severity='error' sx={commonStyles.alertStyle}>
               Error fetching team
             </Alert>
           )}

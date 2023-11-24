@@ -13,8 +13,6 @@ describe('GameResultList', () => {
       screen.getByRole('button', { name: 'Add a new game' })
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByLabelText('List of hackathon games')
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('List of games')).toBeInTheDocument();
   });
 });

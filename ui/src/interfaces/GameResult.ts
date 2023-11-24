@@ -1,4 +1,4 @@
-import { CutoffCondition } from './CutoffCondition';
+import { CutoffCondition } from '~/enums/CutoffCondition';
 import { Game } from './Game';
 
 export interface GameResult {

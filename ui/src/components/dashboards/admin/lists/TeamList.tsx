@@ -1,9 +1,10 @@
-import { Container } from '@mui/material';
 import { useState } from 'react';
 
 import AddButton from '~/components/common/AddButton';
+import { CommonContainer } from '~/components/common/CommonContainer';
 import CreateUpdateTeam from '~/components/popups/CreateUpdateTeam';
 import TeamListTable from '~/components/tables/TeamListTable';
+import { ContainerRole } from '~/enums/ContainerRole';
 
 interface TeamListProps {
   hackathonId: string;
@@ -15,7 +16,7 @@ const TeamList = ({ hackathonId }: TeamListProps) => {
 
   return (
     <>
-      <Container maxWidth={false} style={{ padding: '10px 0' }}>
+      <CommonContainer containerRole={ContainerRole.LIST}>
         <AddButton onClick={handleAddTeamOpen} text='Add a new team' />
         <CreateUpdateTeam
           isOpen={isAddTeamOpen}
@@ -23,7 +24,7 @@ const TeamList = ({ hackathonId }: TeamListProps) => {
           setIsOpen={setIsAddTeamOpen}
         />
         <TeamListTable hackathonId={hackathonId} />
-      </Container>
+      </CommonContainer>
     </>
   );
 };

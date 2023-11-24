@@ -4,14 +4,16 @@ import {
   Box,
   Button,
   CircularProgress,
-  Container,
   Stack,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+
 import { useGetHackathonForTeamUserQuery } from '~/api/api';
 import AddButton from '~/components/common/AddButton';
+import { CommonContainer } from '~/components/common/CommonContainer';
 import ViewInformation from '~/components/popups/ViewInformation';
+import { ContainerRole } from '~/enums/ContainerRole';
 import { colours } from '~/theme';
 
 const Team = () => {
@@ -28,7 +30,7 @@ const Team = () => {
 
   return (
     <>
-      <Container maxWidth={false} style={{ padding: '30px 50px' }}>
+      <CommonContainer containerRole={ContainerRole.DASHBOARD}>
         <Stack spacing={3}>
           <Typography sx={{ fontWeight: 'normal' }}>
             <strong>Current Milestone: </strong>
@@ -88,7 +90,7 @@ const Team = () => {
         >
           Placeholder for games table
         </Box>
-      </Container>
+      </CommonContainer>
       <ViewInformation
         isOpen={isViewInformationOpen}
         setIsOpen={setIsViewInformationOpen}

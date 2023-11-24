@@ -15,7 +15,7 @@ describe('HackathonList', () => {
     expect(
       screen.getByRole('button', { name: 'Add a new hackathon' })
     ).toBeInTheDocument();
-    expect(screen.getByLabelText('hackathon table')).toBeInTheDocument();
+    expect(screen.getByLabelText('List of hackathons')).toBeInTheDocument();
   });
 
   it('should open the create hackathon popup on clicking add a new hackathon', () => {

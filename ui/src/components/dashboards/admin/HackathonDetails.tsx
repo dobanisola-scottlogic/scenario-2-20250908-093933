@@ -1,12 +1,14 @@
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import { CircularProgress, Container, Grid, Typography } from '@mui/material';
+import { CircularProgress, Grid, Typography } from '@mui/material';
 import { Link, useParams } from 'react-router-dom';
 
 import { useGetHackathonQuery } from '~/api/api';
+import { CommonContainer } from '~/components/common/CommonContainer';
 import SnackbarAlert from '~/components/common/SnackbarAlert';
+import { ContainerRole } from '~/enums/ContainerRole';
 import { colours } from '~/theme';
-import GameResultList from './GameResultList';
-import TeamList from './TeamList';
+import GameResultList from './lists/GameResultList';
+import TeamList from './lists/TeamList';
 
 const HackathonDetails = () => {
   const { id } = useParams();
@@ -17,7 +19,7 @@ const HackathonDetails = () => {
     <>
       <SnackbarAlert />
 
-      <Container maxWidth={false} style={{ padding: '30px 50px' }}>
+      <CommonContainer containerRole={ContainerRole.DASHBOARD}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Typography
@@ -55,7 +57,7 @@ const HackathonDetails = () => {
             <GameResultList hackathonId={id!} />
           </Grid>
         </Grid>
-      </Container>
+      </CommonContainer>
     </>
   );
 };

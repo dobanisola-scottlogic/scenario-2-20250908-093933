@@ -1,6 +1,7 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { useState } from 'react';
+import { commonStyles } from '~/components/commonStyles';
 
 interface PasswordTextFieldProps {
   required?: boolean;
@@ -29,7 +30,7 @@ const PasswordTextField = ({
         margin='normal'
         name='Password'
         required={required}
-        sx={{ m: 1, mx: 'auto' }}
+        sx={commonStyles.spacingStyle}
         type={type}
         value={value}
         variant='outlined'

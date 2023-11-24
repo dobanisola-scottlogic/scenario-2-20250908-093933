@@ -2,14 +2,16 @@ import {
   Alert,
   Box,
   Button,
-  Container,
   LinearProgress,
   TextField,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
 import { useLoginMutation } from '~/api/api';
+import { CommonContainer } from '~/components/common/CommonContainer';
 import PasswordTextField from '~/components/common/PasswordTextField';
+import { commonStyles } from '~/components/commonStyles';
+import { ContainerRole } from '~/enums/ContainerRole';
 import { useAppDispatch } from '~/hooks';
 import { setCredentials } from '~/slices/authSlice';
 
@@ -48,16 +50,7 @@ const Login = () => {
 
   return (
     <>
-      <Container
-        component='main'
-        maxWidth='xs'
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '90vh',
-        }}
-      >
+      <CommonContainer containerRole={ContainerRole.LOGIN}>
         <Box
           sx={{
             backgroundColor: 'white',
@@ -103,13 +96,7 @@ const Login = () => {
               }}
             >
               {error && (
-                <Alert
-                  severity='error'
-                  sx={{
-                    my: 2,
-                    mr: 1,
-                  }}
-                >
+                <Alert severity='error' sx={commonStyles.alertStyle}>
                   {error}
                 </Alert>
               )}
@@ -120,7 +107,7 @@ const Login = () => {
             {isLoading && <LinearProgress />}
           </Box>
         </Box>
-      </Container>
+      </CommonContainer>
     </>
   );
 };

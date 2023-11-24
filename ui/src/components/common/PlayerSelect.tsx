@@ -8,6 +8,7 @@ import {
 import { skipToken } from '@reduxjs/toolkit/query/react';
 
 import { useGetHackathonTeamsQuery, useGetMilestonesQuery } from '~/api/api';
+import { commonStyles } from '~/components/commonStyles';
 
 interface PlayerSelectProps {
   hackathonId: string;
@@ -32,7 +33,7 @@ const PlayerSelect = ({
   );
 
   return (
-    <FormControl sx={{ m: 1, mx: 'auto' }} fullWidth>
+    <FormControl sx={commonStyles.spacingStyle} fullWidth>
       <InputLabel id={`player-${playerNumber}-select-label`}>
         {`Select player ${playerNumber} ${
           isOptional ? '(Optional)' : ''

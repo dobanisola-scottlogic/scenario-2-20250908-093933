@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useCreateGameMutation } from '~/api/api';
 import MapSelect from '~/components/common/MapSelect';
 import PlayerSelect from '~/components/common/PlayerSelect';
+import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
 import { CreateGameRequest } from '~/interfaces/CreateGameRequest';
 import { PopupProps } from '~/interfaces/PopupProps';
@@ -93,8 +94,8 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
   return (
     <>
       <Dialog onClose={handleClose} open={isOpen}>
-        <DialogContent sx={{ width: 500 }}>
-          <Typography sx={{ m: 1, mx: 'auto' }} role='dialogHeading'>
+        <DialogContent sx={popupStyles.dialogContentStyle}>
+          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
             Add a new game
           </Typography>
 
@@ -141,14 +142,7 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
               setMapName={setMapName}
             />
 
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                flexDirection: 'row',
-                m: 1,
-              }}
-            >
+            <Box sx={popupStyles.popupBoxStyle}>
               <Button onClick={handleClose}>Cancel</Button>
 
               <Button
@@ -163,13 +157,7 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
           </form>
 
           {formError && (
-            <Alert
-              severity='error'
-              sx={{
-                my: 2,
-                mr: 1,
-              }}
-            >
+            <Alert severity='error' sx={commonStyles.alertStyle}>
               {formError}
             </Alert>
           )}

@@ -1,9 +1,11 @@
-import { Box, Container } from '@mui/material';
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import AddButton from '~/components/common/AddButton';
+import { CommonContainer } from '~/components/common/CommonContainer';
 import SnackbarAlert from '~/components/common/SnackbarAlert';
 import CreateUpdateHackathon from '~/components/popups/CreateUpdateHackathon';
 import HackathonListTable from '~/components/tables/HackathonListTable';
+import { ContainerRole } from '~/enums/ContainerRole';
 
 const HackathonList = () => {
   const [isCreateHackathonOpen, setIsCreateHackathonOpen] = useState(false);
@@ -13,7 +15,7 @@ const HackathonList = () => {
     <>
       <SnackbarAlert />
 
-      <Container maxWidth={false} style={{ padding: '40px 50px' }}>
+      <CommonContainer containerRole={ContainerRole.DASHBOARD}>
         <Box sx={{ mb: 4 }}>
           <AddButton
             onClick={handleIsCreateHackathonOpen}
@@ -25,7 +27,7 @@ const HackathonList = () => {
           isOpen={isCreateHackathonOpen}
           setIsOpen={setIsCreateHackathonOpen}
         />
-      </Container>
+      </CommonContainer>
     </>
   );
 };

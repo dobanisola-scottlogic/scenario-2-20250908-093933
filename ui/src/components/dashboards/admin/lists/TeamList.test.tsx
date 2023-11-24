@@ -13,9 +13,7 @@ describe('TeamList', () => {
       screen.getByRole('button', { name: 'Add a new team' })
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByLabelText('List of hackathon teams')
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('List of teams')).toBeInTheDocument();
   });
 
   it('should open the create team popup on clicking add a new Team', () => {
