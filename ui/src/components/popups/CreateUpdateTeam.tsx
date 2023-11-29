@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { useEffect, useState } from 'react';
-
 import {
   useCreateTeamMutation,
   useGetTeamQuery,
@@ -23,6 +22,7 @@ import { CreateTeamRequest } from '~/interfaces/CreateTeamRequest';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { Team } from '~/interfaces/Team';
 import { setSnackbarState } from '~/slices/snackbarSlice';
+
 import { isValidName } from './utils';
 
 interface CreateUpdateTeamProps extends PopupProps {
@@ -163,7 +163,7 @@ const CreateUpdateTeam = ({
     <>
       <Dialog onClose={handleClose} open={isOpen}>
         <DialogContent sx={popupStyles.dialogContentStyle}>
-          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
+          <Typography sx={commonStyles.spacingStyle}>
             {isEditing ? 'Edit team' : 'Add a new team'}
           </Typography>
 

@@ -13,6 +13,7 @@ import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { setSnackbarState } from '~/slices/snackbarSlice';
+
 import { handleEnterKeyPress } from './utils';
 
 const DeleteHackathon = ({ isOpen, id, setIsOpen }: PopupProps) => {
@@ -63,10 +64,10 @@ const DeleteHackathon = ({ isOpen, id, setIsOpen }: PopupProps) => {
         open={isOpen}
       >
         <DialogContent sx={popupStyles.dialogContentStyle}>
-          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
+          <Typography sx={commonStyles.spacingStyle}>
             Are you sure you want to delete the hackathon?
           </Typography>
-          <Typography sx={commonStyles.spacingStyleNormal} role='dialogHeading'>
+          <Typography sx={commonStyles.spacingStyleNormal}>
             This will delete teams and games in the hackathon as well. You{' '}
             <strong>cannot</strong> undo this action.
           </Typography>

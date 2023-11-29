@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { useEffect, useState } from 'react';
-
 import {
   useCreateHackathonMutation,
   useGetHackathonQuery,
@@ -26,6 +25,7 @@ import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { setSnackbarState } from '~/slices/snackbarSlice';
+
 import { isValidName } from './utils';
 
 const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
@@ -147,7 +147,7 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
     <>
       <Dialog onClose={handleClose} open={isOpen}>
         <DialogContent sx={popupStyles.dialogContentStyle}>
-          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
+          <Typography sx={commonStyles.spacingStyle}>
             {isEditing ? 'Edit hackathon' : 'Add a new hackathon'}
           </Typography>
 

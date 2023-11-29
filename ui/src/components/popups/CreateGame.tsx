@@ -8,7 +8,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-
 import { useCreateGameMutation } from '~/api/api';
 import MapSelect from '~/components/common/MapSelect';
 import PlayerSelect from '~/components/common/PlayerSelect';
@@ -95,9 +94,7 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
     <>
       <Dialog onClose={handleClose} open={isOpen}>
         <DialogContent sx={popupStyles.dialogContentStyle}>
-          <Typography sx={commonStyles.spacingStyle} role='dialogHeading'>
-            Add a new game
-          </Typography>
+          <Typography sx={commonStyles.spacingStyle}>Add a new game</Typography>
 
           <form onSubmit={handleSubmit}>
             <PlayerSelect
