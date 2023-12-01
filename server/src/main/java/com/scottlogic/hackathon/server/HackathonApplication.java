@@ -1,5 +1,6 @@
 package com.scottlogic.hackathon.server;
 
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -23,13 +24,7 @@ import ru.vyarus.dropwizard.guice.GuiceBundle;
 import com.scottlogic.hackathon.server.authentication.Authenticator;
 import com.scottlogic.hackathon.server.authentication.Authorizer;
 import com.scottlogic.hackathon.server.authentication.User;
-import com.scottlogic.hackathon.server.models.AdminUser;
-import com.scottlogic.hackathon.server.models.GameResult;
-import com.scottlogic.hackathon.server.models.GameTeam;
-import com.scottlogic.hackathon.server.models.Hackathon;
-import com.scottlogic.hackathon.server.models.MilestoneBot;
-import com.scottlogic.hackathon.server.models.Team;
-import com.scottlogic.hackathon.server.models.TeamBot;
+import com.scottlogic.hackathon.server.models.*;
 import com.scottlogic.hackathon.server.resources.*;
 import com.scottlogic.hackathon.server.services.AdminService;
 import com.scottlogic.hackathon.server.services.TeamService;
@@ -48,7 +43,6 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
   @Override
   public void initialize(final Bootstrap<HackathonConfiguration> bootstrap) {
     bootstrap.addBundle(new AssetsBundle("/assets", "/", "index.html", "viewer"));
-    bootstrap.addBundle(new AssetsBundle("/ui", "/ui", "index.html", "ui"));
     bootstrap.addBundle(new MultiPartBundle());
     bootstrap.addBundle(hibernateBundle);
     bootstrap.addBundle(
@@ -95,6 +89,9 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
                 new Object[] {
                   injector.getInstance(TeamService.class), injector.getInstance(AdminService.class)
                 });
+
+    DefaultIndexServlet reactServlet = new DefaultIndexServlet("/ui", "/ui", "index.html", StandardCharsets.UTF_8);
+    environment.servlets().addServlet("ui", reactServlet).addMapping("/ui/*");
 
     environment
         .jersey()
