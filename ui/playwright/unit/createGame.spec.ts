@@ -3,7 +3,7 @@ import { HackathonHelpers } from '../helpers';
 
 const uniqueHackathonId = new HackathonHelpers().generateRandomString;
 let hackathonName = '';
-let teamName = ''
+let teamName = '';
 const player1 = 'Milestone1Bot';
 const player2 = 'Milestone2Bot';
 const player3 = 'Milestone3Bot';
@@ -176,10 +176,13 @@ test.describe('create a new game popup without a team being created', () => {
 });
 
 test.describe('create a team before entering the create game popup', () => {
-  test.beforeEach(async ({ hackathonDetailsPage,
-    commonPageObjects,
-    createTeamPage,
-    createGamePage, }) => {
+  test.beforeEach(
+    async ({
+      hackathonDetailsPage,
+      commonPageObjects,
+      createTeamPage,
+      createGamePage,
+    }) => {
       await hackathonDetailsPage.openCreateTeamPopup();
       await commonPageObjects.confirmPopupIsVisible();
       await createTeamPage.inputTeamName(teamName);
@@ -188,10 +191,9 @@ test.describe('create a team before entering the create game popup', () => {
       await hackathonDetailsPage.openCreateGamePopup();
       await commonPageObjects.confirmPopupIsVisible();
       await createGamePage.gamePlayer1Field.click();
-  });
-  test('created team appears in dropdown lists', async ({
-    createGamePage,
-  }) => {
+    }
+  );
+  test('created team appears in dropdown lists', async ({ createGamePage }) => {
     await createGamePage.verifyPlayerDropdownFieldWithTeam(teamName);
   });
 

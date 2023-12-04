@@ -50,34 +50,49 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
   const handleCreateGame = () => {
     setFormError(undefined);
 
-    const createGameRequest: CreateGameRequest = {
-      hackathonId: hackathonId,
-      map: mapName,
-      teams: [namePlayer1, namePlayer2, namePlayer3, namePlayer4].filter(
-        Boolean
-      ),
-    };
+    // Add only present team names to the array
+    const teamNames = [
+      namePlayer1,
+      namePlayer2,
+      namePlayer3,
+      namePlayer4,
+    ].filter(Boolean);
+    const uniqueTeams =
+      teamNames.filter((item, index) => teamNames.indexOf(item) !== index)
+        .length === 0;
 
-    createGame(createGameRequest)
-      .unwrap()
-      .then(() => {
-        dispatch(
-          setSnackbarState({
-            isOpen: true,
-            message: 'Game created successfully!',
-          })
-        );
-        handleClose();
-      })
-      .catch((createError: unknown) => {
-        const { status } = createError as { status: number };
+    if (uniqueTeams) {
+      const createGameRequest: CreateGameRequest = {
+        hackathonId: hackathonId,
+        map: mapName,
+        teams: [namePlayer1, namePlayer2, namePlayer3, namePlayer4].filter(
+          Boolean
+        ),
+      };
 
-        if (status === 400) {
-          setFormError('Error creating game - bad request');
-        } else {
-          setFormError('Error creating game - internal server error');
-        }
-      });
+      createGame(createGameRequest)
+        .unwrap()
+        .then(() => {
+          dispatch(
+            setSnackbarState({
+              isOpen: true,
+              message: 'Game created successfully!',
+            })
+          );
+          handleClose();
+        })
+        .catch((createError: unknown) => {
+          const { status } = createError as { status: number };
+
+          if (status === 400) {
+            setFormError('Error creating game - bad request');
+          } else {
+            setFormError('Error creating game - internal server error');
+          }
+        });
+    } else {
+      setFormError('Error creating game - all players must be unique');
+    }
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

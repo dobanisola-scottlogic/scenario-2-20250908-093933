@@ -39,12 +39,9 @@ for (const emptyField of emptyFields) {
   test(`username '${emptyField.username}' and password '${emptyField.password}' disables the login button`, async ({
     login,
   }) => {
-    await login.inputCredentials(
-      emptyField.username,
-      emptyField.password
-    );
+    await login.inputCredentials(emptyField.username, emptyField.password);
     await login.verifyLoginButtonIsDisabled();
-});
+  });
 }
 
 test("invalid username and password returns 'unable to login' error message", async ({

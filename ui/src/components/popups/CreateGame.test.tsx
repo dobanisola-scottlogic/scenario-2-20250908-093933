@@ -75,6 +75,28 @@ const selectTwoTeamsAndMap = async () => {
   expect(addANewGameButton).not.toHaveAttribute('disabled');
 };
 
+const selectDuplicateTeamsAndMap = async () => {
+  const addANewGameButton = screen.getByRole('button', {
+    name: 'Add a new game',
+  });
+
+  expect(addANewGameButton).toHaveAttribute('disabled');
+
+  await selectAndVerifyDropDownValue(
+    /select player 1/i,
+    'Milestone1Bot',
+    'player-1'
+  );
+
+  await selectAndVerifyDropDownValue(
+    /select player 2/i,
+    'Milestone1Bot',
+    'player-2'
+  );
+
+  await selectAndVerifyDropDownValue(/select map/i, 'Easy', 'game-map');
+};
+
 describe('Add A New Game popup Component', () => {
   const mockFunction = () => null;
 
@@ -157,6 +179,30 @@ describe('Add A New Game popup Component', () => {
 
         expect(reduxState.snackbar.message).toEqual(
           'Game created successfully!'
+        );
+      });
+    });
+
+    it('displays an error when duplicate players are selected', async () => {
+      renderWithRouterAndProvider(
+        <CreateGame isOpen hackathonId={hackathonId} setIsOpen={mockFunction} />
+      );
+
+      const addANewGameButton = screen.getByRole('button', {
+        name: 'Add a new game',
+      });
+
+      await selectDuplicateTeamsAndMap();
+
+      act(() => {
+        fireEvent.click(addANewGameButton);
+      });
+
+      await waitFor(async () => {
+        const alert = await screen.findByRole('alert');
+
+        expect(alert.textContent).toContain(
+          'Error creating game - all players must be unique'
         );
       });
     });

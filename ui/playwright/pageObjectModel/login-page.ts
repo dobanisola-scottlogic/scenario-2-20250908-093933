@@ -31,7 +31,7 @@ export class LoginPage {
   }
 
   async attemptLogin() {
-    await expect (this.loginButton).toBeEnabled();
+    await expect(this.loginButton).toBeEnabled();
     await this.loginButton.click();
   }
 
