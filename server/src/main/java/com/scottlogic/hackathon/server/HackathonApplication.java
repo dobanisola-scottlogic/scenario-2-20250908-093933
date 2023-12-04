@@ -47,7 +47,6 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
     bootstrap.addBundle(hibernateBundle);
     bootstrap.addBundle(
         GuiceBundle.builder()
-            .useWebInstallers()
             .extensions(RemoteBotWebSocketServlet.class)
             .build());
   }

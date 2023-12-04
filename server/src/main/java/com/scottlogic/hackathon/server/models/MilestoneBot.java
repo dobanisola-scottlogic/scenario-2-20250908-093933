@@ -1,5 +1,6 @@
 package com.scottlogic.hackathon.server.models;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -52,12 +53,11 @@ public class MilestoneBot {
 
   @JsonIgnore
   public Bot getBot() {
-    Bot milestoneBot = null;
-    try {
-      milestoneBot = (Bot) Class.forName(milestoneClassName).newInstance();
-    } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-      e.printStackTrace();
-    }
-    return milestoneBot;
+      try {
+          return (Bot) Class.forName(milestoneClassName).getDeclaredConstructor().newInstance();
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException |
+               ClassNotFoundException e) {
+          throw new RuntimeException(String.format("Unable to instantiate bot: %s", milestoneClassName), e);
+      }
   }
 }

@@ -10,8 +10,8 @@ import com.scottlogic.hackathon.game.engine.config.GameConfigLayer;
 import com.scottlogic.hackathon.game.engine.maps.Arena;
 
 import static org.junit.Assert.assertNotNull;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GameEngineTest {
 

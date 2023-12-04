@@ -3,11 +3,11 @@ package com.scottlogic.hackathon.server;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.scottlogic.hackathon.bots.*;
 import com.scottlogic.hackathon.server.models.MilestoneBot;

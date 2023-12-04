@@ -26,28 +26,17 @@ application {
 
 startScripts.setApplicationName("${applicationName}")
 
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if(details.requested.name == 'hibernate-core') {
-            details.useVersion '5.3.6.Final'
-            details.because 'Hibernate 5.3.3+ needed for Java 11 support'
-        }
-    }
-}
-
 dependencies {
-    def dropWizardVersion = "1.3.7"
-    def jettyVersion = "9.4.11.v20180605"
+    implementation platform('ru.vyarus:dropwizard-guicey:5.4.2')
 
-    implementation group: "io.dropwizard", name: "dropwizard-core", version: dropWizardVersion
-    implementation group: "io.dropwizard", name: "dropwizard-auth", version: dropWizardVersion
-    implementation group: "io.dropwizard", name: "dropwizard-assets", version: dropWizardVersion
-    implementation group: "io.dropwizard", name: "dropwizard-forms", version: dropWizardVersion
-    implementation group: "io.dropwizard", name: "dropwizard-hibernate", version: dropWizardVersion
+    implementation group: "io.dropwizard", name: "dropwizard-core"
+    implementation group: "io.dropwizard", name: "dropwizard-auth"
+    implementation group: "io.dropwizard", name: "dropwizard-assets"
+    implementation group: "io.dropwizard", name: "dropwizard-forms"
+    implementation group: "io.dropwizard", name: "dropwizard-hibernate"
 
-    implementation group: 'ru.vyarus', name: 'dropwizard-guicey', version: '4.2.0'
+    implementation group: 'ru.vyarus', name: 'dropwizard-guicey'
 
-    implementation group: "com.google.inject", name: "guice", version: "3.0"
     implementation project(":game")
     implementation project(":game-engine")
     implementation project(":default-bots")
@@ -55,12 +44,9 @@ dependencies {
         exclude group: 'org.slf4j', module: 'slf4j-simple'
     }
 
-    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: jettyVersion
-    implementation group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-server-impl', version: jettyVersion
+    implementation group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-server-impl'
     runtimeOnly group: "org.postgresql", name: "postgresql", version: "42.6.0"
-    runtimeOnly group: "com.h2database", name: "h2", version: "2.2.220"
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
-    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1' // Needed by hibernate in Java 9+
+    runtimeOnly group: "com.h2database", name: "h2"
     runtimeOnly project(path: ':viewer', configuration: 'archives')
     runtimeOnly project(path: ':ui', configuration: 'archives')
 

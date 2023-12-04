@@ -12,9 +12,9 @@ pip installs for
 VS-Code python extension
 
 
-###### For Java 11 SDK we include
+###### For Java 17 SDK we include
 
-- Java 11 from headless
+- Java 17 from headless
 - maven
 - gradle
 
