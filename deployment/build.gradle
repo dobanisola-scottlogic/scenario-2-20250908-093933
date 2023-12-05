@@ -13,6 +13,14 @@ terraform {
         }
     }
 }
+terraformPlan {
+    dependsOn ':python-contestant:tgzContestant'
+    dependsOn ':java-contestant:tgzContestant'
+}
+terraformApply {
+    dependsOn ':python-contestant:tgzContestant'
+    dependsOn ':java-contestant:tgzContestant'
+}
 
 task terraformFmt(type: Exec) {
     commandLine('terraform', '-chdir=src/main/terraform', 'fmt', '-recursive')
