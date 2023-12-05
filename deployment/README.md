@@ -1,13 +1,46 @@
 # Deployment
 
-This subproject contains code and scripts to assist with various strategies for creating a 'production' deployment of
-the [server](../server) along with various supplementary services.
+This sub-project contains the scripts and files necessary to deploy the
+Hackathon game server.
 
-A couple of strategies are supported (to a greater or lesser extent).
+## AWS Elastic Container Registry (ECR) image deployment
 
-## Docker Compose
+The [push-to-aws.sh](push-to-aws.sh) script in this directory will build the
+game server dependencies, create an appropriate Docker image, and push this to
+the AWS ECR repository.
 
-This deployment strategy uses Docker compose to deploy the following services to a single machine:
+Before running the script, you should be signed in to the AWS CLI with
+appropriate permissions for this to succeed. 
+
+If you wish to push an image that has a tag other than `latest`, this can be
+specified as the first argument to the script. Otherwise, the tag will be
+`latest` by default.
+
+---
+### N.B. Pushing the `latest` image requires that your local repository is clean (i.e. no uncommitted changes).
+---
+
+## Terraform deployment
+
+The resources required to run a Hackathon event can be provisioned using the
+Terraform scripts found in
+[deployment/src/main/terraform](deployment/src/main/terraform). This includes
+the game server (using the ECR image described above), database, and a
+pre-configured Cloud9 instance for each team.
+
+Note that it is also still necessary to configure each team via the Hackathon
+admin dashboard.
+
+It is preferred to run the Terraform scripts via Gradle, since this will ensure
+that dependent sub-projects can be built appropriately for deployment. It is
+also possible to run the Terraform scripts directly, but be aware that this will
+require manual building of other sub-projects (e.g. Python and Java contestant
+archives).
+
+## Docker Compose (deprecated)
+
+This deployment strategy uses Docker compose to deploy the following services to
+a single machine:
 
   - The game server, accessible on port 8080
   - A PostgreSQL database for the game server to use
@@ -19,8 +52,9 @@ This deployment strategy uses Docker compose to deploy the following services to
   
 ### Disadvantages
 
-  - If hosted locally, you must make sure that contestants can access the IP address of the machine.
-    Universities often put guests on segregated networks that make this impossible.
+  - If hosted locally, you must make sure that contestants can access the IP
+    address of the machine. Universities often put guests on segregated networks
+    that make this impossible.
   - No provisioning of cloud or Internet hosts/resources.
   
 ### Setup
@@ -33,45 +67,3 @@ This deployment strategy uses Docker compose to deploy the following services to
       ```
       
 The deployment can be brought down again with `./gradlew down`.
-
-## AWS CloudFormation
-
-This deployment strategy uses [CloudFormation](https://aws.amazon.com/cloudformation/) templates to set up and deploy
-AWS resources for running the [game server](../server) and a supporting database (using Amazon RDS).
-
-### Advantages
-
-  - Reachable from any internet-connected machine
-  - No requirement for local hosting resources
-  
-### Disadvantages
-
-  - Not fully automated &ndash; uploading of game server Docker image to registry must be done manually
-  - Costs money
-  - Server has a long URL (this can be fixed using a URL shortener)
-  - Need to host or distribute contestant stub repository separately
-  - May be hampered by poor Internet connection at events
-  
-### Setup
-
-  1. Create an Amazon CloudFormation stack using the
-      [cloudformation-infrastructure.yml](./cloudformation-infrastructure.yml) template in this directory.
-      This stack can be left deployed if you make subsequent changes to the software or need to rebuild for some
-      reason.
-  2. Ensure you have Docker installed
-  3. Open a shell in the root of this repository and run
-      ```bash
-      ./gradlew server:dockerBuild
-      ```
-      This will create a Docker image named 'hackathon-server'
-  4. Upload the created image to a Docker container registry accessible from AWS.
-     You can use [Amazon ECR](https://aws.amazon.com/ecr/) for this.
-  5. Create an Amazon CloudFormation stack using the
-      [cloudformation-server.yml](./cloudformation-server.yml) template in this directory.
-      
-The server should be accessible via the URL of the public load balancer deployed in the first stack
-(see the "outputs" tab in the CloudFormation console).
-
-If you need to update the server image, delete the stack produced in step 5, then repeat steps 3-5.
-
-The [push-to-aws.sh](push-to-aws.sh) script in this directory is a work-in-progress attempt to automate this process.
