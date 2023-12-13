@@ -68,6 +68,7 @@ const Login = () => {
               autoComplete='username'
               fullWidth
               id='username'
+              inputProps={{ maxLength: 255 }}
               label='Username'
               margin='normal'
               name='username'

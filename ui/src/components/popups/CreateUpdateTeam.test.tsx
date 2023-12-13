@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import {
   postTeamBadRequestResponseHandler,
@@ -121,6 +121,28 @@ describe('CreateUpdateTeam Popup Component', () => {
 
       expect(submitButton).toBeDisabled();
       expect(screen.getByText(teamNameErrorMsg)).toBeInTheDocument();
+    });
+
+    it('does not allow more than 255 characters to be entered for the team name', async () => {
+      renderWithRouterAndProvider(
+        <CreateUpdateTeam
+          hackathonId={hackathonId}
+          isOpen
+          setIsOpen={mockFunction}
+        />
+      );
+
+      const user = userEvent.setup({ delay: null });
+      const twoSixtyCharString = 'a'.repeat(260);
+
+      expect(screen.getByText('Add a new team')).toBeInTheDocument();
+
+      const nameInput: HTMLInputElement = screen.getByRole('textbox', {
+        name: 'Name',
+      });
+
+      await user.type(nameInput, twoSixtyCharString);
+      expect(nameInput.value).toHaveLength(255);
     });
   });
 

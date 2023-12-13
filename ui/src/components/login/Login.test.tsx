@@ -1,4 +1,5 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { UserRole } from '~/enums/UserRole';
 import {
@@ -73,5 +74,32 @@ describe('Login', () => {
     expect(alert.textContent).toContain(
       "Sorry, we couldn't log you in. Please try again later."
     );
+  });
+
+  it('does not allow more than 255 characters to be entered for the username field', async () => {
+    renderWithRouterAndProvider(<Login />);
+
+    const loginInput: HTMLInputElement = screen.getByRole('textbox', {
+      name: 'Username',
+    });
+
+    const user = userEvent.setup({ delay: null });
+    const twoSixtyCharString = 'a'.repeat(260);
+
+    await user.type(loginInput, twoSixtyCharString);
+    expect(loginInput.value).toHaveLength(255);
+  });
+
+  it('does not allow more than 255 characters to be entered for the password field', async () => {
+    renderWithRouterAndProvider(<Login />);
+
+    const passwordInput: HTMLInputElement =
+      screen.getByTestId('password-input');
+
+    const user = userEvent.setup({ delay: null });
+    const twoSixtyCharString = 'a'.repeat(260);
+
+    await user.type(passwordInput, twoSixtyCharString);
+    expect(passwordInput.value).toHaveLength(255);
   });
 });

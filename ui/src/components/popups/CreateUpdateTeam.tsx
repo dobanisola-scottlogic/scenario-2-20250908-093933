@@ -173,6 +173,7 @@ const CreateUpdateTeam = ({
               error={teamNameShowError()}
               helperText={teamNameShowError() ? teamNameErrorMsg : null}
               fullWidth
+              inputProps={{ maxLength: 255 }}
               label='Name'
               required
               sx={commonStyles.spacingStyle}

@@ -38,6 +38,7 @@ const PasswordTextField = ({
         InputProps={{
           inputProps: {
             'data-testid': 'password-input',
+            maxLength: 255,
           },
           endAdornment: (
             <InputAdornment position='end'>

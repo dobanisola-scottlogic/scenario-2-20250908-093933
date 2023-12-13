@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import {
   testHackathonBody,
@@ -77,6 +77,24 @@ describe('Create Update Hackathon Popup Component', () => {
             'Hackathon name must not be empty or include special characters'
           )
         ).toBeInTheDocument();
+      });
+
+      it('does not allow more than 255 characters to be entered for the hackathon name', async () => {
+        renderWithRouterAndProvider(
+          <CreateUpdateHackathon isOpen setIsOpen={mockFunction} />
+        );
+
+        const user = userEvent.setup({ delay: null });
+        const twoSixtyCharString = 'a'.repeat(260);
+
+        expect(screen.getAllByText('Add a new hackathon')).toHaveLength(2);
+
+        const nameInput: HTMLInputElement = screen.getByRole('textbox', {
+          name: 'Hackathon name',
+        });
+
+        await user.type(nameInput, twoSixtyCharString);
+        expect(nameInput.value).toHaveLength(255);
       });
     });
 

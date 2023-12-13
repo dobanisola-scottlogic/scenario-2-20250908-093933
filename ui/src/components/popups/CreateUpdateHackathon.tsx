@@ -161,6 +161,7 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
                   : null
               }
               fullWidth
+              inputProps={{ maxLength: 255 }}
               sx={commonStyles.spacingStyle}
               id='outlined-basic'
               label='Hackathon name'
