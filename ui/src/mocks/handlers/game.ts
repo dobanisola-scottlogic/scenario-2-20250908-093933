@@ -35,9 +35,15 @@ export const getGameResultsNetworkErrorResponseHandler = http.get(
   }
 );
 
-export const postGameBadRequestResponseHandler = http.post(gameEndpoint, () => {
-  return badRequestResponse();
-});
+export const postGameBadRequestTooManyBotsResponseHandler = http.post(
+  gameEndpoint,
+  () => {
+    return badRequestResponse({
+      message:
+        'The specified number of bots (5) exceeds the available number of spawn points (4)',
+    });
+  }
+);
 
 export const postGameInternalServerErrorResponseHandler = http.post(
   gameEndpoint,

@@ -8,15 +8,14 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
+import CreateGame from '~/components/popups/CreateGame';
 import {
-  postGameBadRequestResponseHandler,
+  postGameBadRequestTooManyBotsResponseHandler,
   postGameInternalServerErrorResponseHandler,
 } from '~/mocks/handlers/game';
 import { server } from '~/mocks/server';
 import { testHackathonId } from '~/mocks/test-data/hackathon';
 import { renderWithRouterAndProvider } from '~/utils/test-utils';
-import CreateGame from './CreateGame';
 
 const hackathonId = testHackathonId.valid;
 
@@ -210,7 +209,7 @@ describe('Add A New Game popup Component', () => {
     });
 
     it('displays an error when the create game function returns unsuccessfully with a bad request', async () => {
-      server.use(postGameBadRequestResponseHandler);
+      server.use(postGameBadRequestTooManyBotsResponseHandler);
 
       renderWithRouterAndProvider(
         <CreateGame isOpen hackathonId={hackathonId} setIsOpen={mockFunction} />
@@ -230,7 +229,7 @@ describe('Add A New Game popup Component', () => {
         const alert = await screen.findByRole('alert');
 
         expect(alert.textContent).toContain(
-          'Error creating game - bad request'
+          'Error creating game - The specified number of bots (5) exceeds the available number of spawn points (4)'
         );
       });
     });

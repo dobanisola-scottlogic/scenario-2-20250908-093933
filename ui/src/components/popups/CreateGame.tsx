@@ -13,6 +13,7 @@ import MapSelect from '~/components/common/MapSelect';
 import PlayerSelect from '~/components/common/PlayerSelect';
 import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
+import { ApiError } from '~/interfaces/ApiError';
 import { CreateGameRequest } from '~/interfaces/CreateGameRequest';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { setSnackbarState } from '~/slices/snackbarSlice';
@@ -81,11 +82,9 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
           );
           handleClose();
         })
-        .catch((createError: unknown) => {
-          const { status } = createError as { status: number };
-
-          if (status === 400) {
-            setFormError('Error creating game - bad request');
+        .catch((createError: ApiError) => {
+          if (createError.status === 400) {
+            setFormError(`Error creating game - ${createError.data.message}`);
           } else {
             setFormError('Error creating game - internal server error');
           }

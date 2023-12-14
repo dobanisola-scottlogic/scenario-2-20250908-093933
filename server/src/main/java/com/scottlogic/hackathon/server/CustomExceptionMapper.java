@@ -30,7 +30,7 @@ public class CustomExceptionMapper implements ExceptionMapper<Exception> {
                 ex.getMessage());
 
         return Response
-                .status(Response.Status.INTERNAL_SERVER_ERROR)
+                .status(ex instanceof IllegalArgumentException ? Response.Status.BAD_REQUEST : Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(error)
                 .type(MediaType.APPLICATION_JSON)
                 .build();

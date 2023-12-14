@@ -14,10 +14,8 @@ export const errorResponse = () => {
   return HttpResponse.error();
 };
 
-export const badRequestResponse = () => {
-  return new HttpResponse(null, {
-    status: 400,
-  });
+export const badRequestResponse = (body?: object | null) => {
+  return HttpResponse.json(body, { status: 400 });
 };
 
 export const unauthorizedResponse = () => {

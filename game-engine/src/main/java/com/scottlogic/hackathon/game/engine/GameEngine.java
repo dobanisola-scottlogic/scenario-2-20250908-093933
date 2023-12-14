@@ -143,7 +143,7 @@ public class GameEngine {
     }
 
     if (bots.size() > map.getSpawnPointPositions().size()) {
-      throw new IllegalArgumentException("must have a spawn point for each bot");
+      throw new IllegalArgumentException("The specified number of bots (" + bots.size() + ") exceeds the available number of spawn points (" + map.getSpawnPointPositions().size() + ")");
     }
   }
 
