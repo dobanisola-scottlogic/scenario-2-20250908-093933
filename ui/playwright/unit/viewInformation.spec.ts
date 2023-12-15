@@ -15,14 +15,20 @@ let hackathonName = '';
 let teamName = '';
 
 test.beforeEach(
-  async ({ page, login, createHackathonPage, createTeamPage, teamDashboardPage, commonPageObjects }) => {
-    hackathonName = teamName =
-    'viewInformation' + uniqueHackathonId
-  await createHackathonPage.createHackathonUsingAPIWithName(hackathonName);
-  await createTeamPage.createTeamUsingAPIWithHackathonAndTeamName(
-    hackathonName,
-    teamName
-  );
+  async ({
+    page,
+    login,
+    createHackathonPage,
+    createTeamPage,
+    teamDashboardPage,
+    commonPageObjects,
+  }) => {
+    hackathonName = teamName = 'viewInformation' + uniqueHackathonId;
+    await createHackathonPage.createHackathonUsingAPIWithName(hackathonName);
+    await createTeamPage.createTeamUsingAPIWithHackathonAndTeamName(
+      hackathonName,
+      teamName
+    );
     await page.goto('/');
     await login.inputCredentials(teamName, 'teamPassword');
     await login.attemptLogin();

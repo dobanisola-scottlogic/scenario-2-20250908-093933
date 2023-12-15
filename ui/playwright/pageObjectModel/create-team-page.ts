@@ -27,12 +27,20 @@ export class CreateTeamPage {
     await this.teamNameField.fill(teamName);
   }
 
+  async validateTeamName(teamName: string) {
+    await expect(this.teamNameField).toHaveValue(teamName);
+  }
+
   async clearTeamName() {
     await this.teamNameField.clear();
   }
 
   async inputTeamPassword(teamPassword: string) {
     await this.teamPasswordField.fill(teamPassword);
+  }
+
+  async validateTeamPassword(teamPassword: string) {
+    await expect(this.teamPasswordField).toHaveValue(teamPassword);
   }
 
   async addNewTeam() {

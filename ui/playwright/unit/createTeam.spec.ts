@@ -102,6 +102,15 @@ test('team popup contains the expected fields in the expected initial states', a
   await createTeamPage.verifyCreateTeamPopUpWithFieldLabels('Name', 'Password');
 });
 
+test('team fields cannot contain more than 255 characters', async ({
+  createTeamPage,
+}) => {
+  await createTeamPage.inputTeamName('a'.repeat(256));
+  await createTeamPage.validateTeamName('a'.repeat(255));
+  await createTeamPage.inputTeamPassword('a'.repeat(256));
+  await createTeamPage.validateTeamPassword('a'.repeat(255));
+});
+
 test('team cannot be created if fields are missing', async ({
   createTeamPage,
 }) => {

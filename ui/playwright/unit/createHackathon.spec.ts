@@ -71,6 +71,13 @@ test('admin can create a new hackathon using enter key', async ({
   );
 });
 
+test('admin cannot enter more than 255 characters for a hackathon name', async ({
+  createHackathonPage
+}) => {
+  await createHackathonPage.inputHackathonName('a'.repeat(256))
+  await createHackathonPage.validateHackathonName('a'.repeat(255))
+});
+
 test('admin cannot create a new hackathon without a name', async ({
   createHackathonPage,
 }) => {

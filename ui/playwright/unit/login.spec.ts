@@ -34,10 +34,13 @@ test('admin can successfully log in with enter key', async ({
   await hackathonListPage.verifyLoginSuccess();
 });
 
-test('team can successfully log in', async ({ login, createHackathonPage, createTeamPage, teamDashboardPage }) => {
-
-  hackathonName = teamName =
-    'login' + uniqueHackathonId
+test('team can successfully log in', async ({
+  login,
+  createHackathonPage,
+  createTeamPage,
+  teamDashboardPage,
+}) => {
+  hackathonName = teamName = 'login' + uniqueHackathonId;
   await createHackathonPage.createHackathonUsingAPIWithName(hackathonName);
   await createTeamPage.createTeamUsingAPIWithHackathonAndTeamName(
     hackathonName,
@@ -46,6 +49,17 @@ test('team can successfully log in', async ({ login, createHackathonPage, create
   await login.inputCredentials(teamName, 'teamPassword');
   await login.attemptLogin();
   await teamDashboardPage.verifyLoginSuccess();
+});
+
+test('username and password fields cannot exceed 255 characters', async ({
+  login,
+}) => {
+  await login.inputCredentials(
+    'a'.repeat(256),
+    'b'.repeat(256)
+  );
+  await login.validateUsername('a'.repeat(255));
+  await login.validatePassword('b'.repeat(255));
 });
 
 for (const emptyField of emptyFields) {

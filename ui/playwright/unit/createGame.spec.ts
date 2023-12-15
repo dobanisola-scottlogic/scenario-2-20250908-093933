@@ -159,7 +159,8 @@ test.describe('create a new game popup without a team being created', () => {
   });
 
   test('duplicate teams cannot be selected', async ({
-    createGamePage, commonPageObjects
+    createGamePage,
+    commonPageObjects,
   }) => {
     await createGamePage.gamePlayer1Field.click();
     await createGamePage.selectOption(player1);

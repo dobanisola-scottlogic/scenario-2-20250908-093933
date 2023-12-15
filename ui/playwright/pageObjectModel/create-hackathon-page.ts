@@ -21,6 +21,10 @@ export class CreateHackathonPage {
     await this.hackathonNameField.fill(hackathonName);
   }
 
+  async validateHackathonName(hackathonName: string) {
+    await expect(this.hackathonNameField).toHaveValue(hackathonName);
+  }
+
   async clearHackathonName() {
     await this.hackathonNameField.clear();
   }

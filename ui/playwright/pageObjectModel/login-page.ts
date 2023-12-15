@@ -26,6 +26,14 @@ export class LoginPage {
     await this.passwordField.fill(password);
   }
 
+  async validateUsername(username: string) {
+    await expect(this.usernameField).toHaveValue(username);
+  }
+
+  async validatePassword(password: string) {
+    await expect(this.passwordField).toHaveValue(password);
+  }
+
   async verifyLoginButtonIsDisabled() {
     await expect(this.loginButton).toBeDisabled();
   }
@@ -39,7 +47,7 @@ export class LoginPage {
     await this.page.route(
       'http://localhost:8080/application/api/login',
       async (route) => {
-        const json = { name: 'team', role: 'TEAM',  team: true, admin: false,};
+        const json = { name: 'team', role: 'TEAM', team: true, admin: false };
         await route.fulfill({ json });
       }
     );

@@ -25,7 +25,7 @@ export class TeamDashboardPage {
     this.viewInformationButton = page.getByRole('button', {
       name: 'View information',
     });
-    this.refreshButton = page.getByRole('button', { name: 'Refresh' })
+    this.refreshButton = page.getByRole('button', { name: 'Refresh' });
     this.connectButton = page.getByTestId('connectButton');
     this.addGameButton = page.getByRole('button', {
       name: 'Add a new game',
