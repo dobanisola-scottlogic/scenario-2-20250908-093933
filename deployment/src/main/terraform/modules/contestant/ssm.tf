@@ -34,6 +34,7 @@ resource "aws_ssm_document" "s3_cloud9_sync_command" {
             "echo export TEAM_NAME=\"{{TeamName}}\" >> /home/ec2-user/.bash_profile",
             "echo export GAME_SERVER_HOST=\"${var.game_server_host}\" >> /home/ec2-user/.bash_profile",
             "echo export GAME_SERVER_PORT=\"${var.game_server_port}\" >> /home/ec2-user/.bash_profile",
+            "sudo yum -y install java-17-amazon-corretto-devel.x86_64", # HAC-203 Remove this line when Terraform supports Amazon Linux 2023
             join(" ",
               [
                 "su ec2-user -c",
