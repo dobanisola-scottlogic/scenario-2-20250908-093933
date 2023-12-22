@@ -10,7 +10,7 @@ abstract class AbstractRouteSpec extends Specification {
 
     @CompileStatic
     protected static final class RANDOM {
-        public static final String UNROLL = '#featureName (seed: #random.seed)'
+        public static final String UNROLL = '#featureName'
     }
 
     @Shared GameGeometry map = new AlmostInfiniteGeometry()

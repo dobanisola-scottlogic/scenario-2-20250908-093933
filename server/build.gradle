@@ -60,6 +60,7 @@ dependencies {
 }
 
 test {
+    useJUnitPlatform()
     environment 'CONTESTANT_PASSWORD', 'test-password'
     environment 'WORKSPACE', 'test-workspace'
     finalizedBy jacocoTestReport
@@ -111,10 +112,6 @@ run {
     // environment 'AWS_ACCESS_KEY_ID', 'access-key'
     // environment 'AWS_SECRET_ACCESS_KEY', 'secret-key'
     // environment 'WORKSPACE', 'workspace'
-}
-
-tasks.named('test', Test) {
-    useJUnitPlatform()
 }
 
 task('dockerContext', type: Sync) {
