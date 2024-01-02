@@ -53,7 +53,9 @@ export const getTeamsNetworkErrorResponseHandler = http.get(
 );
 
 export const postTeamBadRequestResponseHandler = http.post(teamEndpoint, () => {
-  return badRequestResponse();
+  return badRequestResponse({
+    message: 'Bad request error message',
+  });
 });
 
 export const postTeamInternalServerErrorResponseHandler = http.post(

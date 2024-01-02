@@ -15,10 +15,12 @@ import software.amazon.awssdk.services.cloud9.model.DescribeEnvironmentsResponse
 import software.amazon.awssdk.services.cloud9.model.Environment;
 import software.amazon.awssdk.services.cloud9.model.ListEnvironmentsResponse;
 
+import com.scottlogic.hackathon.server.models.Team;
 import com.scottlogic.hackathon.server.models.TeamInfo;
 import com.scottlogic.hackathon.server.services.stores.TeamStore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -26,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TeamServiceTest {
+
   @Mock TeamStore teamStore;
   @Mock Cloud9Client cloud9;
   @Mock ListEnvironmentsResponse listResponse;
@@ -35,6 +38,7 @@ public class TeamServiceTest {
   @Mock Cloud9ClientBuilder cloud9ClientBuilder;
   MockedStatic<Cloud9Client> cloud9Client;
   MockedStatic<TeamInfo> teamInfoStatic;
+  TeamService teamService;
 
   @BeforeEach
   public void init() {
@@ -49,19 +53,14 @@ public class TeamServiceTest {
     cloud9Client.when(Cloud9Client::builder).thenReturn(cloud9ClientBuilder);
     when(cloud9ClientBuilder.build()).thenReturn(cloud9);
 
-    when(environment.name()).thenReturn("test-workspace-42");
-
-    when(listResponse.environmentIds()).thenReturn(Collections.singletonList("environment-id"));
-    when(cloud9.listEnvironments()).thenReturn(listResponse);
-    when(cloud9.describeEnvironments(any(DescribeEnvironmentsRequest.class))).thenReturn(describeResponse);
-    when(describeResponse.environments()).thenReturn(Collections.singletonList(environment));
-
     teamInfoStatic = mockStatic(TeamInfo.class);
     teamInfo.accountId = "account-id";
     teamInfo.userName = "resource-id";
     teamInfo.devEnvironment = "https://region.console.aws.amazon.com/cloud9/ide/environment-id";
     teamInfo.password = "test-password";
     teamInfoStatic.when(() -> TeamInfo.fromEnvironment(environment)).thenReturn(teamInfo);
+
+    teamService = new TeamService(teamStore);
   }
 
   @AfterEach
@@ -71,22 +70,51 @@ public class TeamServiceTest {
   }
 
   @Test
+  public void addTeamTest() {
+    var team = new Team();
+    team.setName("name");
+    when(teamStore.save(team)).thenReturn(team);
+
+    var result = teamService.addTeam(team);
+
+    assertEquals(result, team);
+  }
+
+  @Test
+  public void addTeam_exceptionOnDuplicateName() {
+    var team = new Team();
+    team.setName("name");
+    when(teamStore.get(any())).thenReturn(team);
+
+    var thrown = assertThrows(IllegalArgumentException.class, () -> teamService.addTeam(team));
+
+    assertEquals(thrown.getMessage(), "Team name already exists");
+  }
+
+  @Test
   public void getTeamInfoTest() {
-    TeamService teamService = new TeamService(teamStore);
+    initGetTeamInfo();
     TeamInfo teamInfo = teamService.getTeamInfo("test42");
 
     assertEquals(teamInfo.accountId, "account-id");
     assertEquals(teamInfo.userName, "resource-id");
     assertEquals(teamInfo.password, System.getenv("CONTESTANT_PASSWORD"));
     assertEquals(teamInfo.devEnvironment, "https://region.console.aws.amazon.com/cloud9/ide/environment-id");
-  } 
+  }
 
   @Test
   public void getTeamInfoNotFoundTest() {
-    TeamService teamService = new TeamService(teamStore);
+    initGetTeamInfo();
     TeamInfo teamInfo = teamService.getTeamInfo("test99");
 
     assertEquals(teamInfo, null);
-  } 
+  }
 
+  private void initGetTeamInfo() {
+    when(environment.name()).thenReturn("test-workspace-42");
+    when(listResponse.environmentIds()).thenReturn(Collections.singletonList("environment-id"));
+    when(cloud9.listEnvironments()).thenReturn(listResponse);
+    when(cloud9.describeEnvironments(any(DescribeEnvironmentsRequest.class))).thenReturn(describeResponse);
+    when(describeResponse.environments()).thenReturn(Collections.singletonList(environment));
+  }
 }

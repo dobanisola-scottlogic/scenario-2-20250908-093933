@@ -18,6 +18,7 @@ import {
 import PasswordTextField from '~/components/common/PasswordTextField';
 import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
+import { ApiError } from '~/interfaces/ApiError';
 import { CreateTeamRequest } from '~/interfaces/CreateTeamRequest';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { Team } from '~/interfaces/Team';
@@ -103,11 +104,9 @@ const CreateUpdateTeam = ({
         );
         handleClose();
       })
-      .catch((createError: unknown) => {
-        const { status } = createError as { status: number };
-
-        if (status === 400) {
-          setFormError('Error adding team - bad request');
+      .catch((createError: ApiError) => {
+        if (createError.status === 400) {
+          setFormError(`Error adding team - ${createError.data.message}`);
         } else {
           setFormError('Error adding team - internal server error');
         }

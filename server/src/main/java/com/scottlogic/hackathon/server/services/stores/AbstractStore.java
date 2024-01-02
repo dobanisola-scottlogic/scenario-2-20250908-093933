@@ -25,6 +25,12 @@ public class AbstractStore<T> {
     return sessionFactory.getCurrentSession();
   }
 
+  public T save(final T entity) {
+    currentSession().save(checkNotNull(entity));
+
+    return entity;
+  }
+
   public T saveOrUpdate(final T entity) {
     currentSession().saveOrUpdate(checkNotNull(entity));
 

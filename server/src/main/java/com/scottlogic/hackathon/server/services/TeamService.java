@@ -32,8 +32,13 @@ public class TeamService {
   }
 
   public Team addTeam(final Team team) {
+    var existing = teamStore.get(Restrictions.eq("name", team.getName()).ignoreCase());
+    if (existing != null) {
+      throw new IllegalArgumentException("Team name already exists");
+    }
+
     team.setId(UUID.randomUUID());
-    return teamStore.saveOrUpdate(team);
+    return teamStore.save(team);
   }
 
   public List<Team> getTeams() {

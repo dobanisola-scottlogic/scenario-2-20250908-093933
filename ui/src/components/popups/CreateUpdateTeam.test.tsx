@@ -226,7 +226,9 @@ describe('CreateUpdateTeam Popup Component', () => {
       await waitFor(async () => {
         const alert = await screen.findByRole('alert');
 
-        expect(alert.textContent).toContain('Error adding team - bad request');
+        expect(alert.textContent).toContain(
+          'Error adding team - Bad request error message'
+        );
       });
     });
 
