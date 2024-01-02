@@ -23,6 +23,7 @@ import {
 import MapSelect from '~/components/common/MapSelect';
 import { commonStyles, popupStyles } from '~/components/commonStyles';
 import { useAppDispatch } from '~/hooks';
+import { ApiError } from '~/interfaces/ApiError';
 import { PopupProps } from '~/interfaces/PopupProps';
 import { setSnackbarState } from '~/slices/snackbarSlice';
 import { isValidName } from './utils';
@@ -95,10 +96,11 @@ const CreateUpdateHackathon = ({ id, isOpen, setIsOpen }: PopupProps) => {
         );
         handleClose();
       })
-      .catch((createError: unknown) => {
-        const { status } = createError as { status: number };
-        if (status === 400) {
-          setFormError('Error creating hackathon - bad request');
+      .catch((createError: ApiError) => {
+        if (createError.status === 400) {
+          setFormError(
+            `Error creating hackathon - ${createError.data.message}`
+          );
         } else {
           setFormError('Error creating hackathon - internal server error');
         }

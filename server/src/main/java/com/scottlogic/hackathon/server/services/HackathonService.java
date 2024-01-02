@@ -1,6 +1,7 @@
 package com.scottlogic.hackathon.server.services;
 
 import java.util.List;
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
 import com.scottlogic.hackathon.server.authentication.User;
@@ -17,7 +18,15 @@ public class HackathonService {
   }
 
   public Hackathon createHackathon(final User user, final Hackathon hackathon) {
-    return hackathonStore.saveOrUpdate(new Hackathon(hackathon.getName()));
+    var entity = new Hackathon(hackathon.getName());
+
+    Preconditions.checkArgument(
+            hackathonStore.get(entity.getId()) == null,
+            "Hackathon with ID %s already exists",
+            entity.getId()
+    );
+
+    return hackathonStore.save(entity);
   }
 
   public Hackathon updateHackathon(final String id, final HackathonUpdate hackathonUpdate) {

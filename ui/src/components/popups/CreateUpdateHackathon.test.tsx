@@ -181,7 +181,7 @@ describe('Create Update Hackathon Popup Component', () => {
 
         const alert = await screen.findByRole('alert');
         expect(alert.textContent).toContain(
-          'Error creating hackathon - bad request'
+          'Error creating hackathon - Bad request error message'
         );
       });
     });

@@ -26,7 +26,9 @@ export const handlers = [
       if (hackathonName === testHackathonName.valid) {
         return jsonOkResponse(testHackathonBody);
       } else if (hackathonName === testHackathonName.badRequest) {
-        return badRequestResponse();
+        return badRequestResponse({
+          message: 'Bad request error message',
+        });
       } else if (hackathonName === testHackathonName.networkError) {
         return errorResponse();
       }
