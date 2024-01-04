@@ -1,5 +1,7 @@
+import { GameTeam } from '~/interfaces/GameTeam';
 import { testGameResultBody } from '~/mocks/test-data/game';
 import { colours, playerColours } from '~/theme';
+
 import { getGameTimeString, getGameTitle, getTeamColour } from './game-utils';
 
 describe('getTeamColour', () => {
@@ -33,6 +35,19 @@ describe('getGameTitle', () => {
   it('should return a string with the team names separated by "vs"', () => {
     expect(getGameTitle(testGameResultBody.game.teams)).toEqual(
       'Milestone1Bot vs Milestone2Bot'
+    );
+  });
+
+  it('should return a string with the team names listed alphabetically', () => {
+    const teams: GameTeam[] = [
+      { botId: 4, teamId: '4', teamName: 'Milestone4Bot' },
+      { botId: 2, teamId: '2', teamName: 'Milestone2Bot' },
+      { botId: 3, teamId: '3', teamName: 'Milestone3Bot' },
+      { botId: 1, teamId: '1', teamName: 'Milestone1Bot' },
+    ];
+
+    expect(getGameTitle(teams)).toEqual(
+      'Milestone1Bot vs Milestone2Bot vs Milestone3Bot vs Milestone4Bot'
     );
   });
 });

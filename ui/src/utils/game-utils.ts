@@ -1,5 +1,6 @@
 import { GameTeam } from '~/interfaces/GameTeam';
 import { colours, playerColours } from '~/theme';
+
 import { removeMilestoneBotPrefix } from './milestone-utils';
 
 export const getGameTimeString = (
@@ -18,8 +19,23 @@ export const getGameTimeString = (
   return `${weekday}, ${time}`;
 };
 
-export const getGameTitle = (teams: GameTeam[]): string =>
-  teams.map((team) => removeMilestoneBotPrefix(team.teamName)).join(' vs ');
+export const getGameTitle = (teams: GameTeam[]): string => {
+  // We're unable to directly mutate or reassign the teams array element as it is a const array (sort mutates the original array).
+  const teamsCopy = [...teams];
+
+  return teamsCopy
+    .sort((a: GameTeam, b: GameTeam) => {
+      if (a.teamName < b.teamName) {
+        return -1;
+      }
+      if (a.teamName > b.teamName) {
+        return 1;
+      }
+      return 0;
+    })
+    .map((team: GameTeam) => removeMilestoneBotPrefix(team.teamName))
+    .join(' vs ');
+};
 
 export const getTeamColour = (playerNumber: number): string => {
   if (playerNumber >= 0 && playerNumber < 4) {
