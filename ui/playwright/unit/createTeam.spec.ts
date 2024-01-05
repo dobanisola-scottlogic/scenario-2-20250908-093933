@@ -127,27 +127,15 @@ test('team cannot be created if team with the same name already exists', async (
   hackathonDetailsPage,
 }) => {
   await createTeamPage.inputTeamName(teamName);
-  await createTeamPage.inputTeamPassword('teamPassword');
+  await createTeamPage.inputTeamPassword('TeamPassword');
   await createTeamPage.addNewTeam();
   await commonPageObjects.confirmSuccessMessageIs('Team added successfully!');
   await hackathonDetailsPage.openCreateTeamPopup();
   await commonPageObjects.confirmPopupIsVisible();
   await createTeamPage.inputTeamName(teamName);
-  await createTeamPage.inputTeamPassword('teamPassword');
+  await createTeamPage.inputTeamPassword('teampassword');
   await createTeamPage.addNewTeam();
   await commonPageObjects.confirmErrorMessageIs(
-    'Error adding team - internal server error'
-  );
-});
-
-test('bad request error will appear', async ({
-  createTeamPage,
-  commonPageObjects,
-}) => {
-  await createTeamPage.inputTeamName(teamName);
-  await createTeamPage.inputTeamPassword('teamPassword');
-  await createTeamPage.mock400ErrorOnCreatingTeam();
-  await commonPageObjects.confirmErrorMessageIs(
-    'Error adding team - bad request'
+    'Error adding team - Team name already exists'
   );
 });

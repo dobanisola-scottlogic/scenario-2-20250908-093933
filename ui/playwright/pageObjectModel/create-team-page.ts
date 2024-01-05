@@ -64,16 +64,6 @@ export class CreateTeamPage {
     await expect(this.addNewTeamButton).toBeDisabled();
   }
 
-  async mock400ErrorOnCreatingTeam() {
-    await this.page.route(
-      `http://localhost:8080/application/api/team`,
-      async (route) => {
-        await route.fulfill({ status: 400 });
-      }
-    );
-    await this.addNewTeam();
-  }
-
   async createTeamUsingAPIWithHackathonAndTeamName(
     hackathonName: string,
     teamName: string

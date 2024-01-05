@@ -131,7 +131,7 @@ test.describe('create a new game popup without a team being created', () => {
 
   test('game cannot be created if number of players exceed number of available spawn points', async ({
     createGamePage,
-    commonPageObjects
+    commonPageObjects,
   }) => {
     await createGamePage.gamePlayer1Field.click();
     await createGamePage.selectOption(player1);
@@ -142,10 +142,10 @@ test.describe('create a new game popup without a team being created', () => {
     await createGamePage.gamePlayer4Field.click();
     await createGamePage.selectOption(player4);
     await createGamePage.gameMapField.click();
-    await createGamePage.selectOption("Three Straight");
+    await createGamePage.selectOption('Three Straight');
     await createGamePage.addNewGame();
     await commonPageObjects.confirmErrorMessageIs(
-      "Error creating game - The specified number of bots (4) exceeds the available number of spawn points (3)"
+      'Error creating game - The specified number of bots (4) exceeds the available number of spawn points (3)'
     );
   });
 
@@ -193,7 +193,7 @@ test.describe('create a new game popup without a team being created', () => {
       'Error creating game - all players must be unique'
     );
   });
-})
+});
 
 test.describe('create a team before entering the create game popup', () => {
   test.beforeEach(

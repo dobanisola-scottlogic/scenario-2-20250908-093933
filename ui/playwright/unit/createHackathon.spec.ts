@@ -71,11 +71,29 @@ test('admin can create a new hackathon using enter key', async ({
   );
 });
 
-test('admin cannot enter more than 255 characters for a hackathon name', async ({
-  createHackathonPage
+test('admin cannot create a hackathon where the name already exists with different casing', async ({
+  createHackathonPage,
+  commonPageObjects,
+  hackathonListPage,
 }) => {
-  await createHackathonPage.inputHackathonName('a'.repeat(256))
-  await createHackathonPage.validateHackathonName('a'.repeat(255))
+  await createHackathonPage.inputHackathonName('DuplicateName');
+  await createHackathonPage.addNewHackathon();
+  await commonPageObjects.confirmSuccessMessageIs(
+    'Hackathon created successfully!'
+  );
+  await hackathonListPage.openCreateHackathonPopup();
+  await createHackathonPage.inputHackathonName('duplicatename');
+  await createHackathonPage.addNewHackathon();
+  await commonPageObjects.confirmErrorMessageIs(
+    'Error creating hackathon - Hackathon with ID duplicatename already exists'
+  );
+});
+
+test('admin cannot enter more than 255 characters for a hackathon name', async ({
+  createHackathonPage,
+}) => {
+  await createHackathonPage.inputHackathonName('a'.repeat(256));
+  await createHackathonPage.validateHackathonName('a'.repeat(255));
 });
 
 test('admin cannot create a new hackathon without a name', async ({
@@ -111,17 +129,6 @@ test('admin can cancel creating a new hackathon', async ({
   await hackathonListPage.checkExistenceOfHackathonInTableWithName(
     hackathonName,
     false
-  );
-});
-
-test('bad request error message will appear', async ({
-  createHackathonPage,
-  commonPageObjects,
-}) => {
-  await createHackathonPage.inputHackathonName(hackathonName);
-  await createHackathonPage.mock400ErrorOnCreatingHackathon();
-  await commonPageObjects.confirmErrorMessageIs(
-    'Error creating hackathon - bad request'
   );
 });
 

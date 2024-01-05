@@ -54,10 +54,7 @@ test('team can successfully log in', async ({
 test('username and password fields cannot exceed 255 characters', async ({
   login,
 }) => {
-  await login.inputCredentials(
-    'a'.repeat(256),
-    'b'.repeat(256)
-  );
+  await login.inputCredentials('a'.repeat(256), 'b'.repeat(256));
   await login.validateUsername('a'.repeat(255));
   await login.validatePassword('b'.repeat(255));
 });
