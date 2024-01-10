@@ -18,7 +18,7 @@ public class CustomExceptionMapper implements ExceptionMapper<Exception> {
     @Override
     public Response toResponse(Exception ex) {
         if (ex instanceof WebApplicationException) {
-            throw ex;
+            return ((WebApplicationException) ex).getResponse();
         }
 
         logger.error(ex.getMessage(), ex);
