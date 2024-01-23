@@ -1,9 +1,15 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { UserRole } from '~/enums/UserRole';
 import {
+  getConnectedStateBadRequestResponseHandler,
   getConnectedStateConnectedResponseHandler,
+  getConnectedStateErrorResponseHandler,
   getConnectedStateUnauthorizedResponseHandler,
   getConnectedStateWaitingResponseHandler,
+  postConnectedBotErrorResponseHandler,
+  postConnectedBotGatewayTimeoutResponseHandler,
+  postDisconnectedBotErrorResponseHandler,
+  postDisconnectedBotGatewayTimeoutResponseHandler,
 } from '~/mocks/handlers/remoteBot';
 import { server } from '~/mocks/server';
 import {
@@ -196,6 +202,261 @@ describe('Team', () => {
       expect(screen.getByText('Connected')).toBeInTheDocument();
       expect(addANewGameButton).not.toHaveAttribute('disabled');
       expect(connectButton).toHaveTextContent('Disconnect');
+    });
+
+    // For code coverage - test should be replaced when button functionality is implemented
+    act(() => {
+      fireEvent.click(addANewGameButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Feature not yet implemented')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display error message when bot status request fails with bad request', async () => {
+    server.use(getConnectedStateConnectedResponseHandler);
+
+    renderWithRouterAndProvider(<Team />, {
+      preloadedState: {
+        auth: {
+          name: 'Team1',
+          role: UserRole.TEAM,
+          credentials: validTeamCredentials.credentials,
+        },
+      },
+    });
+
+    const addANewGameButton = screen.getByRole('button', {
+      name: 'Add a new game',
+    });
+    const connectButton = screen.getByTestId('connectButton');
+    const refreshButton = screen.getByRole('button', {
+      name: 'Refresh',
+    });
+
+    expect(addANewGameButton).toBeInTheDocument();
+    expect(connectButton).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Connected')).toBeInTheDocument();
+    });
+
+    server.use(getConnectedStateBadRequestResponseHandler);
+
+    act(() => {
+      fireEvent.click(refreshButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Error retrieving bot status: Bad request error message'
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display error message when bot status request fails', async () => {
+    server.use(getConnectedStateConnectedResponseHandler);
+
+    renderWithRouterAndProvider(<Team />, {
+      preloadedState: {
+        auth: {
+          name: 'Team1',
+          role: UserRole.TEAM,
+          credentials: validTeamCredentials.credentials,
+        },
+      },
+    });
+
+    const addANewGameButton = screen.getByRole('button', {
+      name: 'Add a new game',
+    });
+    const connectButton = screen.getByTestId('connectButton');
+    const refreshButton = screen.getByRole('button', {
+      name: 'Refresh',
+    });
+
+    expect(addANewGameButton).toBeInTheDocument();
+    expect(connectButton).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Connected')).toBeInTheDocument();
+    });
+
+    server.use(getConnectedStateErrorResponseHandler);
+
+    act(() => {
+      fireEvent.click(refreshButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Error retrieving bot status: unspecified error')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display error message when Connect button clicked and 504 gateway timeout error occurs', async () => {
+    server.use(postConnectedBotGatewayTimeoutResponseHandler);
+
+    renderWithRouterAndProvider(<Team />, {
+      preloadedState: {
+        auth: {
+          name: 'Team1',
+          role: UserRole.TEAM,
+          credentials: validTeamCredentials.credentials,
+        },
+      },
+    });
+
+    const addANewGameButton = screen.getByRole('button', {
+      name: 'Add a new game',
+    });
+
+    const connectButton = screen.getByTestId('connectButton');
+
+    expect(addANewGameButton).toBeInTheDocument();
+    expect(connectButton).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Error connecting bot: gateway timeout')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display error message when Connect button clicked and server error occurs', async () => {
+    server.use(postConnectedBotErrorResponseHandler);
+
+    renderWithRouterAndProvider(<Team />, {
+      preloadedState: {
+        auth: {
+          name: 'Team1',
+          role: UserRole.TEAM,
+          credentials: validTeamCredentials.credentials,
+        },
+      },
+    });
+
+    const addANewGameButton = screen.getByRole('button', {
+      name: 'Add a new game',
+    });
+
+    const connectButton = screen.getByTestId('connectButton');
+
+    expect(addANewGameButton).toBeInTheDocument();
+    expect(connectButton).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Error connecting bot: unspecified error')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display error message when Disconnect button clicked and 504 gateway timeout error occurs', async () => {
+    server.use(getConnectedStateConnectedResponseHandler);
+    server.use(postDisconnectedBotGatewayTimeoutResponseHandler);
+
+    renderWithRouterAndProvider(<Team />, {
+      preloadedState: {
+        auth: {
+          name: 'Team1',
+          role: UserRole.TEAM,
+          credentials: validTeamCredentials.credentials,
+        },
+      },
+    });
+
+    const addANewGameButton = screen.getByRole('button', {
+      name: 'Add a new game',
+    });
+
+    const connectButton = screen.getByTestId('connectButton');
+
+    expect(addANewGameButton).toBeInTheDocument();
+    expect(connectButton).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Connected')).toBeInTheDocument();
+      expect(connectButton).toHaveTextContent('Disconnect');
+    });
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Error disconnecting bot: gateway timeout')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display error message when Disconnect button clicked and server error occurs', async () => {
+    server.use(getConnectedStateConnectedResponseHandler);
+    server.use(postDisconnectedBotErrorResponseHandler);
+
+    renderWithRouterAndProvider(<Team />, {
+      preloadedState: {
+        auth: {
+          name: 'Team1',
+          role: UserRole.TEAM,
+          credentials: validTeamCredentials.credentials,
+        },
+      },
+    });
+
+    const addANewGameButton = screen.getByRole('button', {
+      name: 'Add a new game',
+    });
+
+    const connectButton = screen.getByTestId('connectButton');
+
+    expect(addANewGameButton).toBeInTheDocument();
+    expect(connectButton).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Connected')).toBeInTheDocument();
+      expect(connectButton).toHaveTextContent('Disconnect');
+    });
+
+    act(() => {
+      fireEvent.click(connectButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Error disconnecting bot: unspecified error')
+      ).toBeInTheDocument();
     });
   });
 

@@ -26,6 +26,7 @@ import ViewInformation from '~/components/popups/ViewInformation';
 import { BotConnectionStatus } from '~/enums/BotConnectionStatus';
 import { ContainerRole } from '~/enums/ContainerRole';
 import { useAppSelector } from '~/hooks';
+import { ApiError } from '~/interfaces/ApiError';
 import { selectTeamName } from '~/slices/authSlice';
 import { colours } from '~/theme';
 
@@ -56,6 +57,16 @@ const Team = () => {
   let botConnectionStatusMetadata: BotConnectionStatusMetadata =
     new BotConnectionStatusMetadata(botConnectionStatus);
 
+  const getErrorMessage = (error: ApiError) => {
+    let message = 'unspecified error';
+
+    if (error.data?.message) {
+      message = error.data.message;
+    }
+
+    return message;
+  };
+
   const handleRefreshBotStatusClick = () => {
     if (isBotConnectionStatusLoading || isBotConnectionStatusFetching) {
       setFormError('Waiting for response from bot...');
@@ -65,8 +76,10 @@ const Team = () => {
         .then((status) => {
           botConnectionStatusMetadata = new BotConnectionStatusMetadata(status);
         })
-        .catch((error) => {
-          setFormError(`Error retrieving bot status: ${error}`);
+        .catch((error: ApiError) => {
+          setFormError(
+            `Error retrieving bot status: ${getErrorMessage(error)}`
+          );
         });
     }
   };
@@ -78,8 +91,12 @@ const Team = () => {
     ) {
       disconnectBot(teamName!)
         .unwrap()
-        .catch((error) => {
-          setFormError(`Error disconnecting bot: ${error}`);
+        .catch((error: ApiError) => {
+          if (error.status === 504) {
+            setFormError('Error disconnecting bot: gateway timeout');
+          } else {
+            setFormError(`Error disconnecting bot: ${getErrorMessage(error)}`);
+          }
         });
     } else {
       connectBot(teamName!)
@@ -87,8 +104,12 @@ const Team = () => {
         .then(() => {
           handleRefreshBotStatusClick();
         })
-        .catch((error) => {
-          setFormError(`Error connecting bot: ${error}`);
+        .catch((error: ApiError) => {
+          if (error.status === 504) {
+            setFormError('Error connecting bot: gateway timeout');
+          } else {
+            setFormError(`Error connecting bot: ${getErrorMessage(error)}`);
+          }
         });
     }
     handleRefreshBotStatusClick();
@@ -191,7 +212,7 @@ const Team = () => {
               !botConnectionStatusMetadata.isAddNewGameEnabled
             }
             onClick={() => {
-              alert('Feature not yet implemented');
+              setFormError('Feature not yet implemented');
             }}
             text='Add a new game'
           />

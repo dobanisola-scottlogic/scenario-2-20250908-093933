@@ -10,6 +10,10 @@ export const noContentResponse = () => {
   });
 };
 
+export const gatewayTimeoutResponse = (body?: object | null) => {
+  return HttpResponse.json(body, { status: 504 });
+};
+
 export const errorResponse = () => {
   return HttpResponse.error();
 };

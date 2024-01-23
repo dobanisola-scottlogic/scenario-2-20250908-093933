@@ -246,7 +246,9 @@ export const api = createApi({
       query: (teamName) => ({
         method: RequestType.GET,
         params: { teamName: teamName },
-        responseHandler: 'text',
+        // HAC-245 This fix should not be needed when the backend is fixed - standardise to response.json
+        responseHandler: (response) =>
+          response.status === 200 ? response.text() : response.json(),
         url: '/remotebot/connectedState',
       }),
     }),
