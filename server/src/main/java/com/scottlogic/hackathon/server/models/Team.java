@@ -44,7 +44,7 @@ public class Team {
   }
 
   public void setName(final String name) {
-    this.name = name;
+    this.name = name.trim().replaceAll("\\s+", " ");;
   }
 
   public String getPassword() {

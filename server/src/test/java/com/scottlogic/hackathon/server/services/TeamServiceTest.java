@@ -92,6 +92,20 @@ public class TeamServiceTest {
   }
 
   @Test
+  public void addTeam_exceptionOnDuplicateNameWithSpaces() {
+    var request = new Team();
+    request.setName(" name ");
+
+    var team = new Team();
+    team.setName("name");
+    when(teamStore.get(any())).thenReturn(team);
+
+    var thrown = assertThrows(IllegalArgumentException.class, () -> teamService.addTeam(team));
+
+    assertEquals(thrown.getMessage(), "Team name already exists");
+  }
+
+  @Test
   public void getTeamInfoTest() {
     initGetTeamInfo();
     TeamInfo teamInfo = teamService.getTeamInfo("test42");
