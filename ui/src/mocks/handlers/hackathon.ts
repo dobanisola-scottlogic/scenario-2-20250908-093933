@@ -12,6 +12,7 @@ import {
   errorResponse,
   jsonOkResponse,
   noContentResponse,
+  notFoundResponse,
 } from './utils';
 
 const hackathonEndpoint = baseUrl + '/hackathon';
@@ -47,7 +48,7 @@ export const handlers = [
     return jsonOkResponse(testHackathonBody);
   }),
   http.get(`${hackathonEndpoint}/${testHackathonId.notFound}`, () => {
-    return noContentResponse();
+    return notFoundResponse();
   }),
   http.get(`${hackathonEndpoint}/${testHackathonId.networkError}`, () => {
     return errorResponse();

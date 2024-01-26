@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 import {
   testHackathonBody,
@@ -82,11 +82,18 @@ describe('HackathonDetails', () => {
       }
     );
 
-    expect(
-      await screen.findByText(
-        'This hackathon does not exist. Please create a new hackathon.'
-      )
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          'This hackathon does not exist. Please create a new hackathon.'
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'Failed to fetch hackathon. Please try again later.'
+        )
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('should show correct error message for fetch error', async () => {
@@ -102,10 +109,17 @@ describe('HackathonDetails', () => {
       }
     );
 
-    expect(
-      await screen.findByText(
-        'Failed to fetch hackathon. Please try again later.'
-      )
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          'Failed to fetch hackathon. Please try again later.'
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'This hackathon does not exist. Please create a new hackathon.'
+        )
+      ).not.toBeInTheDocument();
+      });
   });
 });

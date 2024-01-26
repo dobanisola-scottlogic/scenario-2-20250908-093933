@@ -290,7 +290,7 @@ describe('Create Update Hackathon Popup Component', () => {
         ).toHaveAttribute('disabled');
 
         const alert = await screen.findByRole('alert');
-        expect(alert.textContent).toContain('No hackathon data found');
+        expect(alert.textContent).toContain('Error fetching hackathon');
       });
     });
   });
