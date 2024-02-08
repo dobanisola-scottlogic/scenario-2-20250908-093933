@@ -1,18 +1,17 @@
 import { SpawnPoint } from '~/components/game/SpawnPoint';
+import { Team } from '~/components/game/Team';
+import { CutoffCondition } from '~/enums/CutoffCondition';
 import { GameResult } from '~/interfaces/GameResult';
-import { GameTeam } from '~/interfaces/GameTeam';
 import { Position } from '~/interfaces/Position';
-import { SpawnPointData } from '~/interfaces/SpawnPointData';
-import { getTeamColour } from '~/utils/game-utils';
 
 export class ParsedGameConstants {
   private constructor(
-    public readonly cutoffCondition: string,
+    public readonly cutoffCondition: CutoffCondition,
     public readonly height: number,
     public readonly id: string,
     public readonly outOfBoundPositions: Position[],
     public readonly spawnPoints: SpawnPoint[],
-    public readonly teams: GameTeam[],
+    public readonly teams: Team[],
     public readonly width: number
   ) {}
 
@@ -21,38 +20,23 @@ export class ParsedGameConstants {
       throw 'No gameResult';
     }
 
-    const teams: GameTeam[] = gameResult.game.teams.map((team, index) => {
-      return {
-        botId: team.botId,
-        colour: getTeamColour(index),
-        teamId: team.teamId,
-        teamName: team.teamName,
-      };
-    });
+    const teams: Team[] = gameResult.game.teams.map(
+      (team, index) => new Team(team.botId, index, team.teamName, team.teamId)
+    );
 
-    const spawnPoints: SpawnPoint[] = [];
+    const spawnPoints = gameResult.spawnPoints.map((spawnPoint) => {
+      const teamIndex = teams.find((t) => t.botId === spawnPoint.owner)?.index;
 
-    gameResult.spawnPoints.forEach((spawnPoint: SpawnPointData) => {
-      const teamIndex = gameResult.game.teams.findIndex(
-        (t) => t.botId === spawnPoint.owner
-      );
-
-      if (teamIndex < 0) {
-        throw `Unable to determine an owning team for SpawnPoint with id=${spawnPoint.id} and owner=${spawnPoint.owner}`;
-      }
-
-      spawnPoints.push(
-        new SpawnPoint(
-          spawnPoint.id,
-          spawnPoint.owner,
-          spawnPoint.position,
-          teamIndex
-        )
+      return new SpawnPoint(
+        spawnPoint.id,
+        spawnPoint.owner,
+        spawnPoint.position,
+        teamIndex ?? -1
       );
     });
 
     return new ParsedGameConstants(
-      gameResult.cutoffCondition.toString(),
+      gameResult.cutoffCondition,
       gameResult.game.map.height,
       gameResult.id,
       gameResult.game.map.outOfBoundPositions,

@@ -1,22 +1,32 @@
 import Phaser from 'phaser';
+import { GameEndState } from '~/components/game/GameEndState';
 import { ParsedGameResult } from '~/components/game/ParsedGameResult';
+import { ParsedGameState } from '~/components/game/ParsedGameState';
 import { PlayerTravel } from '~/components/game/PlayerTravel';
 import { CollectableSpriteSheet } from '~/components/game/SpriteSheets/CollectableSpriteSheet';
 import { MapSpriteSheet } from '~/components/game/SpriteSheets/MapSpriteSheet';
 import { PlayerSpriteSheet } from '~/components/game/SpriteSheets/PlayerSpriteSheet';
 import { SpawnSpriteSheet } from '~/components/game/SpriteSheets/SpawnSpriteSheet';
 import { SpriteSheetDefinition } from '~/components/game/SpriteSheets/SpriteSheetDefinition';
+import { TeamStats } from '~/components/game/TeamStats';
 import PlayerMovementUtils from '~/enums/PlayerMovement';
 import { Cell } from '~/interfaces/Cell';
 import { Collectable } from '~/interfaces/Collectable';
 import { Player } from '~/interfaces/Player';
+import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
 
 export class HackathonPhaserGame extends Phaser.Game {
   private static readonly GameBackgroundGreen: string = '007600';
 
   constructor(
     public readonly gameData: ParsedGameResult,
-    public readonly parentElementId: string
+    public readonly parentElementId: string,
+    setGameState: React.Dispatch<
+      React.SetStateAction<ParsedGameState | undefined>
+    >,
+    setGameEndState: React.Dispatch<
+      React.SetStateAction<GameEndState | undefined>
+    >
   ) {
     super({
       // Example Phaser config: change this to Hackathon-specific values: HAC-253, HAC-254, HAC-255
@@ -25,7 +35,7 @@ export class HackathonPhaserGame extends Phaser.Game {
       height: gameData.constants.height * Cell.CellHeight,
       width: gameData.constants.width * Cell.CellWidth,
       parent: parentElementId,
-      scene: new HackathonPhaserScene(gameData),
+      scene: new HackathonPhaserScene(gameData, setGameState, setGameEndState),
     });
   }
 }
@@ -47,7 +57,15 @@ class HackathonPhaserScene extends Phaser.Scene {
   private players: Phaser.GameObjects.Sprite[] = [];
   private spawnPoints: Phaser.GameObjects.Sprite[] = [];
 
-  constructor(public readonly gameData: ParsedGameResult) {
+  constructor(
+    public readonly gameData: ParsedGameResult,
+    private setGameState: React.Dispatch<
+      React.SetStateAction<ParsedGameState | undefined>
+    >,
+    private setGameEndState: React.Dispatch<
+      React.SetStateAction<GameEndState | undefined>
+    >
+  ) {
     super({ key: 'MainScene' });
 
     this.spriteSheets = [
@@ -281,11 +299,36 @@ class HackathonPhaserScene extends Phaser.Scene {
 
     const dateTimeNow = Date.now();
 
-    if (
+    if (this.phaseIndex === this.phaseCount) {
+      const gameState = this.gameData.states[this.gameData.states.length - 1];
+
+      const teamStats: TeamStats[] = this.gameData.constants.teams.map(
+        (team, index) => {
+          const teamInfo = gameState.teams.find((t) => t.owner === team.botId);
+
+          return new TeamStats(
+            index,
+            removeMilestoneBotPrefix(team.teamName),
+            teamInfo?.playerCount ?? 0,
+            teamInfo?.spawnCount ?? 0,
+            teamInfo?.disqualificationReason ?? ''
+          );
+        }
+      );
+
+      const gameEndState: GameEndState = new GameEndState(
+        teamStats,
+        this.gameData.constants.cutoffCondition
+      );
+
+      this.setGameEndState(gameEndState);
+    } else if (
       dateTimeNow - this.lastPhaseTime > this.DefaultSpeed &&
       this.phaseIndex < this.phaseCount
     ) {
       this.lastPhaseTime = dateTimeNow;
+
+      this.setGameState(this.gameData.states[this.phaseIndex]);
 
       const delta = this.gameData.deltas[this.phaseIndex];
 

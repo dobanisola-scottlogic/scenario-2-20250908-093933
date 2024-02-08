@@ -1,4 +1,8 @@
-import { fireEvent, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import {
+  fireEvent,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import HackathonList from './HackathonList';
 
@@ -37,6 +41,6 @@ describe('HackathonList', () => {
 
     await waitForElementToBeRemoved(screen.queryByRole('alert')).then(() => {
       expect(screen.queryByRole('alert')).toBeNull();
-    })
+    });
   });
 });

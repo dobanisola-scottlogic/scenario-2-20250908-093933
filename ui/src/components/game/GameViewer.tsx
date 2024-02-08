@@ -8,6 +8,7 @@ import { viewerStyles } from '~/components/commonStyles';
 import GameResultDataGrid from '~/components/dataGrids/GameResultDataGrid';
 import GameDetails from '~/components/game/GameDetails';
 import GamePlayback from '~/components/game/GamePlayback';
+import { ParsedGameState } from '~/components/game/ParsedGameState';
 import { BreadcrumbLevel } from '~/enums/BreadcrumbLevel';
 import { ContainerRole } from '~/enums/ContainerRole';
 import { colours } from '~/theme';
@@ -15,6 +16,7 @@ import { getGameTitle } from '~/utils/game-utils';
 
 const GameViewer = () => {
   const { gameId, id } = useParams();
+  const [gameState, setGameState] = useState<ParsedGameState>();
   const [isAvailableGamesShown, setIsAvailableGamesShown] = useState(false);
 
   const { data: hackathon, isLoading, isError } = useGetHackathonQuery(id!);
@@ -83,18 +85,34 @@ const GameViewer = () => {
                       gameResult={hackathonGameData}
                       height={hackathonGameData.game.map.height}
                       width={hackathonGameData.game.map.width}
+                      setGameState={setGameState}
                     />
                   )}
                 </Grid>
                 <Grid item xs={12}>
                   <Box sx={viewerStyles.commonBoxStyles}>
                     Player count chart placeholder
+                    {/* <h1>
+                      Phase={gameState?.phase} Players=
+                      {gameState?.players?.length}
+                    </h1>
+                    {gameState?.teams.map((team, index) => (
+                      <Chip
+                        key={index}
+                        sx={{
+                          ...viewerStyles.chipStyles,
+                          backgroundColor: getTeamColour(team.teamIndex),
+                        }}
+                        label={team.playerCount}
+                      ></Chip>
+                    ))} */}
                   </Box>
                 </Grid>
               </Grid>
               <Grid container item xs={12} md={1} direction='column'>
                 <Box sx={{ ...viewerStyles.commonBoxStyles, height: '31rem' }}>
                   Collectables chart placeholder
+                  <h1>{gameState?.collectables?.length}</h1>
                 </Box>
               </Grid>
             </>

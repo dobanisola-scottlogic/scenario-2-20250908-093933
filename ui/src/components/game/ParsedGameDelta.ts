@@ -1,8 +1,10 @@
+import { ParsedGameConstants } from '~/components/game/ParsedGameConstants';
 import { PlayerTravel } from '~/components/game/PlayerTravel';
 import PlayerMovementUtils, { PlayerMovement } from '~/enums/PlayerMovement';
 import { Cell } from '~/interfaces/Cell';
 import { Collectable } from '~/interfaces/Collectable';
 import { GameResult } from '~/interfaces/GameResult';
+import { PhaseResult } from '~/interfaces/PhaseResult';
 import { Player } from '~/interfaces/Player';
 import { PlayerPosition } from '~/interfaces/PlayerPosition';
 
@@ -21,103 +23,101 @@ export class ParsedGameDelta {
   };
 
   private static parseAddedPlayers = (
-    phaseIndex: number,
-    gameData: GameResult
+    phaseResult: PhaseResult,
+    constants: ParsedGameConstants
   ): Player[] => {
-    const playersAdded: Player[] = [];
+    const players: Player[] = [];
 
-    const phaseResult = gameData.phaseResults[phaseIndex];
-
-    phaseResult.addedPlayers.forEach((addedPlayer) => {
-      const playerPosition = phaseResult.playerPositions.find(
-        (pp) => pp.id === addedPlayer.id
+    phaseResult.addedPlayers.forEach((player) => {
+      const position = phaseResult.playerPositions.find(
+        (pos) => pos.id === player.id
       );
 
-      if (!playerPosition) {
-        throw `No PlayerPosition found for Added Player id=${addedPlayer.id} in Phase id=${phaseResult.id}`;
+      if (!position) {
+        throw `No PlayerPosition found for Added Player id=${player.id} in Phase id=${phaseResult.id}, phase=${phaseResult.phase}`;
       }
 
-      const teamIndex = gameData.game.teams.findIndex(
-        (t) => t.botId === addedPlayer.owner
-      );
+      const teamIndex = constants.teams.find(
+        (t) => t.botId === player.owner
+      )?.index;
 
-      playersAdded.push({
-        cell: new Cell(playerPosition.position.x, playerPosition.position.y),
-        id: addedPlayer.id,
-        owner: addedPlayer.owner,
+      if (teamIndex === undefined) {
+        throw `No Team found for Added Player id=${player.id}, owner=${player.owner} in Phase id=${phaseResult.id}, phase=${phaseResult.phase}`;
+      }
+
+      players.push({
+        cell: new Cell(position.position.x, position.position.y),
+        id: player.id,
+        owner: player.owner,
         teamIndex,
       });
     });
 
-    return playersAdded;
+    return players;
   };
 
   private static parseCollectablesAdded = (
-    index: number,
-    gameData: GameResult
+    phaseResult: PhaseResult
   ): Collectable[] => {
-    return gameData.phaseResults[index].addedCollectables;
+    return phaseResult.addedCollectables;
   };
 
   private static parseCollectablesCollected = (
-    index: number,
-    gameData: GameResult
+    phaseResult: PhaseResult
   ): number[] => {
-    return gameData.phaseResults[index].removedCollectables;
+    return phaseResult.removedCollectables;
   };
 
   private static parseDestroyedPlayers = (
-    index: number,
-    gameData: GameResult
+    phaseResult: PhaseResult
   ): number[] => {
-    return gameData.phaseResults[index].removedPlayers;
+    return phaseResult.removedPlayers;
   };
 
   private static parseDestroyedSpawnPoints = (
-    index: number,
-    gameData: GameResult
+    phaseResult: PhaseResult
   ): number[] => {
-    return gameData.phaseResults[index].removedSpawnPoints;
+    return phaseResult.removedSpawnPoints;
   };
 
   private static parsePlayerMovements = (
-    index: number,
-    gameData: GameResult
+    phaseResult: PhaseResult,
+    previousPhaseResult: PhaseResult | undefined
   ): Map<number, PlayerTravel> => {
+    if (phaseResult.phase !== 0 && !previousPhaseResult) {
+      throw `Unable to parse player movement for PhaseResult where phase=${phaseResult.phase}: previousPhaseResult was not specified`;
+    }
+
     const movements = new Map<number, PlayerTravel>();
 
-    gameData.phaseResults[index].playerPositions.forEach(
-      (playerPosition: PlayerPosition) => {
-        let idIndex = -1;
-
-        if (index !== 0) {
-          idIndex = gameData.phaseResults[index - 1].playerPositions.findIndex(
+    phaseResult.playerPositions.forEach((playerPosition: PlayerPosition) => {
+      if (phaseResult.phase === 0) {
+        // Every player should be treated as a spawn:
+        movements.set(
+          playerPosition.id,
+          new PlayerTravel(
+            PlayerMovement.STATIONARY,
+            playerPosition.position,
+            false
+          )
+        );
+      } else {
+        const previousPhasePlayerPosition =
+          previousPhaseResult!.playerPositions.find(
             (position) => position.id === playerPosition.id
           );
-        }
 
-        if (idIndex === -1) {
-          // If index = 0, every player should be treated as a spawn:
-          movements.set(
-            playerPosition.id,
-            new PlayerTravel(
-              PlayerMovement.STATIONARY,
-              playerPosition.position,
-              false
-            )
-          );
-        } else {
+        let playerMovement: PlayerMovement = PlayerMovement.STATIONARY;
+        let hasWrappedAroundMap = false;
+
+        if (previousPhasePlayerPosition) {
           let xMovement =
-            playerPosition.position.x -
-            gameData.phaseResults[index - 1].playerPositions[idIndex].position
-              .x;
+            playerPosition.position.x - previousPhasePlayerPosition.position.x;
 
           let yMovement =
-            playerPosition.position.y -
-            gameData.phaseResults[index - 1].playerPositions[idIndex].position
-              .y;
+            playerPosition.position.y - previousPhasePlayerPosition.position.y;
 
-          const hasWrappedAroundMap =
+          hasWrappedAroundMap =
             this.checkBoundary(xMovement) || this.checkBoundary(yMovement);
 
           // Handle the wrapping of the map:
@@ -126,43 +126,52 @@ export class ParsedGameDelta {
           yMovement = yMovement > 1 ? -1 : yMovement;
           yMovement = yMovement < -1 ? 1 : yMovement;
 
-          const playerMovement = PlayerMovementUtils.calculatePlayerMovement(
+          playerMovement = PlayerMovementUtils.calculatePlayerMovement(
             xMovement,
             yMovement
           );
-
-          movements.set(
-            playerPosition.id,
-            new PlayerTravel(
-              playerMovement,
-              playerPosition.position,
-              hasWrappedAroundMap
-            )
-          );
         }
+
+        movements.set(
+          playerPosition.id,
+          new PlayerTravel(
+            playerMovement,
+            playerPosition.position,
+            hasWrappedAroundMap
+          )
+        );
       }
-    );
+    });
 
     return movements;
   };
 
-  public static parseMany = (gameData: GameResult): ParsedGameDelta[] => {
+  public static parseMany = (
+    gameData: GameResult,
+    constants: ParsedGameConstants
+  ): ParsedGameDelta[] => {
     if (!gameData) {
       throw 'No gameData';
     }
 
-    const deltas: ParsedGameDelta[] = [];
+    if (!constants) {
+      throw 'No constants';
+    }
 
-    for (let i = 0; i < gameData.phaseResults.length; i++) {
-      const collectablesAdded = this.parseCollectablesAdded(i, gameData);
-      const collectablesCollected = this.parseCollectablesCollected(
-        i,
-        gameData
+    const deltas: ParsedGameDelta[] = [];
+    let previousPhaseResult: PhaseResult | undefined;
+
+    for (const phaseResult of gameData.phaseResults) {
+      const collectablesAdded = this.parseCollectablesAdded(phaseResult);
+      const collectablesCollected =
+        this.parseCollectablesCollected(phaseResult);
+      const playersAdded = this.parseAddedPlayers(phaseResult, constants);
+      const playersDestroyed = this.parseDestroyedPlayers(phaseResult);
+      const playersMovements = this.parsePlayerMovements(
+        phaseResult,
+        previousPhaseResult
       );
-      const playersAdded = this.parseAddedPlayers(i, gameData);
-      const playersDestroyed = this.parseDestroyedPlayers(i, gameData);
-      const playersMovements = this.parsePlayerMovements(i, gameData);
-      const spawnPointsDestroyed = this.parseDestroyedSpawnPoints(i, gameData);
+      const spawnPointsDestroyed = this.parseDestroyedSpawnPoints(phaseResult);
 
       const delta = new ParsedGameDelta(
         collectablesAdded,
@@ -174,6 +183,8 @@ export class ParsedGameDelta {
       );
 
       deltas.push(delta);
+
+      previousPhaseResult = phaseResult;
     }
 
     return deltas;

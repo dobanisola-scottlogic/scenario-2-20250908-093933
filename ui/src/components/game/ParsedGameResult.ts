@@ -1,8 +1,7 @@
+import { ParsedGameConstants } from '~/components/game/ParsedGameConstants';
+import { ParsedGameDelta } from '~/components/game/ParsedGameDelta';
+import { ParsedGameState } from '~/components/game/ParsedGameState';
 import { GameResult } from '~/interfaces/GameResult';
-
-import { ParsedGameConstants } from './ParsedGameConstants';
-import { ParsedGameDelta } from './ParsedGameDelta';
-import { ParsedGameState } from './ParsedGameState';
 
 export class ParsedGameResult {
   private constructor(
@@ -13,8 +12,8 @@ export class ParsedGameResult {
 
   public static parse = (gameResult: GameResult): ParsedGameResult => {
     const constants = ParsedGameConstants.parse(gameResult);
-    const deltas = ParsedGameDelta.parseMany(gameResult);
-    const states = ParsedGameState.parseMany(gameResult);
+    const deltas = ParsedGameDelta.parseMany(gameResult, constants);
+    const states = ParsedGameState.parseMany(gameResult, constants);
 
     return new ParsedGameResult(constants, deltas, states);
   };

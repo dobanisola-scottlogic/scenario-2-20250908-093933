@@ -1,8 +1,8 @@
+import { ParsedGameConstants } from '~/components/game/ParsedGameConstants';
 import { SpawnPoint } from '~/components/game/SpawnPoint';
-import { TeamInfo } from '~/components/game/TeamInfo';
+import { TeamState } from '~/components/game/TeamState';
 import { Cell } from '~/interfaces/Cell';
 import { Collectable } from '~/interfaces/Collectable';
-import { DisqualifiedBot } from '~/interfaces/DisqualifiedBot';
 import { GameResult } from '~/interfaces/GameResult';
 import { PhaseResult } from '~/interfaces/PhaseResult';
 import { Player } from '~/interfaces/Player';
@@ -10,16 +10,11 @@ import { Player } from '~/interfaces/Player';
 export class ParsedGameState {
   private constructor(
     public readonly collectables: Collectable[],
+    public readonly phase: number,
     public readonly players: Player[],
     public readonly spawnPoints: SpawnPoint[],
-    public readonly teams: TeamInfo[]
+    public readonly teams: TeamState[]
   ) {}
-
-  private static mapTeamOwners = (gameData: GameResult, teams: TeamInfo[]) => {
-    gameData.spawnPoints.forEach((spawnPoint, index) => {
-      teams[index].owner = spawnPoint.owner;
-    });
-  };
 
   private static parseCollectablePositions = (
     index: number,
@@ -56,60 +51,45 @@ export class ParsedGameState {
     return collectables;
   };
 
-  private static parseDisqualificationReasons = (
-    phaseResult: PhaseResult,
-    teams: TeamInfo[] = []
-  ) => {
-    phaseResult.disqualifiedBots.forEach((disqualifiedBot: DisqualifiedBot) => {
-      if (disqualifiedBot?.id) {
-        const team = teams.find((team) => team?.owner === disqualifiedBot?.id);
-
-        if (team) {
-          team.disqualificationReason = disqualifiedBot.reason;
-        }
-      }
-    });
-  };
-
   private static parsePlayerPositions = (
-    index: number,
-    gameData: GameResult,
+    phaseIndex: number,
+    phaseResult: PhaseResult,
     previousState: ParsedGameState | null,
-    teams: TeamInfo[] = []
+    teams: TeamState[] = []
   ): Player[] => {
     const players: Player[] = [];
-    let previousPlayers: number[] = [];
 
-    if (index > 0 && previousState) {
-      previousPlayers = previousState.players.map(
-        (previousPlayer) => previousPlayer.id
-      );
-    }
+    const previousPlayers = previousState?.players.map((p) => p.id) ?? [];
 
-    gameData.phaseResults[index].playerPositions.forEach((player) => {
+    phaseResult.playerPositions.forEach((playerPosition) => {
       let teamIndex = -1;
-      let owner: number | null = null;
 
-      if (index === 0 || previousPlayers.indexOf(player.id) === -1) {
-        // Add owner and teamIndex for players that have just spawned:
-        const addedPlayerIndex = gameData.phaseResults[index].addedPlayers
-          .map((addedPlayer) => addedPlayer.id)
-          .indexOf(player.id);
+      let owner = phaseResult.addedPlayers.find(
+        (p) => p.id === playerPosition.id
+      )?.owner;
 
-        owner =
-          gameData.phaseResults[index].addedPlayers[addedPlayerIndex].owner ||
-          null;
+      if (!owner) {
+        owner = previousState?.players.find(
+          (p) => p.id === playerPosition.id
+        )?.owner;
 
+        if (!owner) {
+          throw `No owner found for player with id=${playerPosition.id} required by PlayerPosition from phase number=${phaseIndex}`;
+        }
+      }
+
+      if (
+        phaseIndex === 0 ||
+        previousPlayers.indexOf(playerPosition.id) === -1
+      ) {
         if (owner != null) {
-          teamIndex = gameData.spawnPoints.findIndex(
-            (spawnPoint) => spawnPoint.owner === owner
-          );
+          teamIndex = teams.find((t) => t.owner === owner)?.teamIndex ?? -1;
         }
       } else if (previousState) {
         // Add owner and teamIndex for players that haven't just spawned:
         const previousIndex = previousState.players
           .map((previousPlayer) => previousPlayer.id)
-          .indexOf(player.id);
+          .indexOf(playerPosition.id);
 
         owner = previousState.players[previousIndex].owner;
         teamIndex = previousState.players[previousIndex].teamIndex;
@@ -118,9 +98,9 @@ export class ParsedGameState {
       teams[teamIndex].playerCount++;
 
       players.push({
-        id: player.id,
-        owner: owner ?? -1,
-        cell: new Cell(player.position.x, player.position.y),
+        id: playerPosition.id,
+        owner: owner,
+        cell: new Cell(playerPosition.position.x, playerPosition.position.y),
         teamIndex: teamIndex,
       });
     });
@@ -132,7 +112,7 @@ export class ParsedGameState {
     index: number,
     gameData: GameResult,
     previousState: ParsedGameState | null,
-    teams: TeamInfo[] = []
+    teams: TeamState[] = []
   ): SpawnPoint[] => {
     let spawnPoints: SpawnPoint[] = [];
 
@@ -184,9 +164,16 @@ export class ParsedGameState {
     return spawnPoints;
   };
 
-  public static parseMany = (gameData: GameResult): ParsedGameState[] => {
+  public static parseMany = (
+    gameData: GameResult,
+    constants: ParsedGameConstants
+  ): ParsedGameState[] => {
     if (!gameData) {
       throw 'No gameData';
+    }
+
+    if (!constants) {
+      throw 'No ParsedGameConstants';
     }
 
     const states: ParsedGameState[] = [];
@@ -194,17 +181,19 @@ export class ParsedGameState {
     let previousGameState: ParsedGameState | null = null;
 
     for (let i = 0; i < gameData.phaseResults.length; i++) {
-      const teams: TeamInfo[] = gameData.game.teams.map(
-        () => new TeamInfo(null, null, 0, 0)
-      );
+      const phaseResult = gameData.phaseResults[i];
 
-      this.mapTeamOwners(gameData, teams);
+      const teams: TeamState[] = constants.teams.map((team) => {
+        const disqualifiedBot = phaseResult.disqualifiedBots.find(
+          (x) => x.id === team.botId
+        );
 
-      this.parseDisqualificationReasons(gameData.phaseResults[i], teams);
+        return new TeamState(disqualifiedBot?.reason, team.botId, team.index);
+      });
 
       const players = this.parsePlayerPositions(
         i,
-        gameData,
+        phaseResult,
         previousGameState,
         teams
       );
@@ -224,6 +213,7 @@ export class ParsedGameState {
 
       const parsedGameState = new ParsedGameState(
         collectables,
+        i,
         players,
         spawnPositions,
         teams
