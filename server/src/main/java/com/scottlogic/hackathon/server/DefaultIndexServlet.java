@@ -2,8 +2,8 @@ package com.scottlogic.hackathon.server;
 
 import java.net.URL;
 import java.nio.charset.Charset;
-import javax.annotation.Nullable;
 import io.dropwizard.servlets.assets.AssetServlet;
+import jakarta.annotation.Nullable;
 
 /**
  * Works the same way as {@link AssetServlet} except if the asset can't be found it defaults to the asset located at
@@ -28,7 +28,7 @@ public class DefaultIndexServlet extends AssetServlet {
     }
 
     @Override
-    protected URL getResourceUrl(String absoluteRequestedResourcePath) {
+    protected URL getResourceURL(String absoluteRequestedResourcePath) {
         URL url = DefaultIndexServlet.class.getClassLoader().getResource(absoluteRequestedResourcePath);
         if (url != null) {
             return url;

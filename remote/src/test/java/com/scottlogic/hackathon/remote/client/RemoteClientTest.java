@@ -4,8 +4,8 @@ import java.util.List;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.UpgradeResponse;
-import org.eclipse.jetty.websocket.client.io.WebSocketClientConnection;
-import org.eclipse.jetty.websocket.common.WebSocketRemoteEndpoint;
+import org.eclipse.jetty.websocket.common.JettyWebSocketRemoteEndpoint;
+import org.eclipse.jetty.websocket.core.CoreSession;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -109,10 +109,10 @@ public class RemoteClientTest {
   }
 }
 
-class DummyEndpoint extends WebSocketRemoteEndpoint {
+class DummyEndpoint extends JettyWebSocketRemoteEndpoint {
 
   public DummyEndpoint() {
-    super(mock(WebSocketClientConnection.class), null);
+    super(mock(CoreSession.class), null);
   }
 
   @Override

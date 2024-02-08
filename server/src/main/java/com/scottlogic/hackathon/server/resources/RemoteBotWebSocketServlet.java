@@ -1,29 +1,20 @@
 package com.scottlogic.hackathon.server.resources;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
-import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import java.time.Duration;
+import jakarta.servlet.annotation.WebServlet;
+import org.eclipse.jetty.websocket.server.JettyWebSocketServlet;
+import org.eclipse.jetty.websocket.server.JettyWebSocketServletFactory;
 
 import com.scottlogic.hackathon.remote.server.RemoteBotSocketCreator;
 
 @WebServlet(
     name = "WebSocket Servlet",
     urlPatterns = {"/connect"})
-public class RemoteBotWebSocketServlet extends WebSocketServlet {
+public class RemoteBotWebSocketServlet extends JettyWebSocketServlet {
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    response.getWriter().println("HTTP GET method not implemented.");
-  }
-
-  @Override
-  public void configure(WebSocketServletFactory factory) {
-    factory.getPolicy().setIdleTimeout(Long.MAX_VALUE);
+  public void configure(JettyWebSocketServletFactory factory) {
+    factory.setIdleTimeout(Duration.ofMillis(Long.MAX_VALUE));
     factory.setCreator(RemoteBotSocketCreator.INSTANCE);
   }
 }

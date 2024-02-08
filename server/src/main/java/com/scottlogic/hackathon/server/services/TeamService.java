@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.google.inject.Inject;
 import io.dropwizard.auth.basic.BasicCredentials;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import software.amazon.awssdk.services.cloud9.Cloud9Client;
 import software.amazon.awssdk.services.cloud9.model.Cloud9Exception;
@@ -36,7 +35,8 @@ public class TeamService {
   }
 
   public Team addTeam(final Team team) {
-    var existing = teamStore.get(Restrictions.eq("name", team.getName()).ignoreCase());
+    
+    var existing = teamStore.get("name", team.getName(), true);
     if (existing != null) {
       throw new IllegalArgumentException("Team name already exists");
     }
@@ -50,7 +50,7 @@ public class TeamService {
   }
 
   public List<Team> getTeamsByHackathon(final String hackathonId) {
-    return teamStore.list(Restrictions.eq("hackathonId", hackathonId));
+    return teamStore.list("hackathonId", hackathonId, false);
   }
 
   public Team getTeam(final UUID id) {
@@ -58,7 +58,7 @@ public class TeamService {
   }
 
   public Team getTeam(final String name) {
-    return teamStore.get(Restrictions.eq("name", name));
+    return teamStore.get("name", name, true);
   }
 
   public Team updateTeam(final UUID id, final TeamUpdate teamUpdate) {

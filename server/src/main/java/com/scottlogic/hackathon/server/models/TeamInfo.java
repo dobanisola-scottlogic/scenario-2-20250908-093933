@@ -1,6 +1,6 @@
 package com.scottlogic.hackathon.server.models;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import software.amazon.awssdk.services.cloud9.model.Environment;
 
 @Entity

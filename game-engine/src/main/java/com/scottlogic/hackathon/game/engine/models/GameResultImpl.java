@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.Column;
 import lombok.Getter;
+import jakarta.persistence.Column;
 
 import com.scottlogic.hackathon.game.CutoffCondition;
 import com.scottlogic.hackathon.game.GameGeometry;

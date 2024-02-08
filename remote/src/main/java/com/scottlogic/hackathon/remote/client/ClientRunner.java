@@ -1,6 +1,7 @@
 package com.scottlogic.hackathon.remote.client;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -25,7 +26,7 @@ public class ClientRunner {
     logger.info("URI: " + botSocketUri.toString());
 
     WebSocketClient wsClient = new WebSocketClient();
-    wsClient.setMaxIdleTimeout(Long.MAX_VALUE);
+    wsClient.setIdleTimeout(Duration.ofMillis(Long.MAX_VALUE));
     wsClient.setStopAtShutdown(true);
     RemoteClient rcClient = new RemoteClient(contestantBot);
 

@@ -4,8 +4,8 @@ import java.util.concurrent.ThreadFactory;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.hibernate.HibernateBundle;
-import io.dropwizard.setup.Environment;
 import org.hibernate.SessionFactory;
 
 import com.scottlogic.hackathon.server.services.BotThreadFactory;

@@ -2,8 +2,8 @@ package com.scottlogic.hackathon.server.models;
 
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

@@ -1,9 +1,9 @@
 package com.scottlogic.hackathon.server.models;
 
 import java.util.UUID;
-import javax.persistence.Column;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
+import jakarta.persistence.Column;
 
 import com.scottlogic.hackathon.game.Id;
 

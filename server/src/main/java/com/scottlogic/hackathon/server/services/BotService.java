@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +107,7 @@ public class BotService {
 
   public List<TeamBot> getTeamBots(final String userName) {
     final Team team = teamService.getTeam(userName);
-    return botStore.list(Restrictions.eq("teamId", team.getId().toString()));
+    return botStore.list("teamId", team.getId().toString());
   }
 
   private boolean userCanAccessBot(final User user, final UUID id) {

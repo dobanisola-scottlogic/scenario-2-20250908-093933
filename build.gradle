@@ -60,6 +60,7 @@ subprojects {
 
         ext {
             slf4jVersion = '1.7.12'
+            jettyVersion = '11.0.19'
         }
 
         repositories {

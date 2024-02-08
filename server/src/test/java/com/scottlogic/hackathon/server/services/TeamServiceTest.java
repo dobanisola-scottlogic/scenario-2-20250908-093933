@@ -22,6 +22,8 @@ import com.scottlogic.hackathon.server.services.stores.TeamStore;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -84,11 +86,11 @@ public class TeamServiceTest {
   public void addTeam_exceptionOnDuplicateName() {
     var team = new Team();
     team.setName("name");
-    when(teamStore.get(any())).thenReturn(team);
+    when(teamStore.get(anyString(), anyString(), anyBoolean())).thenReturn(team);
 
     var thrown = assertThrows(IllegalArgumentException.class, () -> teamService.addTeam(team));
 
-    assertEquals(thrown.getMessage(), "Team name already exists");
+    assertEquals("Team name already exists", thrown.getMessage());
   }
 
   @Test
@@ -98,11 +100,11 @@ public class TeamServiceTest {
 
     var team = new Team();
     team.setName("name");
-    when(teamStore.get(any())).thenReturn(team);
+    when(teamStore.get(anyString(), anyString(), anyBoolean())).thenReturn(team);
 
     var thrown = assertThrows(IllegalArgumentException.class, () -> teamService.addTeam(team));
 
-    assertEquals(thrown.getMessage(), "Team name already exists");
+    assertEquals("Team name already exists", thrown.getMessage());
   }
 
   @Test
@@ -110,10 +112,10 @@ public class TeamServiceTest {
     initGetTeamInfo();
     TeamInfo teamInfo = teamService.getTeamInfo("test42");
 
-    assertEquals(teamInfo.accountId, "account-id");
-    assertEquals(teamInfo.userName, "resource-id");
-    assertEquals(teamInfo.password, System.getenv("CONTESTANT_PASSWORD"));
-    assertEquals(teamInfo.devEnvironment, "https://region.console.aws.amazon.com/cloud9/ide/environment-id");
+    assertEquals("account-id", teamInfo.accountId);
+    assertEquals("resource-id", teamInfo.userName);
+    assertEquals(System.getenv("CONTESTANT_PASSWORD"), teamInfo.password);
+    assertEquals("https://region.console.aws.amazon.com/cloud9/ide/environment-id", teamInfo.devEnvironment);
   }
 
   @Test

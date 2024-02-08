@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.persistence.Column;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.Column;
 
 import com.scottlogic.hackathon.game.Id;
 import com.scottlogic.hackathon.game.engine.ShortIdGenerator;

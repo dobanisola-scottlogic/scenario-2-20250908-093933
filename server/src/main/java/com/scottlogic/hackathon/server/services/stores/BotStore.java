@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +37,11 @@ public class BotStore extends AbstractStore<TeamBot> {
   }
 
   public TeamBot getByTeamId(UUID teamId) {
-    return get(Restrictions.eq("teamId", teamId.toString()));
+    return get("teamId", teamId.toString());
   }
 
   public boolean deleteExisting(UUID teamId) {
-    return list(Restrictions.eq("teamId", teamId.toString())).stream()
+    return list("teamId", teamId.toString()).stream()
         .map(t -> t.getId().getId())
         .map(this::delete)
         .findFirst()

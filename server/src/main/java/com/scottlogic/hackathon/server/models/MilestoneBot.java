@@ -3,10 +3,10 @@ package com.scottlogic.hackathon.server.models;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

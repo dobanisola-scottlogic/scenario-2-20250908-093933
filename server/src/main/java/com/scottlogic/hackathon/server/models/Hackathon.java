@@ -1,11 +1,11 @@
 package com.scottlogic.hackathon.server.models;
 
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Data
 @Entity

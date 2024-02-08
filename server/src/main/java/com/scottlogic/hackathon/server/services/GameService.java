@@ -7,9 +7,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 import com.google.inject.Inject;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +77,7 @@ public class GameService {
   }
 
   public List<GameResult> getGameResultsByHackathon(final String hackathonId) {
-    return gameStore.list(Restrictions.eq("hackathonId", hackathonId));
+    return gameStore.list("hackathonId", hackathonId);
   }
 
   public GameResult getGameResult(final UUID id) {
@@ -92,12 +89,9 @@ public class GameService {
   }
 
   public void deleteMileStoneGameResults(Team team, Set<String> milestoneClasses) {
-    Criterion criterion =
-        Restrictions.and(
-            Restrictions.eq("hackathonId", team.getHackathonId()),
-            Restrictions.like("game", team.getName(), MatchMode.ANYWHERE));
+    List<GameResult> games = gameStore.getGamesForTeam(team);
 
-    gameStore.list(criterion).stream()
+    games.stream()
         .filter(g -> gameContainsAny(g.getGame(), milestoneClasses))
         .map(GameResult::getId)
         .forEach(this::deleteGameResult);

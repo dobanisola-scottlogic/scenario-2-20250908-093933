@@ -1,6 +1,6 @@
 package com.scottlogic.hackathon.server.models;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Position {

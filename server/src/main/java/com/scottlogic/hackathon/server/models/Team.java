@@ -1,10 +1,12 @@
 package com.scottlogic.hackathon.server.models;
 
 import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import io.dropwizard.auth.basic.BasicCredentials;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @EqualsAndHashCode

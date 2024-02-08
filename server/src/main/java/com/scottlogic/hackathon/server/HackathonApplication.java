@@ -2,22 +2,23 @@ package com.scottlogic.hackathon.server;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.core.Application;
+import io.dropwizard.core.setup.Bootstrap;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterRegistration;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 
@@ -76,8 +77,6 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
             new HackathonModule(
                 configuration, environment, hibernateBundle, new BotThreadFactory(sysOut)));
 
-    hibernateBundle.getSessionFactory().openSession().createQuery("from GameResult").list();
-
     setupCrossOriginHeaders(environment);
 
     final Authenticator authenticator =
@@ -88,6 +87,9 @@ public class HackathonApplication extends Application<HackathonConfiguration> {
                 new Object[] {
                   injector.getInstance(TeamService.class), injector.getInstance(AdminService.class)
                 });
+
+    var context = environment.getApplicationContext();
+    JettyWebSocketServletContainerInitializer.configure(context, null);
 
     DefaultIndexServlet reactServlet = new DefaultIndexServlet("/ui", "/ui", "index.html", StandardCharsets.UTF_8);
     environment.servlets().addServlet("ui", reactServlet).addMapping("/ui/*");

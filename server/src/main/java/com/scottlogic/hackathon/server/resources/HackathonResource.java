@@ -1,15 +1,26 @@
 package com.scottlogic.hackathon.server.resources;
 
 import java.util.List;
-import javax.annotation.security.RolesAllowed;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 
 import com.scottlogic.hackathon.server.HackathonConfiguration;
 import com.scottlogic.hackathon.server.authentication.Authorizer;
@@ -50,7 +61,7 @@ public class HackathonResource {
   @RolesAllowed(Authorizer.ROLE_ADMIN)
   @JsonView(Views.Details.class)
   public Response createHackathon(@Auth final User user, final Hackathon hackathon, @Context UriInfo uriInfo) {
-    Hackathon record =  hackathonService.createHackathon(user, hackathon);
+    Hackathon record = hackathonService.createHackathon(user, hackathon);
 
     UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
 
@@ -66,7 +77,8 @@ public class HackathonResource {
   @RolesAllowed(Authorizer.ROLE_ADMIN)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response updateHackathon(@PathParam("id") final String id, final HackathonUpdate hackathonUpdate) throws IllegalArgumentException {
+  public Response updateHackathon(@PathParam("id") final String id, final HackathonUpdate hackathonUpdate)
+      throws IllegalArgumentException {
     Hackathon hackathon = hackathonService.updateHackathon(id, hackathonUpdate);
 
     return Response.ok(hackathon).build();
@@ -92,7 +104,11 @@ public class HackathonResource {
   @Path("/{id}")
   @JsonView(Views.Details.class)
   public Response getHackathon(@NotNull @PathParam("id") final String id) {
-    Hackathon hackathon = hackathonService.getHackathon(id);
+    Hackathon hackathon = null;
+
+    if (id != "null") {
+      hackathon = hackathonService.getHackathon(id);
+    }
 
     if (hackathon == null) {
       return Response.status(Response.Status.NOT_FOUND).build();

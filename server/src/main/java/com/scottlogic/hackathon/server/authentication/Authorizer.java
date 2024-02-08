@@ -1,11 +1,14 @@
 package com.scottlogic.hackathon.server.authentication;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 public class Authorizer implements io.dropwizard.auth.Authorizer<User> {
   public static final String ROLE_ADMIN = "ADMIN";
   public static final String ROLE_TEAM = "TEAM";
 
   @Override
-  public boolean authorize(final User user, final String role) {
+  public boolean authorize(final User user, final String role, @Nullable ContainerRequestContext requestContext) {
     boolean authorized = false;
 
     if (role.equals(ROLE_ADMIN)) {
