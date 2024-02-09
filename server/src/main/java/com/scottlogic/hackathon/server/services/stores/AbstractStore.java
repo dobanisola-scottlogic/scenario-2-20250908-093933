@@ -25,49 +25,60 @@ public class AbstractStore<T> {
   }
 
   private SelectionQuery<?> createQueryByProperty(final String propertyName, final String value, boolean ignoreCase) {
-    String queryString;
-    if (ignoreCase) {
-      queryString = String.format("from %s where %s ilike :value",
-          entityClass.getSimpleName(),
-          propertyName);
-    } else {
-      queryString = String.format("from %s where %s like :value",
-          entityClass.getSimpleName(),
-          propertyName);
+    try (Session session = currentSession()) {
+      String queryString;
+      if (ignoreCase) {
+        queryString = String.format("from %s where %s ilike :value",
+            entityClass.getSimpleName(),
+            propertyName);
+      } else {
+        queryString = String.format("from %s where %s like :value",
+            entityClass.getSimpleName(),
+            propertyName);
+      }
+      return session.createSelectionQuery(queryString, entityClass)
+          .setParameter("value", value);
     }
-    var query = currentSession().createSelectionQuery(queryString, entityClass)
-        .setParameter("value", value);
-    return query;
   }
 
   public T save(final T entity) {
-    currentSession().persist(checkNotNull(entity));
+    try(Session session = currentSession()) {
+      session.persist(checkNotNull(entity));
 
-    return entity;
+      return entity;
+    }
   }
 
   public T saveOrUpdate(final T entity) {
-    currentSession().merge(checkNotNull(entity));
+    try (Session session = currentSession()) {
+      session.merge(checkNotNull(entity));
 
-    return entity;
+      return entity;
+    }
   }
 
   public boolean delete(final Serializable id) {
     final T entity = get(id);
 
     if (entity != null) {
-      currentSession().remove(entity);
+      try (Session session = currentSession()) {
+        session.remove(entity);
 
-      return true;
+        return true;
+      }
     } else {
       return false;
     }
   }
 
+  @SuppressWarnings("unchecked")
   public T get(final Serializable id) {
-    return (T) currentSession().get(entityClass, id);
+    try (Session session = currentSession()) {
+      return (T) session.get(entityClass, id);
+    }
   }
 
+  @SuppressWarnings("unchecked")
   public T get(final String propertyName, final String value, final boolean ignoreCase) {
     var query = createQueryByProperty(propertyName, value, ignoreCase);
 
@@ -79,16 +90,20 @@ public class AbstractStore<T> {
   }
 
   public List<T> list() {
-    var entities = (List<T>) currentSession().createSelectionQuery(
+    try(Session session = currentSession()) {
+      @SuppressWarnings("unchecked")
+      var entities = (List<T>) session.createSelectionQuery(
         String.format("from %s", entityClass.getSimpleName()),
         entityClass)
         .getResultList();
     return Collections.unmodifiableList(entities);
+    }
   }
 
   public List<T> list(final String propertyName, final String value, boolean ignoreCase) {
     var query = createQueryByProperty(propertyName, value, ignoreCase);
 
+    @SuppressWarnings("unchecked")
     var entities = (List<T>) query.list();
     return Collections.unmodifiableList(entities);
   }
@@ -98,12 +113,12 @@ public class AbstractStore<T> {
   }
 
   public void runInSession(Runnable runnable) {
-    Session currentSession = sessionFactory.openSession();
-    ManagedSessionContext.bind(currentSession);
-    currentSession.beginTransaction();
-    runnable.run();
-    ManagedSessionContext.unbind(sessionFactory);
-    currentSession.getTransaction().commit();
-    currentSession.close();
+    try (Session currentSession = sessionFactory.openSession()) {
+      ManagedSessionContext.bind(currentSession);
+      currentSession.beginTransaction();
+      runnable.run();
+      ManagedSessionContext.unbind(sessionFactory);
+      currentSession.getTransaction().commit();
+    }
   }
 }
