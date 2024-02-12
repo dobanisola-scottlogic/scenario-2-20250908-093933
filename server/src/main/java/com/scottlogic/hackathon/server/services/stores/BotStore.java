@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.UnitOfWork;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +26,13 @@ public class BotStore extends AbstractStore<TeamBot> {
   public void configureIdGenerator() {
     runInSession(
         () -> {
-          try (Session session = currentSession()) {
-            Optional<Long> maxId = ofNullable(
-                (Long) session
-                    .createQuery("select max(bot.id) from TeamBot bot")
-                    .getSingleResult());
-            UniqueIdGenerator.INSTANCE.setSeed(maxId.orElse(1L));
-          }
+          Optional<Long> maxId =
+              ofNullable(
+                  (Long)
+                      currentSession()
+                          .createQuery("select max(bot.id) from TeamBot bot")
+                          .getSingleResult());
+          UniqueIdGenerator.INSTANCE.setSeed(maxId.orElse(1L));
         });
   }
 

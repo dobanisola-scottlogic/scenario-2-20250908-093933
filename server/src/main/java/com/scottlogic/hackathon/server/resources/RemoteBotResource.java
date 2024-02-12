@@ -77,11 +77,7 @@ public class RemoteBotResource {
         botService.playMilestone(
             user, team, testGamePayload.getMilestone(), testGamePayload.getMap());
 
-    if (gameResult != null) {
-      logger.debug("Connected and got game results, gameId: {}", gameResult.getId());
-    } else {
-      logger.debug("No result returned from milestone game");
-    }
+    logger.debug("Connected and got game results, gameId: " + gameResult.getId());
 
     return gameResult;
   }

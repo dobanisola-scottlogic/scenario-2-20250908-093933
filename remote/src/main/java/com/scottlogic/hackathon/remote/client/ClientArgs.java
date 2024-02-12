@@ -102,11 +102,10 @@ public class ClientArgs {
 
     } else {
       try {
-        URL[] cp = { botClassPath.toURI().toURL() };
-        try (URLClassLoader urlcl = new URLClassLoader(cp)) {
-          Class<Bot> clazz = (Class<Bot>) urlcl.loadClass(botClazz);
-          this.bot = clazz.getDeclaredConstructor(String.class).newInstance(team);
-        }
+        URL[] cp = {botClassPath.toURI().toURL()};
+        URLClassLoader urlcl = new URLClassLoader(cp);
+        Class<Bot> clazz = (Class<Bot>) urlcl.loadClass(botClazz);
+        this.bot = clazz.getDeclaredConstructor(String.class).newInstance(team);
       } catch (Exception ex) {
         throw new RuntimeException(
             "Failed to load Bot class " + botClazz + " from " + botClassPath.getAbsolutePath());
@@ -133,7 +132,7 @@ public class ClientArgs {
     if (botClassPath != null) {
       buffer.append("'  botclasspath='");
       buffer.append(
-          botClassPath.isDirectory()
+          (botClassPath != null) && botClassPath.isDirectory()
               ? botClassPath.getAbsoluteFile()
               : "invalid!");
       buffer.append("'  bot='");
