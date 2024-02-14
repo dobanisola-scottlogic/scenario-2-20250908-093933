@@ -3,6 +3,7 @@ import { PlayerTravel } from '~/components/game/PlayerTravel';
 import PlayerMovementUtils, { PlayerMovement } from '~/enums/PlayerMovement';
 import { Cell } from '~/interfaces/Cell';
 import { Collectable } from '~/interfaces/Collectable';
+import { DisqualifiedBot } from '~/interfaces/DisqualifiedBot';
 import { GameResult } from '~/interfaces/GameResult';
 import { PhaseResult } from '~/interfaces/PhaseResult';
 import { Player } from '~/interfaces/Player';
@@ -12,6 +13,7 @@ export class ParsedGameDelta {
   private constructor(
     public readonly collectablesAdded: Collectable[],
     public readonly collectablesCollected: number[],
+    public readonly disqualifiedBots: DisqualifiedBot[],
     public readonly playersAdded: Player[],
     public readonly playersDestroyed: number[],
     public readonly playersTravel: Map<number, PlayerTravel>,
@@ -176,6 +178,7 @@ export class ParsedGameDelta {
       const delta = new ParsedGameDelta(
         collectablesAdded,
         collectablesCollected,
+        phaseResult.disqualifiedBots,
         playersAdded,
         playersDestroyed,
         playersMovements,

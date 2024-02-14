@@ -12,6 +12,7 @@ import { TeamStats } from '~/components/game/TeamStats';
 import PlayerMovementUtils from '~/enums/PlayerMovement';
 import { Cell } from '~/interfaces/Cell';
 import { Collectable } from '~/interfaces/Collectable';
+import { DisqualifiedBot } from '~/interfaces/DisqualifiedBot';
 import { Player } from '~/interfaces/Player';
 import { removeMilestoneBotPrefix } from '~/utils/milestone-utils';
 
@@ -41,6 +42,9 @@ export class HackathonPhaserGame extends Phaser.Game {
 }
 
 class HackathonPhaserScene extends Phaser.Scene {
+  private static readonly idKey: string = 'id';
+  private static readonly ownerIdKey: string = 'ownerId';
+
   private readonly DefaultSpeed: number = 280;
   private readonly collectableSpriteSheet: CollectableSpriteSheet =
     new CollectableSpriteSheet();
@@ -85,7 +89,8 @@ class HackathonPhaserScene extends Phaser.Scene {
     spriteSheetDefinition: SpriteSheetDefinition,
     frameNumber: number,
     spriteSheetRow = 0,
-    instanceId: number | null = null
+    instanceId: number | null = null,
+    ownerId: number | null = null
   ): Phaser.GameObjects.Sprite => {
     const targetCell = new Cell(x, y);
 
@@ -119,9 +124,12 @@ class HackathonPhaserScene extends Phaser.Scene {
       });
     });
 
-    // Set the instanceId on the sprite so we can use it to look it up later:
-    if (instanceId != null) {
-      sprite.setData(spriteSheetDefinition.idKey, instanceId);
+    // Set the instanceId/ownerId on the sprite so we can use it to look it up later:
+    if (instanceId != null || ownerId != null) {
+      sprite.setData({
+        [HackathonPhaserScene.idKey]: instanceId,
+        [HackathonPhaserScene.ownerIdKey]: ownerId,
+      });
     }
 
     return sprite;
@@ -201,7 +209,8 @@ class HackathonPhaserScene extends Phaser.Scene {
         this.playerSpriteSheet,
         player.teamIndex * this.playerSpriteSheet.repeatsEvery,
         player.teamIndex,
-        player.id
+        player.id,
+        player.owner
       );
 
       sprite.anims.play(this.playerSpriteSheet.activeAnimation.key);
@@ -214,12 +223,11 @@ class HackathonPhaserScene extends Phaser.Scene {
   removeSprites = (
     ids: number[],
     sprites: Phaser.GameObjects.Sprite[],
-    spriteSheet: SpriteSheetDefinition
+    spriteSheet: SpriteSheetDefinition,
+    key: string = HackathonPhaserScene.idKey
   ) => {
     ids?.forEach((id: number) => {
-      const index = sprites.findIndex(
-        (c) => c.getData(spriteSheet.idKey) === id
-      );
+      const index = sprites.findIndex((c) => c.getData(key) === id);
 
       if (index > -1) {
         const sprite = sprites[index];
@@ -252,7 +260,7 @@ class HackathonPhaserScene extends Phaser.Scene {
   movePlayers = (playersTravels: Map<number, PlayerTravel>) => {
     playersTravels.forEach((playerTravel, key) => {
       const player = this.players.find(
-        (p) => p.getData(this.playerSpriteSheet.idKey) === key
+        (p) => p.getData(HackathonPhaserScene.idKey) === key
       );
 
       if (player) {
@@ -286,6 +294,19 @@ class HackathonPhaserScene extends Phaser.Scene {
 
   removePlayers = (playerIds: number[]) => {
     this.removeSprites(playerIds, this.players, this.playerSpriteSheet);
+  };
+
+  removePlayersOfDisqualifiedBots = (disqualifiedBots: DisqualifiedBot[]) => {
+    if (disqualifiedBots?.length > 0) {
+      const disqualifiedBotsIds = disqualifiedBots.map((bot) => bot.id);
+
+      this.removeSprites(
+        disqualifiedBotsIds,
+        this.players,
+        this.playerSpriteSheet,
+        HackathonPhaserScene.ownerIdKey
+      );
+    }
   };
 
   removeSpawnPoints = (ids: number[]) => {
@@ -339,6 +360,7 @@ class HackathonPhaserScene extends Phaser.Scene {
         this.addPlayers(delta.playersAdded);
         this.removePlayers(delta.playersDestroyed);
         this.movePlayers(delta.playersTravel);
+        this.removePlayersOfDisqualifiedBots(delta.disqualifiedBots);
 
         this.removeSpawnPoints(delta.spawnPointsDestroyed);
       }
