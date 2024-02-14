@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.cloud9.model.DescribeEnvironmentsResponse
 import software.amazon.awssdk.services.cloud9.model.Environment;
 import software.amazon.awssdk.services.cloud9.model.ListEnvironmentsResponse;
 
+import com.scottlogic.hackathon.server.models.Hackathon;
 import com.scottlogic.hackathon.server.models.Team;
 import com.scottlogic.hackathon.server.models.TeamInfo;
 import com.scottlogic.hackathon.server.services.stores.TeamStore;
@@ -23,23 +24,34 @@ import com.scottlogic.hackathon.server.services.stores.TeamUpdate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TeamServiceTest {
 
-  @Mock TeamStore teamStore;
-  @Mock Cloud9Client cloud9;
-  @Mock ListEnvironmentsResponse listResponse;
-  @Mock DescribeEnvironmentsResponse describeResponse;
-  @Mock Environment environment;
-  @Mock TeamInfo teamInfo;
-  @Mock Cloud9ClientBuilder cloud9ClientBuilder;
+  @Mock
+  TeamStore teamStore;
+  @Mock
+  Cloud9Client cloud9;
+  @Mock
+  ListEnvironmentsResponse listResponse;
+  @Mock
+  DescribeEnvironmentsResponse describeResponse;
+  @Mock
+  Environment environment;
+  @Mock
+  TeamInfo teamInfo;
+  @Mock
+  Cloud9ClientBuilder cloud9ClientBuilder;
+  @Mock
+  HackathonService hackathonService;
   MockedStatic<Cloud9Client> cloud9Client;
   MockedStatic<TeamInfo> teamInfoStatic;
   TeamService teamService;
@@ -51,6 +63,7 @@ public class TeamServiceTest {
     listResponse = mock(ListEnvironmentsResponse.class);
     environment = mock(Environment.class);
     teamInfo = mock(TeamInfo.class);
+    hackathonService = mock(HackathonService.class);
 
     cloud9Client = mockStatic(Cloud9Client.class);
     cloud9ClientBuilder = mock(Cloud9ClientBuilder.class);
@@ -64,7 +77,7 @@ public class TeamServiceTest {
     teamInfo.password = "test-password";
     teamInfoStatic.when(() -> TeamInfo.fromEnvironment(environment)).thenReturn(teamInfo);
 
-    teamService = new TeamService(teamStore);
+    teamService = new TeamService(teamStore, hackathonService);
   }
 
   @AfterEach
@@ -78,7 +91,9 @@ public class TeamServiceTest {
     var team = new Team();
     team.setName("name");
     team.setPassword("password");
+    team.setHackathonId("testHackathon");
     when(teamStore.save(team)).thenReturn(team);
+    when(hackathonService.getHackathon(anyString())).thenReturn(mock());
 
     var result = teamService.addTeam(team);
 
@@ -251,5 +266,37 @@ public class TeamServiceTest {
     when(cloud9.listEnvironments()).thenReturn(listResponse);
     when(cloud9.describeEnvironments(any(DescribeEnvironmentsRequest.class))).thenReturn(describeResponse);
     when(describeResponse.environments()).thenReturn(Collections.singletonList(environment));
+  }
+
+  @Test
+  public void createTeamExistingHackathonTest() {
+    Team testTeam = Team.createTeam("testTeam");
+    testTeam.setPassword("password");
+    when(teamStore.save(testTeam)).thenReturn(testTeam);
+    when(hackathonService.getHackathon(anyString())).thenReturn(mock(Hackathon.class));
+    testTeam.setHackathonId("existingHackathon");
+
+    TeamService teamService = new TeamService(teamStore, hackathonService);
+    Team returnedTeam = teamService.addTeam(testTeam);
+
+    verify(teamStore).save(testTeam);
+    assertEquals(testTeam, returnedTeam);
+  }
+
+  @Test
+  public void createTeamWithNonExistentHackathonTest() {
+    when(hackathonService.getHackathon(anyString())).thenReturn(null);
+    Team testTeam = Team.createTeam("testTeam");
+    testTeam.setPassword("password");
+    testTeam.setHackathonId("missingHackathon");
+
+    TeamService teamService = new TeamService(teamStore, hackathonService);
+
+    IllegalArgumentException thrown = assertThrows(
+        IllegalArgumentException.class,
+        () -> teamService.addTeam(testTeam),
+        "Expected attempting to add a team with a missing hackathon to raise an IllegalArgumentException");
+
+    assertTrue(thrown.getMessage().contains("Hackathon with ID 'missingHackathon' not found"));
   }
 }

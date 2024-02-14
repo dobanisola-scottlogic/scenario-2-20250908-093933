@@ -24,13 +24,15 @@ import com.scottlogic.util.StringUtils;
 public class TeamService {
   private final Logger logger;
   private final TeamStore teamStore;
+  private final HackathonService hackathonService;
   private final Cloud9Client cloud9;
   private final String workspace;
   final static Pattern teamNumberPattern = Pattern.compile("([0-9]+)$");
 
   @Inject
-  public TeamService(final TeamStore teamStore) {
+  public TeamService(final TeamStore teamStore, final HackathonService hackathonService) {
     this.teamStore = teamStore;
+    this.hackathonService = hackathonService;
     cloud9 = Cloud9Client.builder().build();
     workspace = System.getenv("WORKSPACE");
     logger = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
@@ -51,6 +53,9 @@ public class TeamService {
     var existing = teamStore.get("name", team.getName(), true);
     if (existing != null) {
       throw new IllegalArgumentException("Team name already exists");
+    }
+    if (hackathonService.getHackathon(team.getHackathonId()) == null) {
+      throw new IllegalArgumentException(String.format("Hackathon with ID '%s' not found", team.getHackathonId()));
     }
 
     team.setId(UUID.randomUUID());
