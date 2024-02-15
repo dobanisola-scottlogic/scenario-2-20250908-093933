@@ -1,11 +1,11 @@
-import { Box, Button, CircularProgress, Grid } from '@mui/material';
+import { Button, CircularProgress, Grid } from '@mui/material';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetHackathonGameQuery, useGetHackathonQuery } from '~/api/api';
 import CollectablesChart from '~/components/charts/CollectablesChart';
+import PlayersChart from '~/components/charts/PlayersChart';
 import Breadcrumb from '~/components/common/Breadcrumb';
 import { CommonContainer } from '~/components/common/CommonContainer';
-import { viewerStyles } from '~/components/commonStyles';
 import GameResultDataGrid from '~/components/dataGrids/GameResultDataGrid';
 import GameDetails from '~/components/game/GameDetails';
 import GamePlayback from '~/components/game/GamePlayback';
@@ -91,23 +91,7 @@ const GameViewer = () => {
                   )}
                 </Grid>
                 <Grid item xs={12}>
-                  <Box sx={viewerStyles.commonBoxStyles}>
-                    Player count chart placeholder
-                    {/* <h1>
-                      Phase={gameState?.phase} Players=
-                      {gameState?.players?.length}
-                    </h1>
-                    {gameState?.teams.map((team, index) => (
-                      <Chip
-                        key={index}
-                        sx={{
-                          ...viewerStyles.chipStyles,
-                          backgroundColor: getTeamColour(team.teamIndex),
-                        }}
-                        label={team.playerCount}
-                      ></Chip>
-                    ))} */}
-                  </Box>
+                  {gameState && <PlayersChart gameState={gameState} />}
                 </Grid>
               </Grid>
               <Grid container item xs={12} md={1} direction='column'>

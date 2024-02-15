@@ -62,9 +62,6 @@ describe('GameViewer', () => {
     // Addition for code coverage should be replaced as elements are implemented
     expect(screen.getByText('Playback placeholder')).toBeInTheDocument();
     expect(
-      screen.getByText('Player count chart placeholder')
-    ).toBeInTheDocument();
-    expect(
       screen.getByText('Collectables chart placeholder')
     ).toBeInTheDocument();
   });
