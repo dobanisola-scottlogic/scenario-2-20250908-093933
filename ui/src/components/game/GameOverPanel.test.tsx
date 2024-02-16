@@ -18,9 +18,7 @@ describe('GameOverPanel', () => {
       <GameOverPanel width={width} gameEndState={gameEndState} />
     );
 
-    expect(
-      screen.getByText('Game Over. Victory for Team1')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Victory for Team1!')).toBeInTheDocument();
 
     expect(screen.getByText('Players remaining 1')).toBeInTheDocument();
 
@@ -52,6 +50,6 @@ describe('GameOverPanel', () => {
       <GameOverPanel width={width} gameEndState={gameEndState} />
     );
 
-    expect(screen.getByText('Game Over. No winner')).toBeInTheDocument();
+    expect(screen.getByText('No winner')).toBeInTheDocument();
   });
 });

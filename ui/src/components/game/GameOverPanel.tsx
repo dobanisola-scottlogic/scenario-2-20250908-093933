@@ -27,11 +27,8 @@ const GameOverPanel = ({ gameEndState, width }: GameOverPanelProps) => {
             textAlign: 'center',
           }}
         >
-          <h1>
-            {gameEndState.winner
-              ? `Game Over. Victory for ${gameEndState.winner?.teamName}`
-              : 'Game Over. No winner'}
-          </h1>
+          <h1>Game Over</h1>
+          <h2>{gameEndState.result}</h2>
           <p>{gameEndState.gameOverReason}</p>
           <table
             style={{ margin: '0 auto', tableLayout: 'fixed', width: '66%' }}

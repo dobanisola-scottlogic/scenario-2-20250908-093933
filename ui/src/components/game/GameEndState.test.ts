@@ -27,7 +27,7 @@ describe('GameEndState', () => {
     expect(gameEndState.gameOverReason).toEqual('Game aborted');
   });
 
-  it('should not populate the winner property when teamStats argument empty', () => {
+  it('should declare no winner when teamStats argument empty', () => {
     const teamStats: TeamStats[] = [];
     const cutoffCondition: CutoffCondition = CutoffCondition.CLIENT_QUIT;
 
@@ -36,10 +36,10 @@ describe('GameEndState', () => {
       cutoffCondition
     );
 
-    expect(gameEndState.winner).toBeUndefined();
+    expect(gameEndState.result).toEqual('No winner');
   });
 
-  it('should populate the winner property when teamStats argument contains elements', () => {
+  it('should declare correct winner when teamStats argument contains one element', () => {
     const teamStats: TeamStats[] = [new TeamStats(0, 'Team1', 0, 0)];
     const cutoffCondition: CutoffCondition = CutoffCondition.CLIENT_QUIT;
 
@@ -48,10 +48,10 @@ describe('GameEndState', () => {
       cutoffCondition
     );
 
-    expect(gameEndState.winner).not.toBeUndefined();
+    expect(gameEndState.result).toEqual('Victory for Team1!');
   });
 
-  it('should populate the winner property with the correct value version 1', () => {
+  it('should populate the result property with the correct value version 1', () => {
     const teamStats: TeamStats[] = [
       new TeamStats(0, 'Team1', 0, 0),
       new TeamStats(1, 'Team2', 5, 1),
@@ -64,10 +64,10 @@ describe('GameEndState', () => {
       cutoffCondition
     );
 
-    expect(gameEndState.winner?.teamName).toEqual('Team3');
+    expect(gameEndState.result).toEqual('Victory for Team3!');
   });
 
-  it('should populate the winner property with the correct value version 2', () => {
+  it('should populate the result property with the correct value version 2', () => {
     const teamStats: TeamStats[] = [
       new TeamStats(0, 'Team1', 5, 1),
       new TeamStats(1, 'Team2', 10, 1),
@@ -80,10 +80,10 @@ describe('GameEndState', () => {
       cutoffCondition
     );
 
-    expect(gameEndState.winner?.teamName).toEqual('Team2');
+    expect(gameEndState.result).toEqual('Victory for Team2!');
   });
 
-  it('should populate the winner property with the correct value version 3', () => {
+  it('should populate the result property with the correct value version 3', () => {
     const teamStats: TeamStats[] = [
       new TeamStats(0, 'Team1', 10, 1),
       new TeamStats(1, 'Team2', 0, 0),
@@ -96,10 +96,10 @@ describe('GameEndState', () => {
       cutoffCondition
     );
 
-    expect(gameEndState.winner?.teamName).toEqual('Team1');
+    expect(gameEndState.result).toEqual('Victory for Team1!');
   });
 
-  it('should populate the winner property with the correct value when team with most players is disqualified', () => {
+  it('should populate the result property with the correct value when team with most players is disqualified', () => {
     const teamStats: TeamStats[] = [
       new TeamStats(
         0,
@@ -118,6 +118,57 @@ describe('GameEndState', () => {
       cutoffCondition
     );
 
-    expect(gameEndState.winner?.teamName).toEqual('Team3');
+    expect(gameEndState.result).toEqual('Victory for Team3!');
+  });
+
+  it('should populate the winner property with the correct value when turn limit reached and two teams finish on the same number of players remaining', () => {
+    const teamStats: TeamStats[] = [
+      new TeamStats(0, 'Team1', 0, 0),
+      new TeamStats(1, 'Team2', 5, 1),
+      new TeamStats(2, 'Team3', 5, 1),
+      new TeamStats(3, 'Team4', 9, 1, 'Ugly team'),
+    ];
+    const cutoffCondition: CutoffCondition = CutoffCondition.TURN_LIMIT_REACHED;
+
+    const gameEndState: GameEndState = new GameEndState(
+      teamStats,
+      cutoffCondition
+    );
+
+    expect(gameEndState.result).toEqual('Draw between Team2 and Team3');
+  });
+
+  it('should populate the winner property with the correct value when turn limit reached and three teams finish on the same number of players remaining and teams created in alphabetical order', () => {
+    const teamStats: TeamStats[] = [
+      new TeamStats(0, 'Team1', 5, 1),
+      new TeamStats(1, 'Team2', 5, 1),
+      new TeamStats(2, 'Team3', 5, 1),
+      new TeamStats(3, 'Team4', 9, 1, 'Ugly team'),
+    ];
+    const cutoffCondition: CutoffCondition = CutoffCondition.TURN_LIMIT_REACHED;
+
+    const gameEndState: GameEndState = new GameEndState(
+      teamStats,
+      cutoffCondition
+    );
+
+    expect(gameEndState.result).toEqual('Draw between Team1, Team2 and Team3');
+  });
+
+  it('should populate the winner property with the correct value when turn limit reached and three teams finish on the same number of players remaining and teams created in non-alphabetical order', () => {
+    const teamStats: TeamStats[] = [
+      new TeamStats(0, 'Team3', 5, 1),
+      new TeamStats(1, 'Team1', 5, 1),
+      new TeamStats(2, 'Team2', 5, 1),
+      new TeamStats(3, 'Team4', 9, 1, 'Ugly team'),
+    ];
+    const cutoffCondition: CutoffCondition = CutoffCondition.TURN_LIMIT_REACHED;
+
+    const gameEndState: GameEndState = new GameEndState(
+      teamStats,
+      cutoffCondition
+    );
+
+    expect(gameEndState.result).toEqual('Draw between Team1, Team2 and Team3');
   });
 });
