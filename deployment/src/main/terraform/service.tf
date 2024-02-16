@@ -44,6 +44,10 @@ resource "aws_ecs_task_definition" "task_definition" {
           value = module.contestant.hackathon_contestant_password
         },
         {
+          name  = "AWS_REGION"
+          value = var.aws_region
+        },
+        {
           name  = "AWS_ACCESS_KEY_ID"
           value = aws_iam_access_key.server_user_access_key.id
         },

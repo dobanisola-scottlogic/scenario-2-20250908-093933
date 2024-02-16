@@ -8,6 +8,9 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import io.dropwizard.auth.basic.BasicCredentials;
 import org.slf4j.Logger;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.core.SdkSystemSetting;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloud9.Cloud9Client;
 import software.amazon.awssdk.services.cloud9.model.Cloud9Exception;
 import software.amazon.awssdk.services.cloud9.model.DescribeEnvironmentsRequest;
@@ -33,7 +36,10 @@ public class TeamService {
   public TeamService(final TeamStore teamStore, final HackathonService hackathonService) {
     this.teamStore = teamStore;
     this.hackathonService = hackathonService;
-    cloud9 = Cloud9Client.builder().build();
+    cloud9 = Cloud9Client.builder()
+      .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())))
+      .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+      .build();
     workspace = System.getenv("WORKSPACE");
     logger = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
   }

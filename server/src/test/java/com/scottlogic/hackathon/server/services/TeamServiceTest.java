@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloud9.Cloud9Client;
 import software.amazon.awssdk.services.cloud9.Cloud9ClientBuilder;
 import software.amazon.awssdk.services.cloud9.model.DescribeEnvironmentsRequest;
@@ -54,6 +55,7 @@ public class TeamServiceTest {
   HackathonService hackathonService;
   MockedStatic<Cloud9Client> cloud9Client;
   MockedStatic<TeamInfo> teamInfoStatic;
+  MockedStatic<Region> regionStatic;
   TeamService teamService;
 
   @BeforeEach
@@ -69,6 +71,11 @@ public class TeamServiceTest {
     cloud9ClientBuilder = mock(Cloud9ClientBuilder.class);
     cloud9Client.when(Cloud9Client::builder).thenReturn(cloud9ClientBuilder);
     when(cloud9ClientBuilder.build()).thenReturn(cloud9);
+    when(cloud9ClientBuilder.region(any())).thenReturn(cloud9ClientBuilder);
+    when(cloud9ClientBuilder.credentialsProvider(any())).thenReturn(cloud9ClientBuilder);
+
+    regionStatic = mockStatic(Region.class);
+    regionStatic.when(() -> Region.of(any())).thenReturn(Region.EU_WEST_2);
 
     teamInfoStatic = mockStatic(TeamInfo.class);
     teamInfo.accountId = "account-id";
@@ -84,6 +91,7 @@ public class TeamServiceTest {
   public void close() {
     cloud9Client.close();
     teamInfoStatic.close();
+    regionStatic.close();
   }
 
   @Test

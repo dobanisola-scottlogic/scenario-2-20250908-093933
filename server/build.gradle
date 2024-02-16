@@ -123,6 +123,7 @@ run {
     args "server", "$defaultConfigFile"
 
     // Uncomment and populate these lines to enable team info requests
+    // environment 'AWS_REGION', 'eu-west-2'
     // environment 'AWS_ACCESS_KEY_ID', 'access-key'
     // environment 'AWS_SECRET_ACCESS_KEY', 'secret-key'
     // environment 'WORKSPACE', 'workspace'
