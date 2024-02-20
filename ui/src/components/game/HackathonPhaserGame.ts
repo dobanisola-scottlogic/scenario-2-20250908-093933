@@ -9,6 +9,7 @@ import { PlayerSpriteSheet } from '~/components/game/SpriteSheets/PlayerSpriteSh
 import { SpawnSpriteSheet } from '~/components/game/SpriteSheets/SpawnSpriteSheet';
 import { SpriteSheetDefinition } from '~/components/game/SpriteSheets/SpriteSheetDefinition';
 import { TeamStats } from '~/components/game/TeamStats';
+import { GamePlaybackSpeedMultiplier } from '~/enums/GamePlaybackSpeedMultiplier';
 import PlayerMovementUtils from '~/enums/PlayerMovement';
 import { Cell } from '~/interfaces/Cell';
 import { Collectable } from '~/interfaces/Collectable';
@@ -36,9 +37,34 @@ export class HackathonPhaserGame extends Phaser.Game {
       height: gameData.constants.height * Cell.CellHeight,
       width: gameData.constants.width * Cell.CellWidth,
       parent: parentElementId,
+      physics: {
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 0 },
+          debug: false,
+        },
+      },
       scene: new HackathonPhaserScene(gameData, setGameState, setGameEndState),
     });
   }
+
+  private getHackathonScene = (): HackathonPhaserScene | undefined => {
+    const scene = this.scene.getScenes().shift();
+
+    if (scene) {
+      return scene as HackathonPhaserScene;
+    }
+  };
+
+  public setPaused = (isPaused: boolean) => {
+    this.getHackathonScene()?.setPaused(isPaused);
+  };
+
+  public setGamePlaybackSpeedMultiplier = (
+    multiplier: GamePlaybackSpeedMultiplier
+  ) => {
+    this.getHackathonScene()?.setGamePlaybackSpeedMultiplier(multiplier);
+  };
 }
 
 class HackathonPhaserScene extends Phaser.Scene {
@@ -55,6 +81,8 @@ class HackathonPhaserScene extends Phaser.Scene {
   private readonly spriteSheets: SpawnSpriteSheet[];
 
   private collectables: Phaser.GameObjects.Sprite[] = [];
+  private gamePlaybackSpeedMultiplier: GamePlaybackSpeedMultiplier =
+    GamePlaybackSpeedMultiplier.Times1;
   private lastPhaseTime = 0;
   private phaseCount = 0;
   private phaseIndex = 0;
@@ -70,7 +98,7 @@ class HackathonPhaserScene extends Phaser.Scene {
       React.SetStateAction<GameEndState | undefined>
     >
   ) {
-    super({ key: 'MainScene' });
+    super({ key: 'Hackathon' });
 
     this.spriteSheets = [
       this.collectableSpriteSheet,
@@ -79,9 +107,27 @@ class HackathonPhaserScene extends Phaser.Scene {
       this.spawnSpriteSheet,
     ];
 
-    this.lastPhaseTime = Date.now() - this.DefaultSpeed;
+    this.lastPhaseTime = Date.now() - this.getGameSpeed();
     this.phaseCount = this.gameData.deltas.length;
   }
+
+  private getGameSpeed = (): number => {
+    return this.DefaultSpeed / this.gamePlaybackSpeedMultiplier;
+  };
+
+  public setPaused = (isPaused: boolean) => {
+    if (isPaused === true) {
+      this.game.pause();
+    } else {
+      this.game.resume();
+    }
+  };
+
+  public setGamePlaybackSpeedMultiplier = (
+    gamePlaybackSpeedMultiplier: GamePlaybackSpeedMultiplier
+  ) => {
+    this.gamePlaybackSpeedMultiplier = gamePlaybackSpeedMultiplier;
+  };
 
   addSprite = (
     x: number,
@@ -275,7 +321,7 @@ class HackathonPhaserScene extends Phaser.Scene {
 
         const duration = playerTravel.hasWrappedAroundMap
           ? 0
-          : this.DefaultSpeed;
+          : this.getGameSpeed();
 
         this.tweens.add({
           targets: player,
@@ -315,12 +361,9 @@ class HackathonPhaserScene extends Phaser.Scene {
 
   update = () => {
     if (this.phaseIndex === this.phaseCount) {
-      // Check for looped, game over etc:
-    }
+      // Game Over:
+      this.game.pause();
 
-    const dateTimeNow = Date.now();
-
-    if (this.phaseIndex === this.phaseCount) {
       const gameState = this.gameData.states[this.gameData.states.length - 1];
 
       const teamStats: TeamStats[] = this.gameData.constants.teams.map(
@@ -343,8 +386,14 @@ class HackathonPhaserScene extends Phaser.Scene {
       );
 
       this.setGameEndState(gameEndState);
-    } else if (
-      dateTimeNow - this.lastPhaseTime > this.DefaultSpeed &&
+
+      return;
+    }
+
+    const dateTimeNow = Date.now();
+
+    if (
+      dateTimeNow - this.lastPhaseTime > this.getGameSpeed() &&
       this.phaseIndex < this.phaseCount
     ) {
       this.lastPhaseTime = dateTimeNow;

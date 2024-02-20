@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react';
 import { commonStyles } from '~/components/commonStyles';
 import { GameEndState } from '~/components/game/GameEndState';
 import GameOverPanel from '~/components/game/GameOverPanel';
+import GamePlaybackSpeedControl from '~/components/game/GamePlaybackSpeedControl';
 import { HackathonPhaserGame } from '~/components/game/HackathonPhaserGame';
 import { ParsedGameResult } from '~/components/game/ParsedGameResult';
 import { ParsedGameState } from '~/components/game/ParsedGameState';
+import { GamePlaybackSpeedMultiplier } from '~/enums/GamePlaybackSpeedMultiplier';
 import { Cell } from '~/interfaces/Cell';
 import { GameResult } from '~/interfaces/GameResult';
 
@@ -30,7 +32,29 @@ const GamePlayback = ({
   setGameState,
 }: GamePlaybackProps) => {
   const [formError, setFormError] = useState<string | undefined>(undefined);
+
   const [gameEndState, setGameEndState] = useState<GameEndState>();
+
+  const [gamePlaybackSpeedMultiplier, setGamePlaybackSpeedMultiplier] =
+    useState<GamePlaybackSpeedMultiplier>(GamePlaybackSpeedMultiplier.Times1);
+
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    // Phaser doesn't 'react' to changes in state hooks so we need to manage changes with useEffect:
+    if (game) {
+      game.setPaused(isPaused);
+    }
+  }, [isPaused]);
+
+  useEffect(() => {
+    // Phaser doesn't 'react' to changes in state hooks so we need to manage changes with useEffect:
+    if (game) {
+      game.setGamePlaybackSpeedMultiplier(gamePlaybackSpeedMultiplier);
+    }
+  }, [gamePlaybackSpeedMultiplier]);
 
   useEffect(() => {
     // Only create a new game if one doesn't already exist:
@@ -48,7 +72,7 @@ const GamePlayback = ({
         setFormError(`Error creating game: ${error as string}`);
       }
     }
-  }, [gameResult, setGameState]);
+  }, [gamePlaybackSpeedMultiplier, gameResult, isPaused, setGameState]);
 
   return (
     <div>
@@ -60,12 +84,22 @@ const GamePlayback = ({
 
       <div
         id={gameElementId}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         style={{
           height: height * Cell.CellHeight,
           width: width * Cell.CellWidth,
           margin: '0 auto',
         }}
       >
+        <GamePlaybackSpeedControl
+          gamePlaybackSpeedMultiplier={gamePlaybackSpeedMultiplier}
+          isPaused={isPaused}
+          isHovered={isHovered}
+          setGamePlaybackSpeedMultiplier={setGamePlaybackSpeedMultiplier}
+          setIsPaused={setIsPaused}
+        ></GamePlaybackSpeedControl>
+
         <GameOverPanel
           gameEndState={gameEndState}
           width={width * Cell.CellWidth}
