@@ -52,7 +52,6 @@ describe('Team', () => {
     expect(screen.getByText('Disconnected')).toBeInTheDocument();
     expect(addANewGameButton).toBeInTheDocument();
     expect(addANewGameButton).toHaveAttribute('disabled');
-    expect(screen.getByText('Placeholder for games table')).toBeInTheDocument();
 
     // View information opens correctly
     fireEvent.click(screen.getByRole('button', { name: 'View information' }));
@@ -208,15 +207,12 @@ describe('Team', () => {
       expect(connectButton).toHaveTextContent('Disconnect');
     });
 
-    // For code coverage - test should be replaced when button functionality is implemented
     act(() => {
       fireEvent.click(addANewGameButton);
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Feature not yet implemented')
-      ).toBeInTheDocument();
+      expect(screen.getAllByText('Add a new game')).toHaveLength(3);
     });
   });
 

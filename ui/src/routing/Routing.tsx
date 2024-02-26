@@ -34,8 +34,8 @@ const Routing = () => {
         <Route path={baseRoute} element={renderComponentBasedOnRole()} />
         <Route element={<ProtectedRoute allowedRoles={UserRole.ADMIN} />}>
           <Route path={hackathonRouterRoute} element={<HackathonDetails />} />
-          <Route path={hackathonGameRouterRoute} element={<GameViewer />} />
         </Route>
+        <Route path={hackathonGameRouterRoute} element={<GameViewer />} />
       </Routes>
     </>
   );

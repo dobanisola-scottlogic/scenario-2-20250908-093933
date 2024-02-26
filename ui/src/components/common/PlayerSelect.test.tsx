@@ -9,14 +9,16 @@ const hackathonId = 'hackathon1';
 const renderComponent = (
   includeTeams = true,
   isOptional = false,
-  playerNumber = 1
+  playerNumber = 1,
+  playerName = ''
 ) => {
   renderWithRouterAndProvider(
     <PlayerSelect
+      disableSelect={Boolean(playerName)}
       hackathonId={hackathonId}
       includeTeams={includeTeams}
       isOptional={isOptional}
-      playerName={''}
+      playerName={playerName}
       playerNumber={playerNumber}
       setPlayerName={mockFunction}
     />
@@ -111,6 +113,14 @@ describe('PlayerSelect', () => {
       expect(
         screen.getByRole('option', { name: 'Milestone2Bot' })
       ).toBeInTheDocument();
+    });
+  });
+
+  it('should render the PlayerSelect component with the first player defaulted to the team when the name is given as a prop', async () => {
+    renderComponent(true, false, 1, 'Team 1');
+
+    await waitFor(() => {
+      expect(screen.getByTestId('player-1')).toHaveTextContent('Team 1');
     });
   });
 });

@@ -1,6 +1,9 @@
 import { Pause, PlayArrow } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import { GamePlaybackSpeedMultiplier, GamePlaybackSpeedMultiplierUtils } from '~/enums/GamePlaybackSpeedMultiplier';
+import {
+  GamePlaybackSpeedMultiplier,
+  GamePlaybackSpeedMultiplierUtils,
+} from '~/enums/GamePlaybackSpeedMultiplier';
 
 interface GamePlaybackSpeedControlProps {
   gamePlaybackSpeedMultiplier: GamePlaybackSpeedMultiplier;

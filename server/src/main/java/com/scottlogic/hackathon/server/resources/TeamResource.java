@@ -67,7 +67,7 @@ public class TeamResource {
   @GET
   @UnitOfWork
   @Timed
-  @RolesAllowed(Authorizer.ROLE_ADMIN)
+  @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
   public List<Team> getTeams(@QueryParam("hackathonId") Optional<String> hackathonId) {
     if (hackathonId.isPresent()) {
       return teamService.getTeamsByHackathon(hackathonId.orNull());

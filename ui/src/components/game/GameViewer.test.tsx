@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 import GameViewer from '~/components/game/GameViewer';
+import { UserRole } from '~/enums/UserRole';
 import { testGameId } from '~/mocks/test-data/game';
 import {
   testHackathonBody,
@@ -26,6 +27,9 @@ describe('GameViewer', () => {
         initialEntries: [
           hackathonGameRoute(testHackathonId.valid, testGameId.valid),
         ],
+        preloadedState: {
+          auth: { name: 'admin', role: UserRole.ADMIN, credentials: '' },
+        },
       }
     );
 
@@ -54,6 +58,9 @@ describe('GameViewer', () => {
         initialEntries: [
           hackathonGameRoute(testHackathonId.valid, testGameId.valid),
         ],
+        preloadedState: {
+          auth: { name: 'admin', role: UserRole.ADMIN, credentials: '' },
+        },
       }
     );
 
@@ -109,6 +116,9 @@ describe('GameViewer', () => {
         initialEntries: [
           hackathonGameRoute(testHackathonId.valid, testGameId.valid),
         ],
+        preloadedState: {
+          auth: { name: 'admin', role: UserRole.ADMIN, credentials: '' },
+        },
       }
     );
 

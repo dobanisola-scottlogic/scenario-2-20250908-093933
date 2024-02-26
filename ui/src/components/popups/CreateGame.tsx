@@ -20,16 +20,24 @@ import { setSnackbarState } from '~/slices/snackbarSlice';
 
 interface CreateGameProps extends PopupProps {
   hackathonId: string;
+  teamName?: string;
 }
 
-const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
+const CreateGame = ({
+  isOpen,
+  hackathonId,
+  teamName,
+  setIsOpen,
+}: CreateGameProps) => {
   const dispatch = useAppDispatch();
 
   const [createGame, { isLoading: isCreating }] = useCreateGameMutation();
 
+  const defaultNamePlayer1 = teamName ?? '';
+
   const [formError, setFormError] = useState<string | undefined>(undefined);
   const [mapName, setMapName] = useState<string>('');
-  const [namePlayer1, setNamePlayer1] = useState<string>('');
+  const [namePlayer1, setNamePlayer1] = useState<string>(defaultNamePlayer1);
   const [namePlayer2, setNamePlayer2] = useState<string>('');
   const [namePlayer3, setNamePlayer3] = useState<string>('');
   const [namePlayer4, setNamePlayer4] = useState<string>('');
@@ -41,7 +49,7 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
 
   const clearForm = () => {
     setMapName('');
-    setNamePlayer1('');
+    setNamePlayer1(defaultNamePlayer1);
     setNamePlayer2('');
     setNamePlayer3('');
     setNamePlayer4('');
@@ -112,9 +120,9 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
 
           <form onSubmit={handleSubmit}>
             <PlayerSelect
+              disableSelect={Boolean(defaultNamePlayer1)}
               hackathonId={hackathonId}
-              includeTeams={true}
-              isOptional={false}
+              includeTeams
               playerName={namePlayer1}
               playerNumber={1}
               setPlayerName={setNamePlayer1}
@@ -122,8 +130,7 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
 
             <PlayerSelect
               hackathonId={hackathonId}
-              includeTeams={true}
-              isOptional={false}
+              includeTeams
               playerName={namePlayer2}
               playerNumber={2}
               setPlayerName={setNamePlayer2}
@@ -131,8 +138,8 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
 
             <PlayerSelect
               hackathonId={hackathonId}
-              includeTeams={true}
-              isOptional={true}
+              includeTeams
+              isOptional
               playerName={namePlayer3}
               playerNumber={3}
               setPlayerName={setNamePlayer3}
@@ -140,8 +147,8 @@ const CreateGame = ({ isOpen, hackathonId, setIsOpen }: CreateGameProps) => {
 
             <PlayerSelect
               hackathonId={hackathonId}
-              includeTeams={true}
-              isOptional={true}
+              includeTeams
+              isOptional
               playerName={namePlayer4}
               playerNumber={4}
               setPlayerName={setNamePlayer4}

@@ -1,6 +1,10 @@
 import { http } from 'msw';
 import { baseUrl } from '~/api/api';
-import { testGameId, testGameResultBody } from '~/mocks/test-data/game';
+import {
+  testGameId,
+  testGameResultBody,
+  testGameResultBodyMultipleGames,
+} from '~/mocks/test-data/game';
 import { badRequestResponse, errorResponse, jsonOkResponse } from './utils';
 
 const gameEndpoint = baseUrl + '/game';
@@ -27,6 +31,13 @@ export const handlers = [
     return jsonOkResponse(testGameResultBody);
   }),
 ];
+
+export const getGameResultsMultipleResponseHandler = http.get(
+  gameEndpoint,
+  () => {
+    return jsonOkResponse(testGameResultBodyMultipleGames);
+  }
+);
 
 export const getGameResultsNetworkErrorResponseHandler = http.get(
   gameEndpoint,

@@ -10,6 +10,7 @@ interface GameResultListTableProps {
   customHeight?: number;
   hackathonId: string;
   openLinksInNewTab?: boolean;
+  teamName?: string;
 }
 
 interface GameResultRowType {
@@ -24,12 +25,19 @@ const GameResultDataGrid = ({
   customHeight,
   hackathonId,
   openLinksInNewTab,
+  teamName,
 }: GameResultListTableProps) => {
   const {
-    data: games,
+    data: gameResults,
     isLoading,
     isError,
   } = useGetHackathonGamesQuery(hackathonId);
+
+  const getGamesByTeam = () =>
+    gameResults?.filter((gameResult: GameResult) =>
+      gameResult.game.teams.some((team) => team.teamName === teamName)
+    );
+  const games = teamName ? getGamesByTeam() : gameResults;
 
   const targetAndRelAttributes = openLinksInNewTab
     ? { target: '_blank', rel: 'noopener noreferrer' }

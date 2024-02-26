@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
+import { UserRole } from '~/enums/UserRole';
 import {
   testHackathonBody,
   testHackathonId,
@@ -26,6 +27,9 @@ describe('HackathonDetails', () => {
       </Routes>,
       {
         initialEntries: [hackathonRoute(testHackathonId.valid)],
+        preloadedState: {
+          auth: { name: 'admin', role: UserRole.ADMIN, credentials: '' },
+        },
       }
     );
 

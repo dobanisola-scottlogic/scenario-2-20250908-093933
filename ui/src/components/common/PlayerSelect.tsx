@@ -11,15 +11,17 @@ import { useGetHackathonTeamsQuery, useGetMilestonesQuery } from '~/api/api';
 import { commonStyles } from '~/components/commonStyles';
 
 interface PlayerSelectProps {
+  disableSelect?: boolean;
   hackathonId: string;
-  includeTeams: boolean;
-  isOptional: boolean;
+  includeTeams?: boolean;
+  isOptional?: boolean;
   playerName: string;
   playerNumber: number;
   setPlayerName: (name: string) => void;
 }
 
 const PlayerSelect = ({
+  disableSelect,
   hackathonId,
   includeTeams,
   isOptional,
@@ -44,6 +46,7 @@ const PlayerSelect = ({
 
       <Select
         data-testid={`player-${playerNumber}`}
+        disabled={disableSelect}
         id={`player-${playerNumber}`}
         label={`Select player ${playerNumber}`}
         labelId={`player-${playerNumber}-select-label`}

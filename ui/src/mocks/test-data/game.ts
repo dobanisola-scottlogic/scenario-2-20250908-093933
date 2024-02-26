@@ -64,3 +64,8 @@ export const testGameResultBodyUserTeams: GameResult = {
     ],
   },
 };
+
+export const testGameResultBodyMultipleGames: GameResult[] = [
+  testGameResultBody,
+  testGameResultBodyUserTeams,
+];

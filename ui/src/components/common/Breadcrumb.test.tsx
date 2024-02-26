@@ -1,6 +1,10 @@
 import { screen } from '@testing-library/react';
 import { BreadcrumbLevel } from '~/enums/BreadcrumbLevel';
-import { testHackathonBody } from '~/mocks/test-data/hackathon';
+import { UserRole } from '~/enums/UserRole';
+import {
+  testHackathonBody,
+  validTeamCredentials,
+} from '~/mocks/test-data/hackathon';
 import { renderWithRouterAndProvider } from '~/utils/test-utils';
 import Breadcrumb from './Breadcrumb';
 
@@ -21,7 +25,12 @@ describe('Breadcrumb', () => {
       <Breadcrumb
         breadcrumbLevel={mockProps.breadcrumbLevel}
         hackathon={mockProps.hackathon}
-      />
+      />,
+      {
+        preloadedState: {
+          auth: { name: 'admin', role: UserRole.ADMIN, credentials: '' },
+        },
+      }
     );
     expect(
       screen.getByRole('link', { name: 'Hackathons' })
@@ -41,11 +50,40 @@ describe('Breadcrumb', () => {
         breadcrumbLevel={BreadcrumbLevel.GAME}
         hackathon={mockProps.hackathon}
         gameTitle='Milestone1Bot vs Milestone2Bot'
-      />
+      />,
+      {
+        preloadedState: {
+          auth: { name: 'admin', role: UserRole.ADMIN, credentials: '' },
+        },
+      }
     );
     expect(
       screen.getByRole('link', { name: 'Hackathons' })
     ).toBeInTheDocument();
+    const gameBreadcrumb = screen.getByTestId('gameBreadcrumb');
+    expect(gameBreadcrumb.textContent).toContain(
+      'Milestone1Bot vs Milestone2Bot'
+    );
+  });
+
+  it('should render the breadcrumb component correctly when logged in as a team', () => {
+    renderWithRouterAndProvider(
+      <Breadcrumb
+        breadcrumbLevel={BreadcrumbLevel.GAME}
+        hackathon={mockProps.hackathon}
+        gameTitle='Milestone1Bot vs Milestone2Bot'
+      />,
+      {
+        preloadedState: {
+          auth: {
+            name: 'team',
+            role: UserRole.TEAM,
+            credentials: validTeamCredentials.credentials,
+          },
+        },
+      }
+    );
+    expect(screen.getByRole('link', { name: 'Hackathon' })).toBeInTheDocument();
     const gameBreadcrumb = screen.getByTestId('gameBreadcrumb');
     expect(gameBreadcrumb.textContent).toContain(
       'Milestone1Bot vs Milestone2Bot'

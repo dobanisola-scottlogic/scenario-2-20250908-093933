@@ -22,6 +22,8 @@ import {
 import AddButton from '~/components/common/AddButton';
 import { CommonContainer } from '~/components/common/CommonContainer';
 import { commonStyles } from '~/components/commonStyles';
+import GameResultDataGrid from '~/components/dataGrids/GameResultDataGrid';
+import CreateGame from '~/components/popups/CreateGame';
 import ViewInformation from '~/components/popups/ViewInformation';
 import { BotConnectionStatus } from '~/enums/BotConnectionStatus';
 import { ContainerRole } from '~/enums/ContainerRole';
@@ -39,10 +41,14 @@ const Team = () => {
     isError: isHackathonError,
   } = useGetHackathonForTeamUserQuery();
 
+  const hackathonId = hackathon?.id;
   const teamName = useAppSelector(selectTeamName);
 
   const [isViewInformationOpen, setIsViewInformationOpen] = useState(false);
   const handleIsViewInformationOpen = () => setIsViewInformationOpen(true);
+
+  const [isAddGameOpen, setIsAddGameOpen] = useState(false);
+  const handleAddGameOpen = () => setIsAddGameOpen(true);
 
   const [connectBot] = useConnectBotMutation();
   const [disconnectBot] = useDisconnectBotMutation();
@@ -123,6 +129,13 @@ const Team = () => {
             {formError}
           </Alert>
         )}
+
+        <CreateGame
+          isOpen={isAddGameOpen}
+          hackathonId={hackathonId ?? ''}
+          teamName={teamName ?? ''}
+          setIsOpen={setIsAddGameOpen}
+        />
 
         <Grid container spacing={3}>
           <Grid item xs={12}>
@@ -211,21 +224,15 @@ const Team = () => {
               !isBotConnectionStatusLoading &&
               !botConnectionStatusMetadata.isAddNewGameEnabled
             }
-            onClick={() => {
-              setFormError('Feature not yet implemented');
-            }}
+            onClick={handleAddGameOpen}
             text='Add a new game'
           />
         </Box>
-        <Box
-          sx={{
-            background: 'white',
-            height: '60vh',
-            borderRadius: '9px',
-          }}
-        >
-          Placeholder for games table
-        </Box>
+        {hackathonId && teamName && <GameResultDataGrid
+          hackathonId={hackathonId}
+          openLinksInNewTab
+          teamName={teamName}
+        />}
       </CommonContainer>
       <ViewInformation
         isOpen={isViewInformationOpen}

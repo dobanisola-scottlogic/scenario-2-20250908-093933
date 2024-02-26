@@ -53,7 +53,7 @@ public class GameResource {
     @POST
     @UnitOfWork
     @Timed
-    @RolesAllowed(Authorizer.ROLE_ADMIN)
+    @RolesAllowed({Authorizer.ROLE_ADMIN, Authorizer.ROLE_TEAM})
     @JsonView(Views.List.class)
     public GameResult playGame(@Auth final User user, final GameConfiguration gameConfiguration) {
         final Map<Team, Bot> teamBotMap = botService.createTeamBotMap(user, gameConfiguration);
