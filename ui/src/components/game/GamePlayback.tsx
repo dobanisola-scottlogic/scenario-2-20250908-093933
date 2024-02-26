@@ -71,7 +71,7 @@ const GamePlayback = ({
     } catch (error) {
       setFormError(`Error creating game: ${error as string}`);
     }
-  }, [gamePlaybackSpeedMultiplier, gameResult, isPaused, setGameState]);
+  }, [gameResult, setGameState]);
 
   return (
     <div>
