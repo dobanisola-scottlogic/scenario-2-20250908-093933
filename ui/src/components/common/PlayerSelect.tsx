@@ -5,15 +5,16 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { skipToken } from '@reduxjs/toolkit/query/react';
 
 import { useGetHackathonTeamsQuery, useGetMilestonesQuery } from '~/api/api';
 import { commonStyles } from '~/components/commonStyles';
+import { UserRole } from '~/enums/UserRole';
+import { useAppSelector } from '~/hooks';
+import { selectUserRole } from '~/slices/authSlice';
 
 interface PlayerSelectProps {
   disableSelect?: boolean;
   hackathonId: string;
-  includeTeams?: boolean;
   isOptional?: boolean;
   playerName: string;
   playerNumber: number;
@@ -23,16 +24,15 @@ interface PlayerSelectProps {
 const PlayerSelect = ({
   disableSelect,
   hackathonId,
-  includeTeams,
   isOptional,
   playerName,
   playerNumber,
   setPlayerName,
 }: PlayerSelectProps) => {
   const { data: milestoneBots } = useGetMilestonesQuery();
-  const { data: teams } = useGetHackathonTeamsQuery(
-    includeTeams ? hackathonId : skipToken
-  );
+  const { data: teams } = useGetHackathonTeamsQuery(hackathonId);
+  const isAdminRole = useAppSelector(selectUserRole) === UserRole.ADMIN;
+  const showTeams = isAdminRole || disableSelect;
 
   return (
     <FormControl
@@ -60,9 +60,9 @@ const PlayerSelect = ({
         )}
 
         {/* Rendering the ListSubheader and MenuItem elements separately avoids the "Fragment as child" error: */}
-        {includeTeams && <ListSubheader>Teams</ListSubheader>}
+        {showTeams && <ListSubheader>Teams</ListSubheader>}
 
-        {includeTeams &&
+        {showTeams &&
           teams?.map((bot) => (
             <MenuItem key={bot.id} value={bot.name}>
               {bot.name}

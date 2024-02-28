@@ -122,7 +122,6 @@ const CreateGame = ({
             <PlayerSelect
               disableSelect={Boolean(defaultNamePlayer1)}
               hackathonId={hackathonId}
-              includeTeams
               playerName={namePlayer1}
               playerNumber={1}
               setPlayerName={setNamePlayer1}
@@ -130,7 +129,6 @@ const CreateGame = ({
 
             <PlayerSelect
               hackathonId={hackathonId}
-              includeTeams
               playerName={namePlayer2}
               playerNumber={2}
               setPlayerName={setNamePlayer2}
@@ -138,7 +136,6 @@ const CreateGame = ({
 
             <PlayerSelect
               hackathonId={hackathonId}
-              includeTeams
               isOptional
               playerName={namePlayer3}
               playerNumber={3}
@@ -147,7 +144,6 @@ const CreateGame = ({
 
             <PlayerSelect
               hackathonId={hackathonId}
-              includeTeams
               isOptional
               playerName={namePlayer4}
               playerNumber={4}

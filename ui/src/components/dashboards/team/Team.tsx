@@ -228,11 +228,13 @@ const Team = () => {
             text='Add a new game'
           />
         </Box>
-        {hackathonId && teamName && <GameResultDataGrid
-          hackathonId={hackathonId}
-          openLinksInNewTab
-          teamName={teamName}
-        />}
+        {hackathonId && teamName && (
+          <GameResultDataGrid
+            hackathonId={hackathonId}
+            openLinksInNewTab
+            teamName={teamName}
+          />
+        )}
       </CommonContainer>
       <ViewInformation
         isOpen={isViewInformationOpen}
