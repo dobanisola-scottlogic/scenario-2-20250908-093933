@@ -1,0 +1,1275 @@
+{
+	"info": {
+		"_postman_id": "25702dde-c4d0-441c-a3e6-3e68443c294a",
+		"name": "Hackathon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10401824"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Team Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{latestTeamPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{latestTeamUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/application/api/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hackathon",
+			"item": [
+				{
+					"name": "Create Hackathon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"latestHackathonId\", jsonData.id);\r",
+									"\r",
+									"pm.test(\"Response status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/hackathon",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"hackathon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Hackathon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Relevant fields have been correctly updated\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData.currentMilestoneClassName).to.eql(\"com.scottlogic.hackathon.bots.Milestone5Bot\");\r",
+									"    pm.expect(responseData.currentMilestoneMap).to.eql(\"Medium\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"milestoneClassName\": \"com.scottlogic.hackathon.bots.Milestone5Bot\", \r\n    \"milestoneMap\": \"Medium\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/hackathon/{{latestHackathonId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"hackathon",
+								"{{latestHackathonId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Hackathons",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains two hackathons\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData.length).to.equal(3, \"total number of created hackathons\")\r",
+									"    responseData.forEach(function (item) {\r",
+									"        pm.expect(item.id).to.deep.include(\"PostmanHackathon\");\r",
+									"        pm.expect(item.name).to.deep.include(\"postmanhackathon\");\r",
+									"        pm.expect(item.games).to.exist.and.to.be.an('array');\r",
+									"        pm.expect(item.games.length).to.eql(0, \"games array will not be populated\");\r",
+									"        pm.expect(item.teams).to.exist.and.to.be.an('array');\r",
+									"        pm.expect(item.teams.length).to.eql(0, \"Teams array will not be populated\");\r",
+									"        pm.expect(item.currentMilestoneClassName).to.eql(\"com.scottlogic.hackathon.bots.Milestone1Bot\");\r",
+									"        pm.expect(item.currentMilestoneMap).to.eql(\"Easy\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate games and teams arrays\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('array');\r",
+									"\r",
+									"    responseData.forEach(function (item) {\r",
+									"        pm.expect(item.games).to.exist.and.to.be.an('array');\r",
+									"        pm.expect(item.games.length).to.equal(0, \"Expected games array to be empty\");\r",
+									"\r",
+									"        pm.expect(item.teams).to.exist.and.to.be.an('array');\r",
+									"        pm.expect(item.teams.length).to.equal(0, \"Expected teams array to be empty\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate id and name fields are non-empty strings\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+									"\r",
+									"    responseData.forEach(function (item) {\r",
+									"        pm.expect(item.id).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+									"        pm.expect(item.name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/hackathon",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"hackathon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Hackathon By ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/hackathon/{{latestHackathonId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"hackathon",
+								"{{latestHackathonId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Hackathon",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/hackathon/{{latestHackathonId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"hackathon",
+								"{{latestHackathonId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Team",
+			"item": [
+				{
+					"name": "Create Team",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var req = JSON.parse(pm.request.body);\r",
+									"var res = JSON.parse(responseBody);\r",
+									"\r",
+									"if (pm.response.code === 200) {\r",
+									"    postman.setEnvironmentVariable(\"latestTeamUsername\", req.name)\r",
+									"    postman.setEnvironmentVariable(\"latestTeamPassword\", req.password);\r",
+									"    postman.setEnvironmentVariable(\"latestTeamId\", res.id);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hackathonId\": \"{{latestHackathonId}}\",\r\n    \"name\": \"testteam\",\r\n    \"password\": \"TestPassword\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/team",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"team"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(pm.request.body)\r",
+									"if (pm.response.code === 200) {\r",
+									"    postman.setEnvironmentVariable(\"latestTeamUsername\", jsonData.name)\r",
+									"    postman.setEnvironmentVariable(\"latestTeamPassword\", jsonData.password);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestTeam\",\r\n    \"password\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/team/{{latestTeamId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"team",
+								"{{latestTeamId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Teams By Hackathon",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/team?hackathonId={{latestHackathonId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"team"
+							],
+							"query": [
+								{
+									"key": "hackathonId",
+									"value": "{{latestHackathonId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Teams",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Backend\",\r\n    \"password\": \"TeamGeneration\",\r\n    \"hackathonId\": \"testhackathon\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/team",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"team"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/team/{{latestTeamId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"team",
+								"{{latestTeamId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Team",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/team/{{latestTeamId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"team",
+								"{{latestTeamId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Game",
+			"item": [
+				{
+					"name": "Play Game",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"latestGameId\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"map\": \"Medium\",\r\n    \"teams\": [\r\n        \"Team1\",\r\n        \"com.scottlogic.hackathon.bots.Milestone6Bot\"\r\n    ],\r\n    \"hackathonId\": \"testteam\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/game",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"game"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Games by Hackathon",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/application/api/game?{{latestHackathonId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"game"
+							],
+							"query": [
+								{
+									"key": "{{latestHackathonId}}",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Game Results By Id",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/application/api/game/{{latestGameId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"game",
+								"{{latestGameId}}"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RemoteBot",
+			"item": [
+				{
+					"name": "Connect",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "Team1",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "ab",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "Team1",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/remotebot/connect",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"remotebot",
+								"connect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Disconnect",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{latestTeamPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{latestTeamUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "TestTeam",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/remotebot/disconnect",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"remotebot",
+								"disconnect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PlayTestGame",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{latestTeamPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{latestTeamUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"teamName\": \"{{latestTeamUsername}}\",\r\n    \"milestone\": \"Milestone1Bot\",\r\n    \"map\": \"Easy\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/remotebot/test",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"remotebot",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ConnectionState",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{latestTeamPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{latestTeamUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "TestTeam",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/remotebot/connectedState",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"remotebot",
+								"connectedState"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetTeamBots",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{latestTeamPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{latestTeamUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/remotebot",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"remotebot"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Change Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"adminPassword\", jsonData.password);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"newPassword\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/admin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Milestone",
+			"item": [
+				{
+					"name": "Get Milestones",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{adminUsername}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/application/api/milestone",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"application",
+								"api",
+								"milestone"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
